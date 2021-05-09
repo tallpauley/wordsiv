@@ -1,0 +1,5 @@
+__pycache__
+scripts/*.txt
+scripts/*.json
+.coverage
+dist/

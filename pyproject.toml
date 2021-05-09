@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "wordsiv"
+version = "0.1.0"
+description = "Generate text with a limited character set for font proofing"
+authors = ["Chris Pauley <cmpauley@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fonttools = "^4.22.1"
+markovify = "^0.9.0"
+pytest = "^6.2.4"
+flake8 = "^3.9.1"
+black = "^21.5b0"
+coveralls = "^3.0.1"
+mypy = "^0.812"
+typer = "^0.3.2"
+build = "^0.3.1"
+
+[tool.poetry.scripts]
+wordsiv = 'wordsiv.cli:run_cli'
+
+[tool.poetry.dev-dependencies]
+black = {version = "^21.5b0", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
