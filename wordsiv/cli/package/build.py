@@ -1,5 +1,11 @@
 from typing import Optional
 from pathlib import Path
+import shutil
+import build
+import typer
+import json
+import subprocess
+from ... import about
 
 SETUP_PY_TEMPLATE = """
 #!/usr/bin/env python3
@@ -72,10 +78,31 @@ include meta.json
 include LICENSE
 """.strip()
 
+GITHUB_RELEASE_TEMPLATE = """
+{description}
 
-def build_package(source_dir: Optional[Path], output_dir: Optional[Path]):
+| Feature | Description |
+| --- | --- |
+| Name | {name} |
+| Language | {lang} | 
+| Version | {version} |
+| Source Class | {source_class} |
+| Compatible Models | {compatible_models} |
+| Wordsiv Version | {wordsiv_version} |
+| Author | {author} |
+| Email | {email} |
+| URL | {url} |
+| License | {license} |
+""".strip()
+
+
+def build_package(
+    source_dir: Optional[Path],
+    output_dir: Optional[Path],
+    release: bool = typer.Option(False, help="Create a Github release after packaging"),
+):
     """Package a wordsiv Source module as wheel & sdist
-    
+
     See https://github.com/tallpauley/wordsiv-source-packages for examples of what
     SOURCE_DIR should look like.
     """
@@ -92,7 +119,52 @@ def build_package(source_dir: Optional[Path], output_dir: Optional[Path]):
         f.write(SETUP_PY_TEMPLATE)
 
     pb = build.ProjectBuilder(temp_dir)
-    pb.build("wheel", output_dir)
-    pb.build("sdist", output_dir)
+
+    wheel_file = pb.build("wheel", output_dir)
+    sdist_file = pb.build("sdist", output_dir)
+
+    if release:
+        with open(source_dir / "meta.json", "r") as f:
+            meta = json.load(f)
+
+        meta["compatible_models"] = ", ".join(
+            f"`{m}`" for m in meta["compatible_models"]
+        )
+        meta["source_class"] = f"`{meta['source_class']}`"
+
+        release_description_f = temp_dir / "release.md"
+        with open(release_description_f, "w+") as f:
+            f.write(GITHUB_RELEASE_TEMPLATE.format(**meta))
+
+        name_version = f"{meta['name']}-{meta['version']}"
+
+        # create release
+        subprocess.run(
+            [
+                "gh",
+                "release",
+                "create",
+                "--repo",
+                about.__packages_repo__,
+                name_version,
+                "--title",
+                name_version,
+                "--notes-file",
+                str(release_description_f),
+            ]
+        )
+
+        subprocess.run(
+            [
+                "gh",
+                "release",
+                "upload",
+                "--repo",
+                about.__packages_repo__,
+                name_version,
+                wheel_file,
+                sdist_file,
+            ]
+        )
 
     shutil.rmtree(temp_dir, ignore_errors=True)
