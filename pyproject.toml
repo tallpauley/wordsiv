@@ -18,7 +18,7 @@ typer = "^0.3.2"
 build = "^0.3.1"
 
 [tool.poetry.scripts]
-wordsiv = 'wordsiv.cli:run_cli'
+wordsiv = 'wordsiv.cli:app'
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
