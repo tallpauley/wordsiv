@@ -158,6 +158,7 @@ def filter_data(
     min_width=0,
     max_width=BIG_NUM,
     width=None,
+    **kwargs
 ):
 
     data = words_count
