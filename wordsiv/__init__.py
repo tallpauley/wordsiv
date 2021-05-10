@@ -20,10 +20,6 @@ from .utilities import installed_source_modules
 from .models.markov import MarkovSource, MarkovModel
 
 
-def has_function(obj, name):
-    return hasattr(obj, name) and callable(getattr(obj, name))
-
-
 class WordSiv:
     def __init__(self, font_file=None, limit_glyphs=None, seed=1):
 
@@ -100,69 +96,44 @@ class WordSiv:
 
         return model
 
-    def sentence(
-        self, sent_len=10, cap_sent=True, uc=False, lc=False, cap=False, **kwargs
-    ):
-
-        # build model at sentence level to check if it has sentence support
-        model_obj = self.build_model(**kwargs, uc=uc, lc=lc, cap=cap)
-
-        # Some models implement sentence themselves (like markov chains for instance)
-        if has_function(model_obj, "sentence"):
-            return model_obj.sentence(**kwargs, uc=uc, lc=lc, cap=cap)
-        else:
-            if uc or lc:
-                first_word = self.word(uc=uc, lc=lc, cap=cap, **kwargs)
-            else:
-                # cap_sent parameter capitalizes first word if uc or lc isn't set
-                first_word = self.word(cap=cap_sent, **kwargs)
-
-            rest_of_sentence = " ".join(
-                self.word(uc=uc, lc=lc, cap=cap, **kwargs) for _ in range(sent_len - 1)
-            )
-            return " ".join((first_word, rest_of_sentence))
-
-    def sentences(self, num_sents=10, sent_len=None, **kwargs):
-
-        # build model to see if it can do sentences, or else add our own sentence termination
-        if has_function(self.build_model(**kwargs), "sentence"):
-            sep = [""]
-        else:
-            sep = [s for s in ".?" if self.available_glyphs.have_glyphs(s)]
-
-        def rand_sep(options):
-            if options:
-                return self.rand.choice(options) + " "
-            else:
-                return " "
-
-        return "".join(
-            (self.sentence(**kwargs) + rand_sep(sep) for _ in range(num_sents))
+    def word(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
         )
+        return model_obj.word(**kwargs)
 
-    # TODO eliminate building model here?
-    def paragraphs(self, num_paras=5, num_sents=7, model=None, **kwargs):
-        if isinstance(model, str) or not model:
-            model_obj = self.build_model(model=model, **kwargs)
-        else:
-            model_obj = model
-
-        return "\n\n".join(
-            self.sentences(model=model_obj, num_sents=num_sents, **kwargs)
-            for _ in range(num_paras)
+    def words(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
         )
+        return model_obj.words(**kwargs)
 
-    def word(self, model=None, source=None, **kwargs):
-        # if model is a string, build a model, else use as is
-        if isinstance(model, str) or not model:
-            model = self.build_model(model=model, source=source, **kwargs)
+    def sentence(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
+        )
+        return model_obj.sentence(**kwargs)
 
-        return model.word()
+    def sentences(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
+        )
+        return model_obj.sentences(**kwargs)
 
-    def words(self, num_words=10, model=None, **kwargs):
-        if isinstance(model, str) or not model:
-            model_obj = self.build_model(model=model, **kwargs)
-        else:
-            model_obj = model
+    def paragraph(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
+        )
+        return model_obj.paragraph(**kwargs)
 
-        return "\n".join(self.word(model=model_obj, **kwargs) for _ in range(num_words))
+    def paragraphs(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
+        )
+        return model_obj.paragraphs(**kwargs)
+
+    def text(self, source=None, model=None, pipeline=None, **kwargs):
+        model_obj = self.build_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
+        )
+        return model_obj.text(**kwargs)

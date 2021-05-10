@@ -16,6 +16,7 @@ from ..availableglyphs import AvailableGlyphs
 from ..utilities import Hashabledict, HashabledictKeys
 from ..utilities import has_glyphs
 from .source import Source
+from .model import Model
 
 #####################################################################################
 ###### SOURCE
@@ -42,54 +43,45 @@ class MarkovSource(Source):
 #####################################################################################
 
 
-class MarkovModel:
+class MarkovModel(Model):
     _instances = {}  # type: ignore
 
     def __init__(self, markovify_text_data, available_glyphs, rand):
 
-        self.rand = rand
-        self.available_glyphs = available_glyphs
         self.markovify_text_data = markovify_text_data
+        self.available_glyphs = available_glyphs
+        self.rand = rand
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
     def markov_text(self):
 
         markov_text = SivText.from_dict(self.markovify_text_data.data)
+
         # TODO: hacky way of feeding our rand object to chain??
         markov_text.chain.rand = self.rand
         markov_text.compile(inplace=True)
 
-        # was testing spitting out compiled model to json
-        # markov_json = markov_text.to_json()
-        # with open('eng-gutenberg-markovify.json', 'w+') as f:
-        #     json.dump(markov_json, f)
         return markov_text
 
-    def sentence(self, **kwargs):
-        """generate a markov chain sentence"""
+    def sentence(self, cap_sent=True, sent_len=10, term=True, **kwargs):
+        """Generate a markov chain sentence"""
+
+        # Ignore cap_sent, sent_len, term, all handled by actual markov model
         return self.markov_text.make_sentence(**kwargs)
 
     def word(self, **kwargs):
-        """return a random word from a markov sentence"""
-        words = self.sentence(**kwargs).split(" ")
-        word = self.rand.choice(words)
+        """No single word generation, just sentences and larger"""
 
-        # filter out punctuation form markov data
-        return "".join(c for c in word if c in self.available_glyphs.letters())
+        raise NotImplementedError
+
+    def words(self, num_words=None, cap_first=False, uc=False, lc=False, **kwargs):
+        """No words generation, just sentences and larger"""
+
+        raise NotImplementedError
 
     @classmethod
-    def filtered_model(
-        cls,
-        markov_data,
-        available_glyphs,
-        font_info,
-        rand,
-        uc=False,
-        lc=False,
-        cap=False,
-        **kwargs
-    ):
+    def filtered_model(cls, data, available_glyphs, font_info, rand, **kwargs):
         """
         returns a new instance if the data is new, otherwise returns a stored instance
 
@@ -97,19 +89,23 @@ class MarkovModel:
         passing around the objects from function to function
         """
 
+        uc = kwargs.get("uc", False)
+        lc = kwargs.get("lc", False)
+        cap = kwargs.get("cap", False)
+
         glyphs_tuple = (
             available_glyphs.glyphs_tuple if available_glyphs.limited else None
         )
 
         # filter chain_data by available
-        markov_data = filter_available(markov_data, glyphs_tuple, uc=uc, lc=lc, cap=cap)
+        data = filter_available(data, glyphs_tuple, uc=uc, lc=lc, cap=cap)
 
         # use chain data as hash to cache object instances
-        if markov_data in cls._instances:
-            return cls._instances[markov_data]
+        if data in cls._instances:
+            return cls._instances[data]
         else:
-            instance = cls(markov_data, available_glyphs, rand)
-            cls._instances[markov_data] = instance
+            instance = cls(data, available_glyphs, rand)
+            cls._instances[data] = instance
             return instance
 
 

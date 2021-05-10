@@ -10,6 +10,7 @@ import json
 
 from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
 from .source import Source
+from .model import Model
 
 BIG_NUM = 100000
 
@@ -73,11 +74,11 @@ class WordCountSource(Source):
 #####################################################################################
 
 
-class WordCountModel:
+class WordCountModel(Model):
     @classmethod
-    def filtered_model(cls, words_count, available_glyphs, font_info, rand, **kwargs):
-        data = filter_data(words_count, available_glyphs, font_info, **kwargs)
-        return cls(data, rand=rand)
+    def filtered_model(cls, data, available_glyphs, font_info, rand, **kwargs):
+        data = filter_data(data, available_glyphs, font_info, **kwargs)
+        return cls(data, available_glyphs, rand=rand)
 
 
 class ProbabilityModel(WordCountModel):
@@ -85,14 +86,15 @@ class ProbabilityModel(WordCountModel):
     A model that uses occurences counts to generate words
     """
 
-    def __init__(self, words_count, rand=None):
+    def __init__(self, words_count, available_glyphs, rand):
         self.words_count = words_count
-        self.rand = rand or random.Random()
+        self.rand = rand
+        self.available_glyphs = available_glyphs
 
-        self.words, self.counts = zip(*self.words_count)
+        self.words_list, self.counts_list = zip(*self.words_count)
 
-    def word(self):
-        return self.rand.choices(self.words, k=1, weights=self.counts)[0]
+    def word(self, **kwargs):
+        return self.rand.choices(self.words_list, k=1, weights=self.counts_list)[0]
 
 
 class TopModel(WordCountModel):
@@ -103,19 +105,21 @@ class TopModel(WordCountModel):
     want to print out the top few
     """
 
-    def __init__(self, words_count, rand=None):
+    def __init__(self, words_count, available_glyphs, rand):
         self.words_count = words_count
+        self.rand = rand
+        self.available_glyphs = available_glyphs
 
-        self.words, _ = zip(*self.words_count)
+        self.words_list, _ = zip(*self.words_count)
         self.reset()
 
     def reset(self):
         self.iterator = self.new_iterator()
 
     def new_iterator(self):
-        return iter(self.words)
+        return iter(self.words_list)
 
-    def word(self):
+    def word(self, **kwargs):
         return next(self.iterator)
 
 
@@ -124,14 +128,15 @@ class RandomModel(WordCountModel):
     A model which picks words completely randomly
     """
 
-    def __init__(self, words_count, rand=None):
+    def __init__(self, words_count, available_glyphs, rand):
         self.words_count = words_count
-        self.rand = rand or random.Random()
+        self.rand = rand
+        self.available_glyphs = available_glyphs
 
-        self.words, _ = zip(*self.words_count)
+        self.words_list, _ = zip(*self.words_count)
 
-    def word(self):
-        return self.rand.choice(self.words)
+    def word(self, **kwargs):
+        return self.rand.choice(self.words_list)
 
 
 #####################################################################################
