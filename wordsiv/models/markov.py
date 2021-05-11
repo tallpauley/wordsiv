@@ -17,6 +17,7 @@ from ..utilities import Hashabledict, HashabledictKeys
 from ..utilities import has_glyphs
 from .source import Source
 from .model import Model
+from .datawrapper import DataWrapper
 
 #####################################################################################
 ###### SOURCE
@@ -35,7 +36,7 @@ class MarkovSource(Source):
     @property  # type: ignore
     @lru_cache(maxsize=None)
     def data(self):
-        return MarkovData.from_json_file(self.data_file)
+        return MarkovDataWrapper.from_json_file(self.data_file)
 
 
 #####################################################################################
@@ -114,13 +115,12 @@ class MarkovModel(Model):
 #####################################################################################
 
 
-class MarkovData:
+class MarkovDataWrapper(DataWrapper):
     def __init__(self, data):
+        # TODO prob don't to hash the chain specifically, try hashing data for better
+        # reuse of parent class
         self.data = data
         self.hash = hash(data["chain"])
-
-    def __hash__(self):
-        return self.hash
 
     def rehash(self):
         self.hash = hash(self.data["chain"])
@@ -190,7 +190,7 @@ def filter_available(
         filter_available_gen(chain, available_glyphs_tuple, case_function)
     )
 
-    return MarkovData.new_with_chain(markov_data, filtered_chain)
+    return MarkovDataWrapper.new_with_chain(markov_data, filtered_chain)
 
 
 # TODO: different filtering strategy in here, using an iterator, isn't congruent with word counts

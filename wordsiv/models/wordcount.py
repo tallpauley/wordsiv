@@ -11,6 +11,7 @@ import json
 from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
 from .source import Source
 from .model import Model
+from .datawrapper import DataWrapper, unwrap
 
 BIG_NUM = 100000
 
@@ -19,11 +20,28 @@ TEST_DATA_DIR = (
 )
 
 #####################################################################################
+###### UTILITY
+######################################################################################
+
+@lru_cache(maxsize=None)
+def zip_tuple(a_tuple):
+    """Zip a tuple of tuple pairs into a tuple (cached)
+    
+    >>> zip_tuple((('hi', 123), ('hello', 321)))
+    (('hi', 'hello'), (123, 321)
+    """
+
+    tuple1, tuple2 = zip(*a_tuple)
+    return tuple1, tuple2
+
+
+#####################################################################################
 ###### SOURCE
 ######################################################################################
 
-
 def stream_file_tuples(file, lines=None):
+    """Yield a tuple ('myword', 123) for each line of a file like 'myword 123'"""
+
     with open(file, "r") as f:
         lc = 0
         for line in f:
@@ -58,15 +76,7 @@ class WordCountSource(Source):
     def data(self):
         """for a WordCountSource, data is a tuple of tuples"""
 
-        return tuple(stream_file_tuples(self.data_file, self.lines))
-
-    @property  # type: ignore
-    @lru_cache(maxsize=None)
-    def as_dict(self):
-        return {k: v for (k, v) in self.data}
-
-    def __getitem__(self, key):
-        return self.as_dict[key]
+        return DataWrapper(tuple(stream_file_tuples(self.data_file, self.lines)))
 
 
 #####################################################################################
@@ -76,9 +86,19 @@ class WordCountSource(Source):
 
 class WordCountModel(Model):
     @classmethod
-    def filtered_model(cls, data, available_glyphs, font_info, rand, **kwargs):
-        data = filter_data(data, available_glyphs, font_info, **kwargs)
-        return cls(data, available_glyphs, rand=rand)
+    def filtered_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+        """Filter data and return a new WordCountModel
+        
+        For these models, we don't actually filter data before building the model like
+        in MarkovModel. Reason being: with this sort of model, we may need to filter the
+        data set differently for each word.
+        
+        For example, with a capitalized sentence, the first word needs a list of
+        available capitalized words, and the other words need lists of lowercase words.
+        Therefore, it is simplest to filter data when word() is called.
+        """
+
+        return cls(data_wrap, available_glyphs, font_info, rand)
 
 
 class ProbabilityModel(WordCountModel):
@@ -86,15 +106,16 @@ class ProbabilityModel(WordCountModel):
     A model that uses occurences counts to generate words
     """
 
-    def __init__(self, words_count, available_glyphs, rand):
-        self.words_count = words_count
+    def __init__(self, data_wrap, available_glyphs, font_info, rand):
+        self.data_wrap = data_wrap
         self.rand = rand
         self.available_glyphs = available_glyphs
-
-        self.words_list, self.counts_list = zip(*self.words_count)
+        self.font_info = font_info
 
     def word(self, **kwargs):
-        return self.rand.choices(self.words_list, k=1, weights=self.counts_list)[0]
+        data_wrap = filter_data(self.data_wrap, self.available_glyphs, self.font_info, **kwargs)
+        words, counts = zip_tuple(data_wrap.data)
+        return self.rand.choices(words, k=1, weights=counts)[0]
 
 
 class TopModel(WordCountModel):
@@ -145,7 +166,7 @@ class RandomModel(WordCountModel):
 
 
 def filter_data(
-    words_count,
+    data_wrap,
     available_glyphs,
     font_info,
     num_top=None,
@@ -161,34 +182,35 @@ def filter_data(
     **kwargs
 ):
 
-    data = words_count
+    dw = data_wrap
 
     glyphs_tuple = available_glyphs.glyphs_tuple if available_glyphs.limited else None
 
     if uc:
-        data = uc_filter(data, glyphs_tuple)
+        dw = uc_filter(dw, glyphs_tuple)
     elif lc:
-        data = lc_filter(data, glyphs_tuple)
+        dw = lc_filter(dw, glyphs_tuple)
     elif cap:
-        data = cap_filter(data, glyphs_tuple)
+        dw = cap_filter(dw, glyphs_tuple)
     else:
-        data = available_filter(data, glyphs_tuple)
+        dw = available_filter(dw, glyphs_tuple)
 
     if min_wl or max_wl != BIG_NUM or wl:
-        data = length_filter(data, min_wl, max_wl, wl)
+        dw = length_filter(dw, min_wl, max_wl, wl)
 
     if font_info:
         if min_width or max_width != BIG_NUM or width:
-            data = width_filter(
-                data, font_info.char_widths_tuple(), min_width, max_width, width
+            dw = width_filter(
+                dw, font_info.char_widths_tuple(), min_width, max_width, width
             )
 
     if num_top:
-        data = top_filter(words_count, num_top)
+        dw = top_filter(dw, num_top)
 
-    return data
+    return dw
 
 
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def top_filter(words_count, num_top=1000):
     """
@@ -202,6 +224,7 @@ def top_filter(words_count, num_top=1000):
     return tuple(islice(words_count, num_top))
 
 
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def available_filter(words_count, available_glyphs_string):
     """
@@ -220,6 +243,7 @@ def available_filter(words_count, available_glyphs_string):
     )
 
 
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def lc_filter(words_count, available_glyphs_string):
     """
@@ -241,6 +265,7 @@ def lc_filter(words_count, available_glyphs_string):
     return tuple(output.items())
 
 
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def uc_filter(words_count, available_glyphs_string):
     """
@@ -262,6 +287,7 @@ def uc_filter(words_count, available_glyphs_string):
     return tuple(output.items())
 
 
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def cap_filter(words_count, available_glyphs_string):
     """
@@ -283,6 +309,7 @@ def cap_filter(words_count, available_glyphs_string):
     return tuple(output.items())
 
 
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def length_filter(words_count, min_wl=0, max_wl=BIG_NUM, wl=None):
     """
@@ -303,7 +330,7 @@ def length_filter(words_count, min_wl=0, max_wl=BIG_NUM, wl=None):
         return words_count
 
 
-# Filter by approximate width of text rendered with a font
+@unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def width_filter(words_count, char_widths, min_width=0, max_width=BIG_NUM, width=None):
     """
