@@ -90,7 +90,9 @@ class WordTextModel(TextModel):
 
         return self.create_word_model(**kwargs).word()
 
-    def words(self, num_words=None, cap_first=False, uc=False, lc=False, cap=False, **kwargs):
+    def words(
+        self, num_words=None, cap_first=False, uc=False, lc=False, cap=False, **kwargs
+    ):
         """Return a list of word strings"""
 
         if not num_words:
@@ -159,7 +161,6 @@ class CachedWordModel(WordModel):
     @classmethod
     def create(cls, data_wrap, rand):
         """Factory method to initialize object if data is unique, or use cached one"""
-
 
         # Objects are cached using hash from data_wrap
         if data_wrap in cls._instances:

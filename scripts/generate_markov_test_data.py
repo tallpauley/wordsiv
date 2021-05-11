@@ -1,6 +1,7 @@
 from markovify import Text
 
-txt = """
+txt = (
+    """
 One night—it was on the twentieth of March, 
 1888—I was returning from a journey to a patient 
 (for I had now returned to civil practice), 
@@ -20,7 +21,10 @@ He was at work again. He had risen out of his drug-created
 dreams and was hot upon the scent of some new problem. 
 I rang the bell and was shown up to the chamber which 
 had formerly been in part my own.
-""".strip().replace('\r', '').replace('\n', '')
+""".strip()
+    .replace("\r", "")
+    .replace("\n", "")
+)
 
-with open('markov-source.json', 'w+') as f:
+with open("markov-source.json", "w+") as f:
     f.write(Text(txt, retain_original=False, state_size=1).to_json())

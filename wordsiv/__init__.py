@@ -92,7 +92,11 @@ class WordSiv:
         # Pass the data to the model class to have it filter the data and return a model
         # object
         model = model_class.create_model(
-            source_obj.data_wrap, self.available_glyphs, self.font_info, self.rand, **kwargs
+            source_obj.data_wrap,
+            self.available_glyphs,
+            self.font_info,
+            self.rand,
+            **kwargs
         )
 
         return model
