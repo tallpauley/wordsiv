@@ -16,7 +16,7 @@ from ..availableglyphs import AvailableGlyphs
 from ..utilities import Hashabledict, HashabledictKeys
 from ..utilities import has_glyphs
 from .source import Source
-from .model import Model
+from .model import TextModel
 from .datawrapper import DataWrapper
 
 #####################################################################################
@@ -35,7 +35,7 @@ class MarkovSource(Source):
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
-    def data(self):
+    def data_wrap(self):
         return MarkovDataWrapper.from_json_file(self.data_file)
 
 
@@ -44,7 +44,7 @@ class MarkovSource(Source):
 #####################################################################################
 
 
-class MarkovModel(Model):
+class MarkovModel(TextModel):
     _instances = {}  # type: ignore
 
     def __init__(self, markovify_text_data, available_glyphs, rand):
@@ -65,7 +65,7 @@ class MarkovModel(Model):
 
         return markov_text
 
-    def sentence(self, cap_sent=True, sent_len=10, term=True, **kwargs):
+    def sentence(self, sent_len=10, **kwargs):
         """Generate a markov chain sentence"""
 
         # Ignore cap_sent, sent_len, term, all handled by actual markov model
@@ -76,13 +76,13 @@ class MarkovModel(Model):
 
         raise NotImplementedError
 
-    def words(self, num_words=None, cap_first=False, uc=False, lc=False, **kwargs):
+    def words(self, num_words=None, **kwargs):
         """No words generation, just sentences and larger"""
 
         raise NotImplementedError
 
     @classmethod
-    def filtered_model(cls, data, available_glyphs, font_info, rand, **kwargs):
+    def create_model(cls, data, available_glyphs, font_info, rand, **kwargs):
         """
         returns a new instance if the data is new, otherwise returns a stored instance
 
@@ -102,6 +102,9 @@ class MarkovModel(Model):
         data = filter_available(data, glyphs_tuple, uc=uc, lc=lc, cap=cap)
 
         # use chain data as hash to cache object instances
+        # Note: in the case of markov chains, not only filtering the data is costly,
+        # but also creating the model, since it requires compilation for performance
+        # hence the caching of entire TextModels
         if data in cls._instances:
             return cls._instances[data]
         else:

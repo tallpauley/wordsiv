@@ -10,7 +10,7 @@ import json
 
 from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
 from .source import Source
-from .model import Model
+from .model import CachedWordModel, WordTextModel
 from .datawrapper import DataWrapper, unwrap
 
 BIG_NUM = 100000
@@ -23,12 +23,12 @@ TEST_DATA_DIR = (
 ###### UTILITY
 ######################################################################################
 
-@lru_cache(maxsize=None)
+
 def zip_tuple(a_tuple):
     """Zip a tuple of tuple pairs into a tuple (cached)
-    
+
     >>> zip_tuple((('hi', 123), ('hello', 321)))
-    (('hi', 'hello'), (123, 321)
+    (('hi', 'hello'), (123, 321))
     """
 
     tuple1, tuple2 = zip(*a_tuple)
@@ -38,6 +38,7 @@ def zip_tuple(a_tuple):
 #####################################################################################
 ###### SOURCE
 ######################################################################################
+
 
 def stream_file_tuples(file, lines=None):
     """Yield a tuple ('myword', 123) for each line of a file like 'myword 123'"""
@@ -61,10 +62,8 @@ class WordCountSource(Source):
     file looks like this: "koala 235\ncobra 123\n"
 
     >>> obj = WordCountSource(TEST_DATA_DIR / "count-source.txt")
-    >>> obj.data
+    >>> obj.data_wrap.data
     (('koala', 2345), ('bear', 1234), ('team', 234), ('collage', 12))
-    >>> obj['koala']
-    2345
     """
 
     def __init__(self, data_file, lines=None):
@@ -73,88 +72,113 @@ class WordCountSource(Source):
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
-    def data(self):
+    def data_wrap(self):
         """for a WordCountSource, data is a tuple of tuples"""
 
         return DataWrapper(tuple(stream_file_tuples(self.data_file, self.lines)))
 
 
 #####################################################################################
-###### MODELS
+###### WORDTEXT MODELS
 #####################################################################################
 
 
-class WordCountModel(Model):
-    @classmethod
-    def filtered_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
-        """Filter data and return a new WordCountModel
-        
-        For these models, we don't actually filter data before building the model like
-        in MarkovModel. Reason being: with this sort of model, we may need to filter the
-        data set differently for each word.
-        
-        For example, with a capitalized sentence, the first word needs a list of
-        available capitalized words, and the other words need lists of lowercase words.
-        Therefore, it is simplest to filter data when word() is called.
-        """
+class ProbabilityModel(WordTextModel):
+    def create_word_model(self, **kwargs):
+        """Filter data and return a word model"""
 
-        return cls(data_wrap, available_glyphs, font_info, rand)
+        filtered_data_wrap = filter_data(
+            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
+        )
+
+        return ProbabilityWordModel.create(filtered_data_wrap, self.rand)
 
 
-class ProbabilityModel(WordCountModel):
+class TopModel(WordTextModel):
     """
-    A model that uses occurences counts to generate words
+    A WordTextModel using TopWordModel
     """
 
-    def __init__(self, data_wrap, available_glyphs, font_info, rand):
-        self.data_wrap = data_wrap
+    def create_word_model(self, **kwargs):
+        """Filter data and return a word model"""
+
+        filtered_data_wrap = filter_data(
+            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
+        )
+
+        return TopWordModel.create(filtered_data_wrap, self.rand)
+
+
+class RandomModel(WordTextModel):
+    """
+    A WordTextModel using RandomWordModel
+    """
+
+    def create_word_model(self, **kwargs):
+        """Filter data and return a word model"""
+
+        filtered_data_wrap = filter_data(
+            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
+        )
+
+        return RandomWordModel.create(filtered_data_wrap, self.rand)
+
+
+#####################################################################################
+###### WORD MODELS
+#####################################################################################
+
+
+class ProbabilityWordModel(CachedWordModel):
+    """
+    A CachedWordModel that uses occurences counts to generate words
+    """
+
+    def __init__(self, data_wrap, rand):
+
         self.rand = rand
-        self.available_glyphs = available_glyphs
-        self.font_info = font_info
+        self.word_list, self.counts = zip_tuple(data_wrap.data)
 
     def word(self, **kwargs):
-        data_wrap = filter_data(self.data_wrap, self.available_glyphs, self.font_info, **kwargs)
-        words, counts = zip_tuple(data_wrap.data)
-        return self.rand.choices(words, k=1, weights=counts)[0]
+        return self.rand.choices(self.word_list, k=1, weights=self.counts)[0]
 
 
-class TopModel(WordCountModel):
+class TopWordModel(CachedWordModel):
     """
-    A model that spits out the most common words sequentially
+    A CachedWordModel that spits out the words sequentially
 
     Useful for things like trigrams, where you often just
     want to print out the top few
     """
 
-    def __init__(self, words_count, available_glyphs, rand):
-        self.words_count = words_count
-        self.rand = rand
-        self.available_glyphs = available_glyphs
+    def __init__(self, data_wrap, rand):
 
-        self.words_list, _ = zip(*self.words_count)
+        self.rand = rand
+        # don't need counts
+        self.word_list, _ = zip_tuple(data_wrap.data)
+
         self.reset()
 
     def reset(self):
         self.iterator = self.new_iterator()
 
     def new_iterator(self):
-        return iter(self.words_list)
+        return iter(self.word_list)
 
     def word(self, **kwargs):
         return next(self.iterator)
 
 
-class RandomModel(WordCountModel):
+class RandomWordModel(CachedWordModel):
     """
-    A model which picks words completely randomly
+    A CachedWordModel which picks words completely randomly
     """
 
-    def __init__(self, words_count, available_glyphs, rand):
-        self.words_count = words_count
+    def __init__(self, data_wrap, rand):
+
         self.rand = rand
-        self.available_glyphs = available_glyphs
-
-        self.words_list, _ = zip(*self.words_count)
+        # don't need counts
+        self.word_list, _ = zip_tuple(data_wrap.data)
 
     def word(self, **kwargs):
         return self.rand.choice(self.words_list)
