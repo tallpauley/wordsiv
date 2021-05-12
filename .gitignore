@@ -3,3 +3,5 @@ scripts/*.txt
 scripts/*.json
 .coverage
 dist/
+prof/
+.DS_Store
