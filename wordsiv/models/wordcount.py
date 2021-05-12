@@ -61,9 +61,9 @@ class WordCountSource(Source):
 
     file looks like this: "koala 235\ncobra 123\n"
 
-    >>> obj = WordCountSource(TEST_DATA_DIR / "count-source.txt")
+    >>> obj = WordCountSource(TEST_DATA_DIR / "count-source.txt", lines=3)
     >>> obj.data_wrap.data
-    (('koala', 2345), ('bear', 1234), ('team', 234), ('collage', 12))
+    (('gather', 94), ('to', 119), ('sublimedirectory', 204), ('sublimedirectory', 12))
     """
 
     def __init__(self, data_file, lines=None):
