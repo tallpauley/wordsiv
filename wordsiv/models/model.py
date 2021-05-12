@@ -10,8 +10,14 @@ class TextModel(ABC):
 
     @classmethod
     @abstractmethod
-    def create_model(cls, data, available_glyphs, font_info, rand, **kwargs):
-        """Create model, filtering or caching if necessary"""
+    def create_and_run(
+        cls, method, data_wrap, available_glyphs, font_info, rand, **kwargs
+    ):
+        """Create model, and run method
+
+        Allows model to define what kwargs are needed for model initialization and which
+        kwargs are fed to the runtime method (word(), sentence(), text(), etc())
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -20,12 +26,12 @@ class TextModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def words(self, num_words=None, **kwargs):
+    def words(self, **kwargs):
         """Return a single word string"""
         raise NotImplementedError
 
     @abstractmethod
-    def sentence(self, sent_len=None, **kwargs):
+    def sentence(self, **kwargs):
         """Return a single word string"""
         raise NotImplementedError
 
@@ -51,25 +57,21 @@ class TextModel(ABC):
 
 
 class WordTextModel(TextModel):
-    """A Text Model which generates simple text with a WordModel and PunctModel
+    """A Text Model which generates simple text with a WordModel
 
     It caches each word model for performance
     """
 
     @classmethod
-    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
-        """Factory to return a new WordTextModel.
+    def create_and_run(
+        cls, method, data_wrap, available_glyphs, font_info, rand, **kwargs
+    ):
+        """Creates model, sending all **kwargs to the method being called"""
 
-        Notes:
-        - For WordTextModel, we filter at the word level, so we don't filter here.
-        See word(...)
-        - It is redundant to have create_model here, but elsewhere we use it to cache
-          model objects. We don't in this case since we use CachedWordModel
-        """
+        model = cls(data_wrap, available_glyphs, font_info, rand)
+        return getattr(model, method)(**kwargs)
 
-        return cls(data_wrap, available_glyphs, font_info, rand, **kwargs)
-
-    def __init__(self, data_wrap, available_glyphs, font_info, rand, **kwargs):
+    def __init__(self, data_wrap, available_glyphs, font_info, rand):
 
         # No filtering on initialization since filtering happens at word level
         self.data_wrap = data_wrap
@@ -100,7 +102,7 @@ class WordTextModel(TextModel):
 
         # TODO: test or error out when multiple conflicting options are set
         def cap_first(n):
-            return cap or (cap_first and n==0)
+            return cap or (cap_first and n == 0)
 
         return [
             self.word(cap=cap_first(n), uc=uc, lc=lc, **kwargs)

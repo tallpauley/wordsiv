@@ -65,8 +65,17 @@ class WordSiv:
         # if no pipeline name specified, default pipeline is same as source name
         self.pipelines["default"] = self.pipelines[pipeline or source]
 
-    def build_model(self, source=None, model=None, pipeline=None, **kwargs):
-        """feeds source through filters and into a model which is returned"""
+    def select_source_model(self, source=None, model=None, pipeline=None, **kwargs):
+        """Select source object and model class
+
+        Args:
+            source: name to lookup in self.sources
+            model: name to lookup in self.model_classes
+            source: name to lookup in self.pipelines
+
+        Returns:
+            A tuple with (source_object, model_class)
+        """
 
         if not self.sources:
             raise KeyError("No data source packages loaded!")
@@ -89,9 +98,19 @@ class WordSiv:
             #     pair together source and model
             model_class = self.model_classes[model]
 
-        # Pass the data to the model class to have it filter the data and return a model
-        # object
-        model = model_class.create_model(
+        return source_obj, model_class
+
+    def create_model_and_run(
+        self, method, source=None, model=None, pipeline=None, **kwargs
+    ):
+        """creates a model, and runs a method on it to produce text"""
+
+        source_obj, model_class = self.select_source_model(
+            source=source, model=model, pipeline=pipeline, **kwargs
+        )
+
+        return model_class.create_and_run(
+            method,
             source_obj.data_wrap,
             self.available_glyphs,
             self.font_info,
@@ -99,46 +118,25 @@ class WordSiv:
             **kwargs
         )
 
-        return model
-
     def word(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
-        return model_obj.word(**kwargs)
+        return self.create_model_and_run("word", source, model, pipeline, **kwargs)
 
     def words(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
-        return model_obj.words(**kwargs)
+        return self.create_model_and_run("words", source, model, pipeline, **kwargs)
 
     def sentence(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
-        return model_obj.sentence(**kwargs)
+        return self.create_model_and_run("sentence", source, model, pipeline, **kwargs)
 
     def sentences(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
-        return model_obj.sentences(**kwargs)
+        return self.create_model_and_run("sentences", source, model, pipeline, **kwargs)
 
     def paragraph(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
-        return model_obj.paragraph(**kwargs)
+        return self.create_model_and_run("paragraph", source, model, pipeline, **kwargs)
 
     def paragraphs(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
+        return self.create_model_and_run(
+            "paragraphs", source, model, pipeline, **kwargs
         )
-        return model_obj.paragraphs(**kwargs)
 
     def text(self, source=None, model=None, pipeline=None, **kwargs):
-        model_obj = self.build_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
-        return model_obj.text(**kwargs)
+        return self.create_model_and_run("text", source, model, pipeline, **kwargs)

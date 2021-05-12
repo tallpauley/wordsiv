@@ -34,5 +34,5 @@ def test_uc_string(wsv_func):
 
 
 def test_cap_sent_sentence():
-    sent = wsv.sentence(source="test", model="markov", cap_sent=True)
-    assert sent[0].isupper()
+    with pytest.raises(TypeError):
+        sent = wsv.sentence(source="test", model="markov", cap_sent=True)

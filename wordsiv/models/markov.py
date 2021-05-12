@@ -59,30 +59,30 @@ class MarkovModel(TextModel):
 
         markov_text = SivText.from_dict(self.markovify_text_data.data)
 
-        # TODO: hacky way of feeding our rand object to chain??
+        # TODO: less hacky way of feeding our rand object to chain??
         markov_text.chain.rand = self.rand
         markov_text.compile(inplace=True)
 
         return markov_text
 
-    def sentence(self, sent_len=10, **kwargs):
+    def sentence(self):
         """Generate a markov chain sentence"""
 
-        # Ignore cap_sent, sent_len, term, all handled by actual markov model
-        return self.markov_text.make_sentence(**kwargs)
+        # Ignore sent_len: handled by actual markov model
+        return self.markov_text.make_sentence()
 
     def word(self, **kwargs):
         """No single word generation, just sentences and larger"""
 
         raise NotImplementedError
 
-    def words(self, num_words=None, **kwargs):
+    def words(self, **kwargs):
         """No words generation, just sentences and larger"""
 
         raise NotImplementedError
 
     @classmethod
-    def create_model(cls, data, available_glyphs, font_info, rand, **kwargs):
+    def create(cls, data, available_glyphs, font_info, rand, uc, lc):
         """
         returns a new instance if the data is new, otherwise returns a stored instance
 
@@ -90,16 +90,12 @@ class MarkovModel(TextModel):
         passing around the objects from function to function
         """
 
-        uc = kwargs.get("uc", False)
-        lc = kwargs.get("lc", False)
-        cap = kwargs.get("cap", False)
-
         glyphs_tuple = (
             available_glyphs.glyphs_tuple if available_glyphs.limited else None
         )
 
         # filter chain_data by available
-        data = filter_available(data, glyphs_tuple, uc=uc, lc=lc, cap=cap)
+        data = filter_available(data, glyphs_tuple, uc=uc, lc=lc)
 
         # use chain data as hash to cache object instances
         # Note: in the case of markov chains, not only filtering the data is costly,
@@ -111,6 +107,23 @@ class MarkovModel(TextModel):
             instance = cls(data, available_glyphs, rand)
             cls._instances[data] = instance
             return instance
+
+    @classmethod
+    def create_and_run(
+        cls,
+        method,
+        data_wrap,
+        available_glyphs,
+        font_info,
+        rand,
+        uc=False,
+        lc=False,
+        **kwargs
+    ):
+        """Creates model, sending"""
+
+        model = cls.create(data_wrap, available_glyphs, font_info, rand, uc, lc)
+        return getattr(model, method)(**kwargs)
 
 
 #####################################################################################
