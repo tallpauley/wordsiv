@@ -39,7 +39,7 @@ jobs:
     #     poetry run mypy wordsiv/
     - name: Test with pytest outputting coverage
       run: |
-        poetry run coverage run --source=wordsiv/ -m pytest --doctest-modules --ignore scripts
+        poetry run coverage run --source=. -m pytest --doctest-modules --ignore scripts
     - name: Upload to coveralls
       run: |
         poetry run coveralls --service=github
