@@ -342,7 +342,7 @@ def length_filter(words_count, min_wl=0, max_wl=BIG_NUM, wl=None):
     Example:
     """
 
-    if min_wl or max_wl < BIG_NUM:
+    if min_wl or (max_wl < BIG_NUM):
         return tuple(
             (word, count)
             for word, count in words_count
