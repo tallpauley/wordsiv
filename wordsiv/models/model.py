@@ -98,11 +98,12 @@ class WordTextModel(TextModel):
         if not num_words:
             num_words = self.rand.randrange(10, 20)
 
-        # only capitalize first word if uc and lc not True
-        should_cap_first = cap or cap_first and not uc and not lc
+        # TODO: test or error out when multiple conflicting options are set
+        def cap_first(n):
+            return cap or (cap_first and n==0)
 
         return [
-            self.word(**kwargs, cap=(should_cap_first and n == 0))
+            self.word(cap=cap_first(n), uc=uc, lc=lc, **kwargs)
             for n in range(num_words)
         ]
 

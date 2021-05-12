@@ -181,7 +181,7 @@ class RandomWordModel(CachedWordModel):
         self.word_list, _ = zip_tuple(data_wrap.data)
 
     def word(self, **kwargs):
-        return self.rand.choice(self.words_list)
+        return self.rand.choice(self.word_list)
 
 
 #####################################################################################
