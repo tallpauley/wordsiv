@@ -23,8 +23,7 @@ def test_lc_string(model, wsv_func):
 @pytest.mark.parametrize("wsv_func", ["words", "sentences", "paragraphs"])
 def test_lc_list(model, wsv_func):
     assert all(
-        s.islower()
-        for s in getattr(wsv, wsv_func)(source="test", model=model, lc=True)
+        s.islower() for s in getattr(wsv, wsv_func)(source="test", model=model, lc=True)
     )
 
 
