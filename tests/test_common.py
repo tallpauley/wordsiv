@@ -4,7 +4,7 @@ from wordsiv.text_models.markov import MarkovSource
 from pathlib import Path
 import pytest
 
-from test_source_modules import wctest, mktest
+from test_source_modules import wctest, mkvtest
 
 HERE = Path(__file__).parent.absolute()
 LIMITED_CHARS = "HAMBURGERFONTSIVhamburgerfontsiv"
@@ -20,7 +20,7 @@ def wsv_no_source():
 def wsv_default():
     w = wordsiv.WordSiv()
     w.add_source_module(wctest)
-    w.add_source_module(mktest)
+    w.add_source_module(mkvtest)
     return w
 
 
@@ -34,7 +34,7 @@ def test_default_not_exist(wsv_default):
         wsv_default.set_default("not_exist")
 
 
-@pytest.mark.parametrize("source_name", ("wctest", "mktest"))
+@pytest.mark.parametrize("source_name", ("wctest", "mkvtest"))
 def test_default_exists(wsv_default, source_name):
     wsv_default.set_default(source_name)
     assert type(wsv_default.sentence()) == str
