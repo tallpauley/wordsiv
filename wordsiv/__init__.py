@@ -19,9 +19,10 @@ from .text_models.wordcount import (
 from .text_models.markov import MarkovSource, MarkovModel
 from .utilities import installed_source_modules
 
+DEFAULT_SEED=11
 
 class WordSiv:
-    def __init__(self, font_file=None, limit_glyphs=None, seed=1):
+    def __init__(self, font_file=None, limit_glyphs=None, seed=DEFAULT_SEED):
 
         # set up available characters
         self.font_info = FontInfo(font_file) if font_file else None
