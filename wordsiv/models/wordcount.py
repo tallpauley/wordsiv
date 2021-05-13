@@ -15,8 +15,9 @@ from .datawrapper import DataWrapper, unwrap
 
 BIG_NUM = 100000
 
-TEST_DATA_DIR = (
-    Path(os.path.dirname(os.path.realpath(__file__))) / ".." / ".." / "tests" / "data"
+TEST_MODULES_DIR = (
+    Path(os.path.dirname(os.path.realpath(__file__)))
+    / "../../tests/test_source_modules"
 )
 
 #####################################################################################
@@ -61,7 +62,8 @@ class WordCountSource(Source):
 
     file looks like this: "koala 235\ncobra 123\n"
 
-    >>> obj = WordCountSource(TEST_DATA_DIR / "count-source.txt", lines=3)
+    >>> obj = WordCountSource( \
+            TEST_MODULES_DIR / "wctest/data/count-source.txt", lines=3)
     >>> obj.data_wrap.data
     (('gather', 94), ('to', 119), ('sublimedirectory', 204), ('sublimedirectory', 12))
     """

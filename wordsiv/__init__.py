@@ -54,12 +54,15 @@ class WordSiv:
             "markov": MarkovModel,
         }
 
-    def load_sources(self):
-        for s in installed_source_modules():
-            self.sources.update(s.sources)
-            self.pipelines.update(s.pipelines)
+    def add_source_module(self, source_module):
+        self.sources.update(source_module.sources)
+        self.pipelines.update(source_module.pipelines)
 
-    def default(self, source, pipeline=None):
+    def load_sources(self):
+        for sm in installed_source_modules():
+            self.add_source_module(sm)
+
+    def set_default(self, source, pipeline=None):
         self.sources["default"] = self.sources[source]
 
         # if no pipeline name specified, default pipeline is same as source name
