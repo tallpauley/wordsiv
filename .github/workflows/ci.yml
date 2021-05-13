@@ -50,4 +50,4 @@ jobs:
         poetry run black --diff wordsiv/
     - name: Test out README.md examples
       run: |
-        ./tests/run_byexample.sh
+        bash tests/run_byexample.sh
