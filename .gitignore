@@ -6,3 +6,5 @@ dist/
 prof/
 .DS_Store
 .venv*/
+_build/
+_static/
