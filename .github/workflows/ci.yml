@@ -48,3 +48,6 @@ jobs:
     - name: Show diff w/ black
       run: |
         poetry run black --diff wordsiv/
+    - name: Test out README.md examples
+      run: |
+        ./tests/run_byexample.sh

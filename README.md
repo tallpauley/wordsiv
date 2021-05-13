@@ -28,13 +28,36 @@ We need a tool that can make realistic-*looking* text with whatever glyphs we ha
 - A realistic langauge generator
 - A [responsible human forming sentences](#ethical-guidelines)
 
-## Installation
+## Quick Start
 
-TODO
+First, install wordsiv
 
-## Usage
+```bash
+# For now, we install straight from git
+$ pip install git+https://github.com/tallpauley/wordsiv  # byexample: +timeout=10 +pass
 
-TODO
+# TODO: Note to Chris: publish an actual package??
+```
+
+Next, you'll need to install one or more source packages from the [tallpauley/wordsiv-source-packages](https://github.com/tallpauley/wordsiv-source-packages/releases) repo:
+
+```bash
+
+$ pip install https://github.com/tallpauley/wordsiv-source-packages/releases/download/en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl  # byexample: +timeout=10 +pass
+
+# TODO: Note to Chris: Make `wordsiv download` CLI command!
+
+```
+
+Now you are ready to make bogus sentences with Wordsiv in Python!
+
+```python
+
+>>> import wordsiv # byexample: +pass
+>>> wsv = wordsiv.WordSiv(limit_glyphs=('HAMBURGERFONTSIVhamburgerfontsiv')) # byexample: +pass
+>>> wsv.sentence(pipeline='en_markov_gutenberg') # byexample: +pass
+'Ten minutes to his other than the human form the baronet in the heathenish'
+```
 
 ## Similar Tools
 
