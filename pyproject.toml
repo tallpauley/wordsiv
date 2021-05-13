@@ -25,7 +25,9 @@ pytest = "^6.2.4"
 pytest-profiling = "^1.7.0"
 
 [tool.poe.tasks]
-test = "poetry run pytest --doctest-modules --ignore scripts" --maxfail = 10
+test = "poetry run pytest --doctest-modules --ignore scripts --maxfail=5 -m 'not rangetest'"
+test-full = "poetry run pytest --doctest-modules --ignore scripts --maxfail=5"
+clean = "black ."
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
