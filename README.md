@@ -53,10 +53,10 @@ Now you are ready to make bogus sentences with Wordsiv in Python!
 
 ```python
 
->>> import wordsiv # byexample: +pass
->>> wsv = wordsiv.WordSiv(limit_glyphs=('HAMBURGERFONTSIVhamburgerfontsiv')) # byexample: +pass
->>> wsv.sentence(pipeline='en_markov_gutenberg') # byexample: +pass
-'Ten minutes to his other than the human form the baronet in the heathenish'
+>>> import wordsiv
+>>> wsv = wordsiv.WordSiv(limit_glyphs=('HAMBURGERFONTSIVhamburgerfontsiv'))
+>>> wsv.sentence(pipeline='en_markov_gutenberg')
+'The strife Of that a brother or I am sure is in an hour or from the Muses'
 ```
 
 ## Similar Tools
