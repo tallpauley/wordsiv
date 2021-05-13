@@ -34,6 +34,7 @@ def test_default_not_exist(wsv_default):
         wsv_default.set_default("not_exist")
 
 
-def test_default_exists(wsv_default):
-    wsv_default.set_default("wctest")
-    assert type(wsv_default.word()) == str
+@pytest.mark.parametrize('source_name', ('wctest', 'mktest'))
+def test_default_exists(wsv_default, source_name):
+    wsv_default.set_default(source_name)
+    assert type(wsv_default.sentence()) == str
