@@ -126,15 +126,6 @@ class MarkovModel(BaseTextModel):
 
 
 class MarkovDataWrapper(DataWrapper):
-    def __init__(self, data):
-        # TODO prob don't to hash the chain specifically, try hashing data for better
-        # reuse of parent class
-        self.data = data
-        self.hash = hash(data["chain"])
-
-    def rehash(self):
-        self.hash = hash(self.data["chain"])
-
     @classmethod
     def new_with_chain(self, markov_data, chain):
         obj = copy.copy(markov_data)
