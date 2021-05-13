@@ -24,6 +24,8 @@ mypy = "^0.812"
 pytest = "^6.2.4"
 pytest-profiling = "^1.7.0"
 ipython = "^7.23.1"
+myst-parser = "^0.14.0"
+sphinx-autoapi = "^1.8.1"
 
 [tool.poe.tasks]
 test = "poetry run pytest --doctest-modules --ignore scripts --maxfail=5 -m 'not rangetest'"
