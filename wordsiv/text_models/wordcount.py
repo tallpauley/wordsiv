@@ -9,9 +9,9 @@ import re
 import json
 
 from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
-from .source import Source
-from .model import CachedWordModel, WordTextModel
-from .datawrapper import DataWrapper, unwrap
+from ..source import BaseSource
+from ..base_models import BaseCachedWordModel, WordTextModel
+from ..datawrapper import DataWrapper, unwrap
 
 BIG_NUM = 100000
 
@@ -57,7 +57,7 @@ def stream_file_tuples(file, lines=None):
                 lc += 1
 
 
-class WordCountSource(Source):
+class WordCountSource(BaseSource):
     """A Source that expects a txt file with words and counts
 
     file looks like this: "koala 235\ncobra 123\n"
@@ -131,9 +131,9 @@ class RandomModel(WordTextModel):
 #####################################################################################
 
 
-class ProbabilityWordModel(CachedWordModel):
+class ProbabilityWordModel(BaseCachedWordModel):
     """
-    A CachedWordModel that uses occurences counts to generate words
+    A WordModel that uses occurences counts to generate words
     """
 
     def __init__(self, data_wrap, rand):
@@ -145,9 +145,9 @@ class ProbabilityWordModel(CachedWordModel):
         return self.rand.choices(self.word_list, k=1, weights=self.counts)[0]
 
 
-class TopWordModel(CachedWordModel):
+class TopWordModel(BaseCachedWordModel):
     """
-    A CachedWordModel that spits out the words sequentially
+    A WordModel that spits out the words sequentially
 
     Useful for things like trigrams, where you often just
     want to print out the top few
@@ -171,9 +171,9 @@ class TopWordModel(CachedWordModel):
         return next(self.iterator)
 
 
-class RandomWordModel(CachedWordModel):
+class RandomWordModel(BaseCachedWordModel):
     """
-    A CachedWordModel which picks words completely randomly
+    A WordModel which picks words completely randomly
     """
 
     def __init__(self, data_wrap, rand):

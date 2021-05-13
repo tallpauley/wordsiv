@@ -1,4 +1,4 @@
-from wordsiv.models.wordcount import WordCountSource, ProbabilityModel, RandomModel
+from wordsiv.text_models.wordcount import WordCountSource, ProbabilityModel, RandomModel
 
 from pathlib import Path
 import json

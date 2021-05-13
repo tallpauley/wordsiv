@@ -1,22 +1,20 @@
 from abc import ABC, abstractmethod
 
 #####################################################################################
-###### TEXT MODELS
+###### BASE TEXT MODELS
 #####################################################################################
 
 
-class TextModel(ABC):
-    """TextModel is a base class which only implements sentences() and larger"""
+class BaseTextModel(ABC):
+    """BaseTextModel is a base class which only implements sentences() and larger"""
 
     @classmethod
     @abstractmethod
-    def create_and_run(
-        cls, method, data_wrap, available_glyphs, font_info, rand, **kwargs
-    ):
-        """Create model, and run method
+    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+        """Create model, and return (model, **kwargs)
 
         Allows model to define what kwargs are needed for model initialization and which
-        kwargs are fed to the runtime method (word(), sentence(), text(), etc())
+        kwargs are returned for the runtime method (word(), sentence(), text(), etc())
         """
         raise NotImplementedError
 
@@ -56,20 +54,18 @@ class TextModel(ABC):
         return "\n\n".join(self.paragraphs(**kwargs))
 
 
-class WordTextModel(TextModel):
+class WordTextModel(BaseTextModel):
     """A Text Model which generates simple text with a WordModel
 
     It caches each word model for performance
     """
 
     @classmethod
-    def create_and_run(
-        cls, method, data_wrap, available_glyphs, font_info, rand, **kwargs
-    ):
-        """Creates model, sending all **kwargs to the method being called"""
+    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+        """Creates model, returning (model, **kwargs)"""
 
         model = cls(data_wrap, available_glyphs, font_info, rand)
-        return getattr(model, method)(**kwargs)
+        return model, kwargs
 
     def __init__(self, data_wrap, available_glyphs, font_info, rand):
 
@@ -131,12 +127,12 @@ class WordTextModel(TextModel):
 
 
 #####################################################################################
-###### WORD MODELS
+###### BASE WORD MODELS
 #####################################################################################
 
 
-class WordModel(ABC):
-    """A WordModel is a model for generating single words at a time
+class BaseWordModel(ABC):
+    """A BaseWordModel is a model for generating single words at a time
 
     They aren't intended to be directly accessed via a Wordsiv object. Rather they are a
     compositional object which can be plugged into models like WordTextModel.
@@ -150,13 +146,13 @@ class WordModel(ABC):
     @classmethod
     @abstractmethod
     def create(self, data_wrap, rand):
-        """Given a DataWrapper, create a WordModel.
+        """Given a DataWrapper, create a BaseWordModel.
 
         We use this as main interface to allow caching"""
         raise NotImplementedError
 
 
-class CachedWordModel(WordModel):
+class BaseCachedWordModel(BaseWordModel):
     """A WordModel that caches models based on their input data"""
 
     _instances = {}  # type: ignore

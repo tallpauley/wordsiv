@@ -15,16 +15,16 @@ from typing import Dict
 from ..availableglyphs import AvailableGlyphs
 from ..utilities import Hashabledict, HashabledictKeys
 from ..utilities import has_glyphs
-from .source import Source
-from .model import TextModel
-from .datawrapper import DataWrapper
+from ..source import BaseSource
+from ..base_models import BaseTextModel
+from ..datawrapper import DataWrapper
 
 #####################################################################################
 ###### SOURCE
 #####################################################################################
 
 
-class MarkovSource(Source):
+class MarkovSource(BaseSource):
     """A source that is a compiled & serialized JSON Markovify.Text Object
 
     TODO Add test here
@@ -44,7 +44,7 @@ class MarkovSource(Source):
 #####################################################################################
 
 
-class MarkovModel(TextModel):
+class MarkovModel(BaseTextModel):
     _instances = {}  # type: ignore
 
     def __init__(self, markovify_text_data, available_glyphs, rand):
@@ -82,7 +82,7 @@ class MarkovModel(TextModel):
         raise NotImplementedError
 
     @classmethod
-    def create(cls, data, available_glyphs, font_info, rand, uc, lc):
+    def filter_and_create(cls, data, available_glyphs, font_info, rand, uc, lc):
         """
         returns a new instance if the data is new, otherwise returns a stored instance
 
@@ -109,21 +109,15 @@ class MarkovModel(TextModel):
             return instance
 
     @classmethod
-    def create_and_run(
-        cls,
-        method,
-        data_wrap,
-        available_glyphs,
-        font_info,
-        rand,
-        uc=False,
-        lc=False,
-        **kwargs
+    def create_model(
+        cls, data_wrap, available_glyphs, font_info, rand, uc=False, lc=False, **kwargs
     ):
-        """Creates model, sending"""
+        """Creates model, returning (model, **kwargs)"""
 
-        model = cls.create(data_wrap, available_glyphs, font_info, rand, uc, lc)
-        return getattr(model, method)(**kwargs)
+        model = cls.filter_and_create(
+            data_wrap, available_glyphs, font_info, rand, uc, lc
+        )
+        return model, kwargs
 
 
 #####################################################################################

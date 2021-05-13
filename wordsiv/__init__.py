@@ -10,14 +10,14 @@ import pkg_resources
 
 from .fontinfo import FontInfo
 from .availableglyphs import AvailableGlyphs
-from .models.wordcount import (
+from .text_models.wordcount import (
     WordCountSource,
     ProbabilityModel,
     TopModel,
     RandomModel,
 )
+from .text_models.markov import MarkovSource, MarkovModel
 from .utilities import installed_source_modules
-from .models.markov import MarkovSource, MarkovModel
 
 
 class WordSiv:
@@ -103,17 +103,14 @@ class WordSiv:
 
         return source_obj, model_class
 
-    def create_model_and_run(
-        self, method, source=None, model=None, pipeline=None, **kwargs
-    ):
-        """creates a model, and runs a method on it to produce text"""
+    def create_model(self, source=None, model=None, pipeline=None, **kwargs):
+        """creates a model, and returns model along with kwargs for function call"""
 
         source_obj, model_class = self.select_source_model(
             source=source, model=model, pipeline=pipeline, **kwargs
         )
 
-        return model_class.create_and_run(
-            method,
+        return model_class.create_model(
             source_obj.data_wrap,
             self.available_glyphs,
             self.font_info,
@@ -122,24 +119,29 @@ class WordSiv:
         )
 
     def word(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run("word", source, model, pipeline, **kwargs)
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.word(**params)
 
     def words(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run("words", source, model, pipeline, **kwargs)
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.words(**params)
 
     def sentence(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run("sentence", source, model, pipeline, **kwargs)
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.sentence(**params)
 
     def sentences(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run("sentences", source, model, pipeline, **kwargs)
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.sentences(**params)
 
     def paragraph(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run("paragraph", source, model, pipeline, **kwargs)
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.paragraph(**params)
 
     def paragraphs(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run(
-            "paragraphs", source, model, pipeline, **kwargs
-        )
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.paragraphs(**params)
 
     def text(self, source=None, model=None, pipeline=None, **kwargs):
-        return self.create_model_and_run("text", source, model, pipeline, **kwargs)
+        model, params = self.create_model(source, model, pipeline, **kwargs)
+        return model.text(**params)

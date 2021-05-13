@@ -1,6 +1,6 @@
 import wordsiv
-from wordsiv.models.wordcount import WordCountSource
-from wordsiv.models.markov import MarkovSource
+from wordsiv.text_models.wordcount import WordCountSource
+from wordsiv.text_models.markov import MarkovSource
 from pathlib import Path
 import pytest
 
@@ -34,7 +34,7 @@ def test_default_not_exist(wsv_default):
         wsv_default.set_default("not_exist")
 
 
-@pytest.mark.parametrize('source_name', ('wctest', 'mktest'))
+@pytest.mark.parametrize("source_name", ("wctest", "mktest"))
 def test_default_exists(wsv_default, source_name):
     wsv_default.set_default(source_name)
     assert type(wsv_default.sentence()) == str

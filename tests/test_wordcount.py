@@ -1,5 +1,5 @@
 import wordsiv
-from wordsiv.models.wordcount import WordCountSource
+from wordsiv.text_models.wordcount import WordCountSource
 from pathlib import Path
 from test_source_modules import wctest
 import pytest
@@ -115,9 +115,11 @@ def test_cap_sent_sentence(wsv_wc, model):
 #####################################################################################
 
 
+@pytest.mark.rangetest
+@pytest.mark.parametrize("wl", range(1, 20))
 @pytest.mark.parametrize("model", ["prob", "top", "rand"])
-def test_word_length(wsv_wc, model):
-    assert len(wsv_wc.word(source="wctest", model=model, wl=4)) == 4
+def test_word_length(wsv_wc, model, wl):
+    assert len(wsv_wc.word(source="wctest", model=model, wl=wl)) == wl
 
 
 def gen_range_tuples(max):
@@ -126,6 +128,7 @@ def gen_range_tuples(max):
             yield (n, n2)
 
 
+@pytest.mark.rangetest
 @pytest.mark.parametrize("min_len,max_len", tuple(gen_range_tuples(20)))
 @pytest.mark.parametrize("model", ["prob", "top", "rand"])
 def test_word_length(wsv_wc, min_len, max_len, model):

@@ -1,7 +1,7 @@
 from abc import ABC
 
 
-class Source(ABC):
+class BaseSource(ABC):
     @property
     def data(self):
         """Return data to be filtered and loaded into a model
