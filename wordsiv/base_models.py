@@ -54,7 +54,7 @@ class BaseTextModel(ABC):
         return "\n\n".join(self.paragraphs(**kwargs))
 
 
-class WordTextModel(BaseTextModel):
+class BaseWordTextModel(BaseTextModel):
     """A Text Model which generates simple text with a WordModel
 
     It caches each word model for performance
@@ -76,17 +76,10 @@ class WordTextModel(BaseTextModel):
         self.rand = rand
 
     @abstractmethod
-    def create_word_model(self, **kwargs):
-        """Filter data and return a new WordModel
-
-        No need to cache here, we let word model itself handle this"""
+    def word(self, **kwargs):
+        """Create a WordModel and return a word"""
 
         raise NotImplementedError
-
-    def word(self, **kwargs):
-        """Return a single word string"""
-
-        return self.create_word_model(**kwargs).word()
 
     def words(
         self, num_words=None, cap_first=False, uc=False, lc=False, cap=False, **kwargs
@@ -113,7 +106,7 @@ class WordTextModel(BaseTextModel):
         # TODO: Revisit how to get default punc func from source
         # Also, we can have more advanced punctuation options in TemplateTextModel
         # TODO: And EVENTUALLY TemplateTextModel could implement
-        # E.G. for WordTextModel: We could supply template:
+        # E.G. for BaseWordTextModel: We could supply template:
         # def template(mayb, pword, r):
         #    return mayb(sp) + pword(cap=True), pword() * r(7,15), mayb(ep)
         if not punc_func:

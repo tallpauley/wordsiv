@@ -10,7 +10,7 @@ import json
 
 from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
 from ..source import BaseSource
-from ..base_models import BaseCachedWordModel, WordTextModel
+from ..base_models import BaseCachedWordModel, BaseWordTextModel
 from ..datawrapper import DataWrapper, unwrap
 
 BIG_NUM = 100000
@@ -85,45 +85,82 @@ class WordCountSource(BaseSource):
 #####################################################################################
 
 
-class ProbabilityModel(WordTextModel):
-    def create_word_model(self, **kwargs):
-        """Filter data and return a word model"""
+class ProbabilityModel(BaseWordTextModel):
+    """TextModel which randomly selects words (probability distribution from counts)"""
+
+    def word(self, **kwargs):
+        """Randomly select a word with proabability distribution defined by word counts
+
+        Keyword Args:
+            uc (bool): Uppercase word
+            lc (bool): Lowercase word
+            cap (bool): Capitalize word
+            num_top (int): Limit number of words drawn from
+            min_wl (int): Minimum word length,
+            max_wl (int): Maximum word length,
+            wl (int): Word length,
+            min_width (int): Minimum approximate rendered word width,
+            max_width (int): Maximum approximate rendered word width,
+            width (int): Approximate rendered word width
+        """
 
         filtered_data_wrap = filter_data(
             self.data_wrap, self.available_glyphs, self.font_info, **kwargs
         )
 
-        return ProbabilityWordModel.create(filtered_data_wrap, self.rand)
+        return ProbabilityWordModel.create(filtered_data_wrap, self.rand).word(**kwargs)
 
 
-class TopModel(WordTextModel):
-    """
-    A WordTextModel using TopWordModel
-    """
+class TopModel(BaseWordTextModel):
+    """TextModel which returns words sequentially in the order of the source data"""
 
-    def create_word_model(self, **kwargs):
-        """Filter data and return a word model"""
+    def word(self, **kwargs):
+        """
 
-        filtered_data_wrap = filter_data(
-            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
-        )
-
-        return TopWordModel.create(filtered_data_wrap, self.rand)
-
-
-class RandomModel(WordTextModel):
-    """
-    A WordTextModel using RandomWordModel
-    """
-
-    def create_word_model(self, **kwargs):
-        """Filter data and return a word model"""
+        Keyword Args:
+            uc (bool): Uppercase word
+            lc (bool): Lowercase word
+            cap (bool): Capitalize word
+            num_top (int): Limit number of words drawn from
+            min_wl (int): Minimum word length,
+            max_wl (int): Maximum word length,
+            wl (int): Word length,
+            min_width (int): Minimum approximate rendered word width,
+            max_width (int): Maximum approximate rendered word width,
+            width (int): Approximate rendered word width
+        """
 
         filtered_data_wrap = filter_data(
             self.data_wrap, self.available_glyphs, self.font_info, **kwargs
         )
 
-        return RandomWordModel.create(filtered_data_wrap, self.rand)
+        return TopWordModel.create(filtered_data_wrap, self.rand).word(**kwargs)
+
+
+class RandomModel(BaseWordTextModel):
+    """TextModel which randomly selects words (equal probability for all words)"""
+
+    def word(self, **kwargs):
+        """Randomly select a word with equal probability for all words
+
+        Keyword Args:
+            uc (bool): Uppercase word
+            lc (bool): Lowercase word
+            cap (bool): Capitalize word
+            num_top (int): Limit number of words drawn from
+            min_wl (int): Minimum word length,
+            max_wl (int): Maximum word length,
+            wl (int): Word length,
+            min_width (int): Minimum approximate rendered word width,
+            max_width (int): Maximum approximate rendered word width,
+            width (int): Approximate rendered word width
+        """
+
+        filtered_data_wrap = filter_data(
+            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
+        )
+
+        return RandomWordModel.create(filtered_data_wrap, self.rand).word(**kwargs)
 
 
 #####################################################################################
@@ -204,8 +241,7 @@ def filter_data(
     wl=None,
     min_width=0,
     max_width=BIG_NUM,
-    width=None,
-    **kwargs
+    width=None
 ):
 
     dw = data_wrap

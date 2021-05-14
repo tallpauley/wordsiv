@@ -10,13 +10,13 @@ import pkg_resources
 
 from .fontinfo import FontInfo
 from .availableglyphs import AvailableGlyphs
-from .text_models.wordcount import (
+from .text_models_sources import (
     WordCountSource,
     ProbabilityModel,
     TopModel,
     RandomModel,
 )
-from .text_models.markov import MarkovSource, MarkovModel
+from .text_models_sources import MarkovSource, MarkovModel
 from .utilities import installed_source_modules
 
 DEFAULT_SEED=11
