@@ -241,7 +241,7 @@ def filter_data(
     wl=None,
     min_width=0,
     max_width=BIG_NUM,
-    width=None
+    width=None,
 ):
 
     dw = data_wrap

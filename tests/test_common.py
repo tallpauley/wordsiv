@@ -7,7 +7,6 @@ import pytest
 from test_source_modules import wctest, mkvtest
 
 HERE = Path(__file__).parent.absolute()
-LIMITED_CHARS = "HAMBURGERFONTSIVhamburgerfontsiv"
 
 
 @pytest.fixture(scope="session")

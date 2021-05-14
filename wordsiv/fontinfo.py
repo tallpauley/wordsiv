@@ -87,11 +87,11 @@ class FontInfo:
             NullPen.__init__(self)
             self.exists = False
 
-        def lineTo(self, _):
+        def lineTo(self, *args):
             self.exists = True
 
-        def curveTo(self, _, _2, _3):
+        def curveTo(self, *args):
             self.exists = True
 
-        def qCurveTo(self, _, _2, _3):
+        def qCurveTo(self, *args):
             self.exists = True
