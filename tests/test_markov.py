@@ -1,5 +1,5 @@
 import wordsiv
-from wordsiv.text_models.markov import MarkovSource
+from wordsiv.text_models_sources import MarkovSource
 from pathlib import Path
 from test_source_modules import mkvtest
 import pytest

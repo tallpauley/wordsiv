@@ -1,5 +1,5 @@
 import wordsiv
-from wordsiv.text_models.wordcount import WordCountSource
+from wordsiv.text_models_sources import WordCountSource
 from pathlib import Path
 from test_source_modules import wctest
 import pytest
