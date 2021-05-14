@@ -21,20 +21,60 @@ def wsv_wc():
 
 
 @pytest.fixture(scope="session")
-def wsv_wc_limited():
+def wsv_limit_glyphs_wc():
     w = wordsiv.WordSiv(limit_glyphs=LIMITED_CHARS)
     w.add_source_module(wctest)
     return w
 
 
 @pytest.mark.parametrize("model", ["prob", "top", "rand"])
-def test_limit_glyphs(wsv_wc_limited, model):
+def test_limit_glyphs(wsv_limit_glyphs_wc, model):
     assert all(
         [
             c in LIMITED_CHARS + " \n"
-            for c in wsv_wc_limited.text(source="wctest", model=model, num_paras=10)
+            for c in wsv_limit_glyphs_wc.text(
+                source="wctest", model=model, num_paras=10
+            )
         ]
     )
+
+
+#####################################################################################
+###### TEST FONT FILE
+#####################################################################################
+
+
+@pytest.fixture(scope="session")
+def wsv_font_file_wc():
+    w = wordsiv.WordSiv(font_file=HERE / "data/noto-sans-subset.ttf")
+    w.add_source_module(wctest)
+    return w
+
+
+@pytest.mark.parametrize("model", ["prob", "top", "rand"])
+def test_font_file(wsv_font_file_wc, model):
+    assert all(
+        [
+            c in LIMITED_CHARS + " \n"
+            for c in wsv_font_file_wc.text(source="wctest", model=model, num_paras=10)
+        ]
+    )
+
+
+@pytest.mark.parametrize("model", ["prob", "top", "rand"])
+def test_width(wsv_font_file_wc, model):
+    assert (
+        wsv_font_file_wc.word(source="wctest", model=model, width=15622)
+        == "instrumentation"
+    )
+
+
+@pytest.mark.parametrize("model", ["prob", "top", "rand"])
+def test_width_range(wsv_font_file_wc, model):
+    # TODO I think whatever the width filter does is NOT deterministic
+    assert wsv_font_file_wc.words(
+        num_words=5, source="wctest", model=model, min_width=1000, max_width=5000
+    )[4]
 
 
 #####################################################################################

@@ -19,7 +19,8 @@ from .text_models_sources import (
 from .text_models_sources import MarkovSource, MarkovModel
 from .utilities import installed_source_modules
 
-DEFAULT_SEED=11
+DEFAULT_SEED = 11
+
 
 class WordSiv:
     def __init__(self, font_file=None, limit_glyphs=None, seed=DEFAULT_SEED):
