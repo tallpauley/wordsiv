@@ -35,23 +35,29 @@ def wsv_font_file_mkv():
 
 
 def test_limit_glyphs(wsv_limit_glyphs_mkv):
-    assert all(
-        [
-            c in LIMITED_CHARS + " \n"
+
+    unexpected_chars = " ".join(
+        set(
+            c
             for c in wsv_limit_glyphs_mkv.text(
                 source="mkvtest", model="mkv", num_paras=10
             )
-        ]
+            if c not in LIMITED_CHARS + " \n"
+        )
     )
+    assert not unexpected_chars
 
 
 def test_font_file(wsv_font_file_mkv):
-    assert all(
-        [
-            c in LIMITED_CHARS + " \n"
+
+    unexpected_chars = " ".join(
+        set(
+            c
             for c in wsv_font_file_mkv.text(source="mkvtest", model="mkv", num_paras=10)
-        ]
+            if c not in LIMITED_CHARS + " \n"
+        )
     )
+    assert not unexpected_chars
 
 
 #####################################################################################

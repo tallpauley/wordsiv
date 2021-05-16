@@ -25,7 +25,10 @@ def has_glyphs(word, available_glyphs_string):
     False
     >>> has_glyphs("speaker", "aekrps")
     True
+    >>> has_glyphs("dog,cat", "dogcat")
+    False
     """
+
     if available_glyphs_string:
         return all(char in available_glyphs_string for char in word)
     else:

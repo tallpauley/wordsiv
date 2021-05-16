@@ -16,7 +16,7 @@ class AvailableGlyphs:
     @property  # type: ignore
     @lru_cache(maxsize=None)
     def glyphs_string(self):
-        return str(self.glyphs_set)
+        return " ".join(self.glyphs_set)
 
     def lowercase(self):
         return self.glyphs_in_category("Ll")
