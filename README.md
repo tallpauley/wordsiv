@@ -55,7 +55,7 @@ Now you are ready to make bogus sentences with Wordsiv in Python!
 
 >>> import wordsiv
 >>> wsv = wordsiv.WordSiv(limit_glyphs=('HAMBURGERFONTSIVhamburgerfontsiv'))
->>> wsv.sentence(pipeline='en_markov_gutenberg')
+>>> wsv.sentence(source='en_markov_gutenberg')
 ('I might go over the instant to the streets in the air of those the same be '
  'haunting')
 ```

@@ -8,13 +8,9 @@ HERE = Path(__file__).parent.absolute()
 
 # Sources should always be prefixed with the package name
 # as they will be merged into a common namespace
-sources = {"mkvtest": MarkovSource(HERE / "data" / "markov-source.json")}
-
-# dictionary of "pipelines": preset maps of sources to models
-# Pipelines should also be prefixed with the package name
-pipelines = {
+sources = {
     "mkvtest": {
-        "source": sources["mkvtest"],
-        "model_class": MarkovModel,
-    }
+        "source": MarkovSource(HERE / "data" / "markov-source.json"),
+        "default_model_class": MarkovModel,
+    },
 }
