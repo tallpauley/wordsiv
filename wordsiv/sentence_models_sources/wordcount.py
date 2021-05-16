@@ -95,6 +95,7 @@ def prob_wordcount_gen(data_wrap, rand):
 
 @lru_cache(maxsize=None)
 def rand_wordcount_gen(data_wrap, rand):
+    word_list, _ = zip_tuple(data_wrap.data)
     while True:
         yield rand.choice(word_list)
 

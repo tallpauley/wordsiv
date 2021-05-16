@@ -50,18 +50,22 @@ def wsv_font_file_wc():
     return w
 
 
-def test_font_file(wsv_font_file_wc):
+@pytest.mark.parametrize("prob", [True, False])
+def test_font_file(wsv_font_file_wc, prob):
     assert all(
         [
             c in LIMITED_CHARS + " \n"
-            for c in wsv_font_file_wc.text(source="wctest", model="rand", num_paras=10)
+            for c in wsv_font_file_wc.text(
+                prob=prob, source="wctest", model="rand", num_paras=10
+            )
         ]
     )
 
 
-def test_width(wsv_font_file_wc):
+@pytest.mark.parametrize("prob", [True, False])
+def test_width(wsv_font_file_wc, prob):
     assert (
-        wsv_font_file_wc.word(source="wctest", model="rand", width=15622)
+        wsv_font_file_wc.word(prob=prob, source="wctest", model="rand", width=15622)
         == "instrumentation"
     )
 
@@ -70,7 +74,11 @@ def test_width(wsv_font_file_wc):
 def test_width_range(wsv_font_file_wc, model):
     # TODO I think whatever the width filter does is NOT deterministic
     assert wsv_font_file_wc.words(
-        num_words=5, source="wctest", model=model, min_width=1000, max_width=5000
+        num_words=5,
+        source="wctest",
+        model=model,
+        min_width=1000,
+        max_width=5000,
     )[4]
 
 
@@ -85,30 +93,40 @@ def capitalized(w):
     )
 
 
+@pytest.mark.parametrize("prob", [True, False])
 @pytest.mark.parametrize("wsv_func", ["word", "sentence", "paragraph", "text"])
-def test_lc_string(wsv_wc, wsv_func):
-    assert getattr(wsv_wc, wsv_func)(source="wctest", model="rand", lc=True).islower()
+def test_lc_string(wsv_wc, wsv_func, prob):
+    assert getattr(wsv_wc, wsv_func)(
+        prob=prob, source="wctest", model="rand", lc=True
+    ).islower()
 
 
+@pytest.mark.parametrize("prob", [True, False])
 @pytest.mark.parametrize("wsv_func", ["words", "sentences", "paragraphs"])
-def test_lc_list(wsv_wc, wsv_func):
+def test_lc_list(wsv_wc, wsv_func, prob):
     assert all(
         s.islower()
-        for s in getattr(wsv_wc, wsv_func)(source="wctest", model="rand", lc=True)
+        for s in getattr(wsv_wc, wsv_func)(
+            prob=prob, source="wctest", model="rand", lc=True
+        )
     )
 
 
+@pytest.mark.parametrize("prob", [True, False])
 @pytest.mark.parametrize("wsv_func", ["word", "sentence", "paragraph", "text"])
-def test_uc_string(wsv_wc, wsv_func):
+def test_uc_string(wsv_wc, wsv_func, prob):
     assert getattr(wsv_wc, wsv_func)(source="wctest", model="rand", uc=True).isupper()
 
 
+@pytest.mark.parametrize("prob", [True, False])
 @pytest.mark.parametrize("wsv_func", ["words", "sentences", "paragraphs"])
-def test_uc_list(wsv_wc, wsv_func):
+def test_uc_list(wsv_wc, wsv_func, prob):
     assert all(
         [
             s.isupper()
-            for s in getattr(wsv_wc, wsv_func)(source="wctest", model="rand", uc=True)
+            for s in getattr(wsv_wc, wsv_func)(
+                prob=prob, source="wctest", model="rand", uc=True
+            )
         ]
     )
 
