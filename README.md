@@ -4,39 +4,35 @@
 
 Wordsiv is a Python library for generating text with a limited character set. The library was designed specifically for [type proofing](https://ohnotype.co/blog/proof-it), but there may be other applications.
 
-**WARNING:** Wordsiv is *very* early in the development/exploration process, and is subject to radical restructuring at this point!
+**WARNING:** Wordsiv is early in the development process. Change is likely!
 
 ## Why Wordsiv?
 
-When designing a typeface, it is useful to see text (or at least words) set in the type before the character set is complete.
+When designing a typeface, it is useful to see text set in the type before the character set is complete. We need a the ability to make realistic-*looking* text with whatever glyphs we have already designed.
 
-We need a tool that can make realistic-*looking* text with whatever glyphs we have already designed.
-
-## Features
+### Features
 
 - Generate text given an incomplete font file and/or a specified character set.
 - Generate text in a variety of ways, some which are somewhat realistic-*looking* (Markov chains).
 - Comes with ready-to-use language data sets for generating text.
 
-## Vision
+### Vision
 
 - Easily extensible & multi-lingual (multi-script??) meaningless language generation
 - Easy-to-use Pythonic interface, which allows advanced customization for those interested
 
-## Wordsiv is NOT
+### Wordsiv is NOT
 
 - A realistic langauge generator
 - A [responsible human forming sentences](#ethical-guidelines)
 
-## Quick Start
+## Installation
 
 First, install wordsiv
 
 ```bash
 # For now, we install straight from git
 $ pip install git+https://github.com/tallpauley/wordsiv  # byexample: +timeout=10 +pass
-
-# TODO: Note to Chris: publish an actual package??
 ```
 
 Next, you'll need to install one or more source packages from the [tallpauley/wordsiv-source-packages](https://github.com/tallpauley/wordsiv-source-packages/releases) repo:
@@ -44,8 +40,6 @@ Next, you'll need to install one or more source packages from the [tallpauley/wo
 ```bash
 
 $ pip install https://github.com/tallpauley/wordsiv-source-packages/releases/download/en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl  # byexample: +timeout=10 +pass
-
-# TODO: Note to Chris: Make `wordsiv download` CLI command!
 
 ```
 
@@ -59,6 +53,33 @@ Now you are ready to make bogus sentences with Wordsiv in Python!
 ('I might go over the instant to the streets in the air of those the same be '
  'haunting')
 ```
+
+## Different Ways of Generating Text
+Wordsiv first needs some words, which come in the form of [Sources](https://github.com/tallpauley/wordsiv/blob/main/wordsiv/source.py), objects which supply the raw word data.
+
+These Sources are available via [Source Packages](https://github.com/tallpauley/wordsiv-source-packages), which are simply Python Packages. Let's install some:
+
+```bash
+
+# A markov model trained on public domain books
+$ pip install https://github.com/tallpauley/wordsiv-source-packages/releases/download/en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl  # byexample: +timeout=10 +pass
+
+# Most common English words compiled by Peter Norvig with data from Google
+$ pip install https://github.com/tallpauley/wordsiv-source-packages/releases/download/en_wordcount_web-0.1.0/en_wordcount_web-0.1.0-py3-none-any.whl  # byexample: +timeout=10 +pass
+
+# Most common Trigrams compiled by Peter Norvig with data from Google
+# (Three letter combinations)
+$ pip install https://github.com/tallpauley/wordsiv-source-packages/releases/download/en_wordcount_trigrams-0.1.0/en_wordcount_trigrams-0.1.0-py3-none-any.whl  # byexample: +timeout=10 +pass
+```
+
+Once you install a source package with pip, Wordsiv finds them and can use them right away. Lets try one:
+
+```python
+
+>>> from wordsiv import WordSiv
+>>> wsv = WordSiv()
+>>> wsv.word(source="en_wordcount_web")
+>>>
 
 ## Similar Tools
 
