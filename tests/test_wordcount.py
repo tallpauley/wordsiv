@@ -83,6 +83,27 @@ def test_width_range(wsv_font_file_wc, model):
 
 
 #####################################################################################
+###### TEST MODEL BEHAVIORS
+#####################################################################################
+
+
+def test_sequential(wsv_wc):
+    assert wsv_wc.words(source="wctest", model="seq", num_words=7) == [
+        "gather",
+        "to",
+        "sublimedirectory",
+        "sublimedirectory",
+        "consultation",
+        "other",
+        "componentartscstamp",
+    ]
+
+
+def test_sequential_loops(wsv_wc):
+    assert len(wsv_wc.words(source="wctest", model="seq", num_words=100)) == 100
+
+
+#####################################################################################
 ###### TEST WORD CASE
 #####################################################################################
 
