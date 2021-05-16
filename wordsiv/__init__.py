@@ -44,9 +44,10 @@ class WordSiv:
         self.rand = Random(seed)
 
         self.sources = {}
-        self.pipelines = {}
+        self.default_source_name = None
+        self.default_model_class_name = None
 
-        # populate pipelines and sources from data source packages
+        # populate sources from data source packages
         self.load_sources()
 
         self.model_classes = {
@@ -56,100 +57,90 @@ class WordSiv:
         }
 
     def add_source_module(self, source_module):
-        self.sources.update(source_module.sources)
-        self.pipelines.update(source_module.pipelines)
+        for source_name, params in source_module.sources.items():
+            if source_name not in self.sources:
+                self.sources[source_name] = params
+            else:
+                raise KeyError(f"Source {source_name} is already installed!")
 
     def load_sources(self):
         for sm in installed_source_modules():
             self.add_source_module(sm)
 
-    def set_default(self, source, pipeline=None):
-        self.sources["default"] = self.sources[source]
+    def set_default_source(self, source, model=None):
+        if source in self.sources:
+            self.default_source_name = source
+        else:
+            raise KeyError(f"No source installed with name {source}!")
+        if model:
+            self.default_model_class_name = model
 
-        # if no pipeline name specified, default pipeline is same as source name
-        self.pipelines["default"] = self.pipelines[pipeline or source]
-
-    def select_source_model(self, source=None, model=None, pipeline=None, **kwargs):
+    def select_source_model(self, source=None, model=None):
         """Select source object and model class
 
         Args:
             source: name to lookup in self.sources
             model: name to lookup in self.model_classes
-            source: name to lookup in self.pipelines
 
         Returns:
             A tuple with (source_object, model_class)
         """
 
         if not self.sources:
-            raise KeyError("No data source packages loaded!")
+            raise KeyError("No data source packages installed!")
 
-        source_name = source or "default"
+        source_name = source or self.default_source_name
+        source_obj = self.sources[source_name]["source"]
 
-        # do pipeline if specified, or if neither source nor model are defined
-        if pipeline or (not source and not model):
-            pipeline_name = pipeline or "default"
-            pipeline = self.pipelines[pipeline_name]
-            model_class = pipeline["model_class"]
-            source_obj = pipeline["source"]
-        else:
-            # if no source defined, use default source
-            source_obj = self.sources[source or "default"]
-
-            # we assume a model is always specified if a pipeline is not
-            # a default source makes some sense since the user explicitly loaded it
-            # a default model doesn't really make sense, outside of pipelines which
-            #     pair together source and model
+        if model:
             model_class = self.model_classes[model]
+        elif self.default_model_class_name:
+            model_class = self.model_classes[self.default_model_class_name]
+        else:
+            model_class = self.sources[source_name]["default_model_class"]
 
         return source_obj, model_class
 
-    def create_model(self, source=None, model=None, pipeline=None, **kwargs):
+    def create_model(self, source=None, model=None, **kwargs):
         """creates a model, and returns model along with kwargs for function call"""
 
-        source_obj, model_class = self.select_source_model(
-            source=source, model=model, pipeline=pipeline, **kwargs
-        )
+        source_obj, model_class = self.select_source_model(source=source, model=model)
 
         return model_class.create_model(
             source_obj.data_wrap,
             self.available_glyphs,
             self.font_info,
             self.rand,
-            **kwargs
+            **kwargs,
         )
 
-    def word(self, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
+    def word(self, source=None, model=None, **kwargs):
+        model, params = self.create_model(source, model, **kwargs)
         return model.word(**params)
 
-    def words(self, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
+    def words(self, source=None, model=None, **kwargs):
+        model, params = self.create_model(source, model, **kwargs)
         return model.words(**params)
 
-    def sentence(self, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
+    def sentence(self, source=None, model=None, **kwargs):
+        model, params = self.create_model(source, model, **kwargs)
         return model.sentence(**params)
 
-    def sentences(self, num_sents=5, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
+    def sentences(self, num_sents=5, source=None, model=None, **kwargs):
+        model, params = self.create_model(source, model, **kwargs)
         return [model.sentence(**params) for _ in range(num_sents)]
 
-    def paragraph(self, source=None, model=None, pipeline=None, **kwargs):
+    def paragraph(self, source=None, model=None, **kwargs):
         """Return a paragraph string"""
-        return " ".join(
-            self.sentences(source=source, model=model, pipeline=pipeline, **kwargs)
-        )
+        return " ".join(self.sentences(source=source, model=model, **kwargs))
 
-    def paragraphs(self, num_paras=3, source=None, model=None, pipeline=None, **kwargs):
+    def paragraphs(self, num_paras=3, source=None, model=None, **kwargs):
         """Return a list of paragraphs"""
         return [
-            self.paragraph(source=source, model=model, pipeline=pipeline, **kwargs)
+            self.paragraph(source=source, model=model, **kwargs)
             for _ in range(num_paras)
         ]
 
-    def text(self, para_sep="\n\n", source=None, model=None, pipeline=None, **kwargs):
+    def text(self, para_sep="\n\n", source=None, model=None, **kwargs):
         """Return a string of multiple paragraphs seperated by par_sep"""
-        return para_sep.join(
-            self.paragraphs(source=source, model=model, pipeline=pipeline, **kwargs)
-        )
+        return para_sep.join(self.paragraphs(source=source, model=model, **kwargs))

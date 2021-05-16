@@ -30,10 +30,10 @@ def test_no_source(wsv_no_source):
 
 def test_default_not_exist(wsv_default):
     with pytest.raises(KeyError):
-        wsv_default.set_default("not_exist")
+        wsv_default.set_default_source("not_exist")
 
 
 @pytest.mark.parametrize("source_name", ("wctest", "mkvtest"))
 def test_default_exists(wsv_default, source_name):
-    wsv_default.set_default(source_name)
+    wsv_default.set_default_source(source_name)
     assert type(wsv_default.sentence()) == str
