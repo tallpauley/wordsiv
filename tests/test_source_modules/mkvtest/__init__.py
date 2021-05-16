@@ -1,4 +1,4 @@
-from wordsiv.text_models_sources import MarkovSource, MarkovModel
+from wordsiv.sentence_models_sources import MarkovSource, MarkovModel
 
 from pathlib import Path
 import json

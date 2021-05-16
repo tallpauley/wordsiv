@@ -10,13 +10,13 @@ import pkg_resources
 
 from .fontinfo import FontInfo
 from .availableglyphs import AvailableGlyphs
-from .text_models_sources import (
+from .sentence_models_sources import (
     WordCountSource,
-    ProbabilityModel,
-    TopModel,
     RandomModel,
+    SequentialModel,
+    MarkovSource,
+    MarkovModel,
 )
-from .text_models_sources import MarkovSource, MarkovModel
 from .utilities import installed_source_modules
 
 DEFAULT_SEED = 11
@@ -50,10 +50,9 @@ class WordSiv:
         self.load_sources()
 
         self.model_classes = {
-            "prob": ProbabilityModel,
-            "top": TopModel,
             "rand": RandomModel,
-            "markov": MarkovModel,
+            "seq": SequentialModel,
+            "mkv": MarkovModel,
         }
 
     def add_source_module(self, source_module):
@@ -132,18 +131,25 @@ class WordSiv:
         model, params = self.create_model(source, model, pipeline, **kwargs)
         return model.sentence(**params)
 
-    def sentences(self, source=None, model=None, pipeline=None, **kwargs):
+    def sentences(self, num_sents=5, source=None, model=None, pipeline=None, **kwargs):
         model, params = self.create_model(source, model, pipeline, **kwargs)
-        return model.sentences(**params)
+        return [model.sentence(**params) for _ in range(num_sents)]
 
     def paragraph(self, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
-        return model.paragraph(**params)
+        """Return a paragraph string"""
+        return " ".join(
+            self.sentences(source=source, model=model, pipeline=pipeline, **kwargs)
+        )
 
-    def paragraphs(self, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
-        return model.paragraphs(**params)
+    def paragraphs(self, num_paras=3, source=None, model=None, pipeline=None, **kwargs):
+        """Return a list of paragraphs"""
+        return [
+            self.paragraph(source=source, model=model, pipeline=pipeline, **kwargs)
+            for _ in range(num_paras)
+        ]
 
-    def text(self, source=None, model=None, pipeline=None, **kwargs):
-        model, params = self.create_model(source, model, pipeline, **kwargs)
-        return model.text(**params)
+    def text(self, para_sep="\n\n", source=None, model=None, pipeline=None, **kwargs):
+        """Return a string of multiple paragraphs seperated by par_sep"""
+        return para_sep.join(
+            self.paragraphs(source=source, model=model, pipeline=pipeline, **kwargs)
+        )

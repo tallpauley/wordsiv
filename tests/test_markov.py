@@ -1,5 +1,5 @@
 import wordsiv
-from wordsiv.text_models_sources import MarkovSource
+from wordsiv.sentence_models_sources import MarkovSource
 from pathlib import Path
 from test_source_modules import mkvtest
 import pytest
@@ -39,7 +39,7 @@ def test_limit_glyphs(wsv_limit_glyphs_mkv):
         [
             c in LIMITED_CHARS + " \n"
             for c in wsv_limit_glyphs_mkv.text(
-                source="mkvtest", model="markov", num_paras=10
+                source="mkvtest", model="mkv", num_paras=10
             )
         ]
     )
@@ -49,9 +49,7 @@ def test_font_file(wsv_font_file_mkv):
     assert all(
         [
             c in LIMITED_CHARS + " \n"
-            for c in wsv_font_file_mkv.text(
-                source="mkvtest", model="markov", num_paras=10
-            )
+            for c in wsv_font_file_mkv.text(source="mkvtest", model="mkv", num_paras=10)
         ]
     )
 
@@ -70,30 +68,26 @@ def capitalized(w):
 # not supported
 def test_word(wsv_mk):
     with pytest.raises(NotImplementedError):
-        wsv_mk.word(source="mkvtest", model="markov")
+        wsv_mk.word(source="mkvtest", model="mkv")
 
 
 # not supported
 def test_words(wsv_mk):
     with pytest.raises(NotImplementedError):
-        wsv_mk.words(source="mkvtest", model="markov")
+        wsv_mk.words(source="mkvtest", model="mkv")
 
 
 @pytest.mark.parametrize("wsv_func", ["sentence", "paragraph", "text"])
 def test_lc_string(wsv_mk, wsv_func):
-    assert getattr(wsv_mk, wsv_func)(
-        source="mkvtest", model="markov", lc=True
-    ).islower()
+    assert getattr(wsv_mk, wsv_func)(source="mkvtest", model="mkv", lc=True).islower()
 
 
 @pytest.mark.parametrize("wsv_func", ["sentence", "paragraph", "text"])
 def test_uc_string(wsv_mk, wsv_func):
-    assert getattr(wsv_mk, wsv_func)(
-        source="mkvtest", model="markov", uc=True
-    ).isupper()
+    assert getattr(wsv_mk, wsv_func)(source="mkvtest", model="mkv", uc=True).isupper()
 
 
 # not supported
 def test_cap_sent_sentence(wsv_mk):
     with pytest.raises(TypeError):
-        sent = wsv_mk.sentence(source="mkvtest", model="markov", cap_sent=True)
+        sent = wsv_mk.sentence(source="mkvtest", model="mkv", cap_sent=True)

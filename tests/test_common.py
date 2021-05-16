@@ -1,6 +1,6 @@
 import wordsiv
-from wordsiv.text_models_sources import WordCountSource
-from wordsiv.text_models_sources import MarkovSource
+from wordsiv.sentence_models_sources import WordCountSource
+from wordsiv.sentence_models_sources import MarkovSource
 from pathlib import Path
 import pytest
 

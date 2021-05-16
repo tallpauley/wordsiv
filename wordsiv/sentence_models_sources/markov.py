@@ -16,7 +16,7 @@ from ..availableglyphs import AvailableGlyphs
 from ..utilities import Hashabledict, HashabledictKeys
 from ..utilities import has_glyphs
 from ..source import BaseSource
-from ..base_models import BaseTextModel
+from .base_sentence_model import BaseSentenceModel
 from ..datawrapper import DataWrapper
 
 #####################################################################################
@@ -44,7 +44,7 @@ class MarkovSource(BaseSource):
 #####################################################################################
 
 
-class MarkovModel(BaseTextModel):
+class MarkovModel(BaseSentenceModel):
     _instances = {}  # type: ignore
 
     def __init__(self, markovify_text_data, available_glyphs, rand):
