@@ -12,6 +12,7 @@ from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
 from ..source import BaseSource
 from .base_sentence_model import BaseSentenceModel
 from ..datawrapper import DataWrapper, unwrap
+from ..punctuation import punctuate
 
 BIG_NUM = 100000
 
@@ -64,14 +65,15 @@ class WordCountSource(BaseSource):
     file looks like this: "koala 235\ncobra 123\n"
 
     >>> obj = WordCountSource( \
-            TEST_MODULES_DIR / "wctest/data/count-source.txt", lines=3)
+            TEST_MODULES_DIR / "wctest/data/count-source.txt", {}, lines=3)
     >>> obj.data_wrap.data
     (('gather', 94), ('to', 119), ('sublimedirectory', 204), ('sublimedirectory', 12))
     """
 
-    def __init__(self, data_file, lines=None):
+    def __init__(self, data_file, meta, lines=None):
         self.data_file = data_file
         self.lines = lines
+        self.meta = meta
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
@@ -104,19 +106,22 @@ class RandomModel(BaseSentenceModel):
     """SentenceModel which randomly selects words"""
 
     @classmethod
-    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+    def create_model(
+        cls, data_wrap, available_glyphs, font_info, rand, language, **kwargs
+    ):
         """Creates model, returning (model, **kwargs)"""
 
-        model = cls(data_wrap, available_glyphs, font_info, rand)
+        model = cls(data_wrap, available_glyphs, font_info, rand, language)
         return model, kwargs
 
-    def __init__(self, data_wrap, available_glyphs, font_info, rand):
+    def __init__(self, data_wrap, available_glyphs, font_info, rand, language):
 
         # No filtering on initialization since filtering happens at word level
         self.data_wrap = data_wrap
         self.available_glyphs = available_glyphs
         self.font_info = font_info
         self.rand = rand
+        self.language = language
 
     def word(self, prob=True, **kwargs):
         """Return a random word
@@ -197,15 +202,14 @@ class RandomModel(BaseSentenceModel):
             width (int): Approximate rendered word width
         """
 
-        # TODO: Revisit how to get default punc func from source
-        if not punc_func:
-
-            def punc_func(x):
-                return x
-
-        sent = " ".join(self.words(cap_first=cap_sent, **kwargs))
-
-        return punc_func(sent)
+        words = self.words(cap_first=cap_sent, **kwargs)
+        return punctuate(
+            words,
+            self.available_glyphs.glyphs_string,
+            self.rand,
+            self.language,
+            punc_func,
+        )
 
 
 @lru_cache(maxsize=None)
@@ -218,7 +222,9 @@ class SequentialModel(BaseSentenceModel):
     """SentenceModel which returns words sequentially in the order of the source data"""
 
     @classmethod
-    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+    def create_model(
+        cls, data_wrap, available_glyphs, font_info, rand, language, **kwargs
+    ):
         """Creates model, returning (model, **kwargs)"""
 
         model = cls(data_wrap, available_glyphs, font_info)
@@ -304,16 +310,16 @@ def filter_data(
 
     dw = data_wrap
 
-    glyphs_tuple = available_glyphs.glyphs_tuple if available_glyphs.limited else None
+    glyphs_string = available_glyphs.glyphs_string if available_glyphs.limited else None
 
     if uc:
-        dw = uc_filter(dw, glyphs_tuple)
+        dw = uc_filter(dw, glyphs_string)
     elif lc:
-        dw = lc_filter(dw, glyphs_tuple)
+        dw = lc_filter(dw, glyphs_string)
     elif cap:
-        dw = cap_filter(dw, glyphs_tuple)
+        dw = cap_filter(dw, glyphs_string)
     else:
-        dw = available_filter(dw, glyphs_tuple)
+        dw = available_filter(dw, glyphs_string)
 
     if min_wl or max_wl != BIG_NUM or wl:
         dw = length_filter(dw, min_wl, max_wl, wl)

@@ -111,6 +111,7 @@ class WordSiv:
             self.available_glyphs,
             self.font_info,
             self.rand,
+            source_obj.meta["lang"],
             **kwargs,
         )
 

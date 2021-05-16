@@ -1,7 +1,4 @@
-from abc import ABC
-
-
-class BaseSource(ABC):
+class BaseSource:
     @property
     def data(self):
         """Return data to be filtered and loaded into a model
@@ -12,4 +9,9 @@ class BaseSource(ABC):
         For this reason, you should use decorator @lru_cache(maxsize=None) so the data
         only needs to be loaded the first time data is requested
         """
-        pass
+        raise NotImplementedError
+
+    def meta(self):
+        """return metadata dictionary"""
+
+        return self.meta

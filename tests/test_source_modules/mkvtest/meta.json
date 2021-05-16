@@ -1,0 +1,15 @@
+{
+    "name": "mkvtest",
+    "lang": "en",
+    "version": "0.1.0",
+    "source_class": "MarkovSource",
+    "compatible_models": [
+        "MarkovModel"
+    ],
+    "description": "Blah blah blah test",
+    "wordsiv_version": ">=0.1.0",
+    "author": "Chris Pauley",
+    "email": "cmpauley@gmail.com",
+    "url": "https://github.com/tallpauley",
+    "license": "MIT License"
+}

@@ -15,8 +15,8 @@ class AvailableGlyphs:
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
-    def glyphs_tuple(self):
-        return tuple(self.glyphs_set)
+    def glyphs_string(self):
+        return str(self.glyphs_set)
 
     def lowercase(self):
         return self.glyphs_in_category("Ll")
