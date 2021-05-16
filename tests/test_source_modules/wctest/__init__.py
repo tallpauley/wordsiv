@@ -1,4 +1,4 @@
-from wordsiv.text_models_sources import WordCountSource, ProbabilityModel, RandomModel
+from wordsiv.sentence_models_sources import WordCountSource, RandomModel
 
 from pathlib import Path
 import json
@@ -18,10 +18,6 @@ sources = {
 pipelines = {
     "wctest": {
         "source": sources["wctest"],
-        "model_class": ProbabilityModel,
-    },
-    "wctest_rand": {
-        "source": sources["wctest"],
         "model_class": RandomModel,
-    },
+    }
 }

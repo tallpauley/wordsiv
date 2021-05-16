@@ -1,6 +1,6 @@
 from functools import lru_cache
 from collections import OrderedDict
-from itertools import islice
+from itertools import islice, cycle
 import random
 import reprlib
 from pathlib import Path
@@ -10,7 +10,7 @@ import json
 
 from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
 from ..source import BaseSource
-from ..base_models import BaseCachedWordModel, BaseWordTextModel
+from .base_sentence_model import BaseSentenceModel
 from ..datawrapper import DataWrapper, unwrap
 
 BIG_NUM = 100000
@@ -25,6 +25,7 @@ TEST_MODULES_DIR = (
 ######################################################################################
 
 
+@lru_cache(maxsize=None)
 def zip_tuple(a_tuple):
     """Zip a tuple of tuple pairs into a tuple (cached)
 
@@ -85,13 +86,43 @@ class WordCountSource(BaseSource):
 #####################################################################################
 
 
-class ProbabilityModel(BaseWordTextModel):
-    """TextModel which randomly selects words (probability distribution from counts)"""
+@lru_cache(maxsize=None)
+def prob_wordcount_gen(data_wrap, rand):
+    word_list, counts = zip_tuple(data_wrap.data)
+    while True:
+        yield rand.choices(word_list, k=1, weights=counts)[0]
 
-    def word(self, **kwargs):
-        """Randomly select a word with proabability distribution defined by word counts
+
+@lru_cache(maxsize=None)
+def rand_wordcount_gen(data_wrap, rand):
+    word_list, _ = zip_tuple(data_wrap.data)
+    while True:
+        yield rand.choice(word_list)
+
+
+class RandomModel(BaseSentenceModel):
+    """SentenceModel which randomly selects words"""
+
+    @classmethod
+    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+        """Creates model, returning (model, **kwargs)"""
+
+        model = cls(data_wrap, available_glyphs, font_info, rand)
+        return model, kwargs
+
+    def __init__(self, data_wrap, available_glyphs, font_info, rand):
+
+        # No filtering on initialization since filtering happens at word level
+        self.data_wrap = data_wrap
+        self.available_glyphs = available_glyphs
+        self.font_info = font_info
+        self.rand = rand
+
+    def word(self, prob=True, **kwargs):
+        """Return a random word
 
         Keyword Args:
+            prob: favor words with higher wordcounts
             uc (bool): Uppercase word
             lc (bool): Lowercase word
             cap (bool): Capitalize word
@@ -99,128 +130,155 @@ class ProbabilityModel(BaseWordTextModel):
             min_wl (int): Minimum word length,
             max_wl (int): Maximum word length,
             wl (int): Word length,
-            min_width (int): Minimum approximate rendered word width,
-            max_width (int): Maximum approximate rendered word width,
+            min_width (int): Minimum approximate rendered word width
+            max_width (int): Maximum approximate rendered word width
             width (int): Approximate rendered word width
         """
 
         filtered_data_wrap = filter_data(
             self.data_wrap, self.available_glyphs, self.font_info, **kwargs
         )
+        if prob:
+            gen = prob_wordcount_gen(filtered_data_wrap, self.rand)
+        else:
+            gen = rand_wordcount_gen(filtered_data_wrap, self.rand)
 
-        return ProbabilityWordModel.create(filtered_data_wrap, self.rand).word(**kwargs)
+        return next(gen)
 
-
-class TopModel(BaseWordTextModel):
-    """TextModel which returns words sequentially in the order of the source data"""
-
-    def word(self, **kwargs):
-        """
+    def words(
+        self, num_words=None, cap_first=False, uc=False, lc=False, cap=False, **kwargs
+    ):
+        """Return a list of random words
 
         Keyword Args:
-            uc (bool): Uppercase word
-            lc (bool): Lowercase word
-            cap (bool): Capitalize word
+            num_words: Number of words to generate (sentence length)
+            cap_first (bool): Capitalize first word in word list
+            prob: favor words with higher wordcounts
+            uc (bool): Uppercase all words
+            lc (bool): Lowercase all words
+            cap (bool): Capitalize all words
             num_top (int): Limit number of words drawn from
-            min_wl (int): Minimum word length,
-            max_wl (int): Maximum word length,
+            min_wl (int): Minimum word length
+            max_wl (int): Maximum word length
             wl (int): Word length,
-            min_width (int): Minimum approximate rendered word width,
-            max_width (int): Maximum approximate rendered word width,
+            min_width (int): Minimum approximate rendered word width
+            max_width (int): Maximum approximate rendered word width
             width (int): Approximate rendered word width
         """
 
-        filtered_data_wrap = filter_data(
-            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
-        )
+        if not num_words:
+            num_words = self.rand.randint(7, 20)
 
-        return TopWordModel.create(filtered_data_wrap, self.rand).word(**kwargs)
+        def should_cap_first(n):
+            return cap or (cap_first and n == 0)
 
+        return [
+            self.word(cap=should_cap_first(n), uc=uc, lc=lc, **kwargs)
+            for n in range(num_words)
+        ]
 
-class RandomModel(BaseWordTextModel):
-    """TextModel which randomly selects words (equal probability for all words)"""
-
-    def word(self, **kwargs):
-        """Randomly select a word with equal probability for all words
+    def sentence(self, cap_sent=True, sent_len=None, punc_func=None, **kwargs):
+        """Return a random sentence
 
         Keyword Args:
-            uc (bool): Uppercase word
-            lc (bool): Lowercase word
-            cap (bool): Capitalize word
+            num_words: Number of words to generate (sentence length)
+            cap_first (bool): Capitalize first word of sentence
+            punc_func (function): Function which wraps sentence with punctuation
+            prob: favor words with higher wordcounts
+            uc (bool): Uppercase all words
+            lc (bool): Lowercase all words
+            cap (bool): Capitalize all words
             num_top (int): Limit number of words drawn from
-            min_wl (int): Minimum word length,
-            max_wl (int): Maximum word length,
+            min_wl (int): Minimum word length
+            max_wl (int): Maximum word length
             wl (int): Word length,
-            min_width (int): Minimum approximate rendered word width,
-            max_width (int): Maximum approximate rendered word width,
+            min_width (int): Minimum approximate rendered word width
+            max_width (int): Maximum approximate rendered word width
+            width (int): Approximate rendered word width
+        """
+
+        # TODO: Revisit how to get default punc func from source
+        if not punc_func:
+
+            def punc_func(x):
+                return x
+
+        sent = " ".join(self.words(cap_first=cap_sent, **kwargs))
+
+        return punc_func(sent)
+
+
+@lru_cache(maxsize=None)
+def sequential_gen(data_wrap):
+    for word, _ in cycle(data_wrap.data):
+        yield word
+
+
+class SequentialModel(BaseSentenceModel):
+    """SentenceModel which returns words sequentially in the order of the source data"""
+
+    @classmethod
+    def create_model(cls, data_wrap, available_glyphs, font_info, rand, **kwargs):
+        """Creates model, returning (model, **kwargs)"""
+
+        model = cls(data_wrap, available_glyphs, font_info)
+        return model, kwargs
+
+    def __init__(self, data_wrap, available_glyphs, font_info):
+
+        # No filtering on initialization since filtering happens at word level
+        self.data_wrap = data_wrap
+        self.available_glyphs = available_glyphs
+        self.font_info = font_info
+
+    def words(
+        self,
+        num_words=None,
+        uc=False,
+        lc=False,
+        cap=False,
+        min_wl=0,
+        max_wl=BIG_NUM,
+        wl=None,
+        min_width=0,
+        max_width=BIG_NUM,
+        width=None,
+    ):
+        """Return a list of sequential words from the source
+
+        Keyword Args:
+            num_words: Number of words to generate
+            uc (bool): Uppercase all words
+            lc (bool): Lowercase all words
+            cap (bool): Capitalize all words
+            min_wl (int): Minimum word length
+            max_wl (int): Maximum word length
+            wl (int): Word length
+            min_width (int): Minimum approximate rendered word width
+            max_width (int): Maximum approximate rendered word width
             width (int): Approximate rendered word width
         """
 
         filtered_data_wrap = filter_data(
-            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
+            self.data_wrap,
+            self.available_glyphs,
+            self.font_info,
+            uc=uc,
+            lc=lc,
+            cap=cap,
+            min_wl=min_wl,
+            max_wl=max_wl,
+            wl=wl,
+            min_width=min_width,
+            max_width=max_width,
+            width=width,
         )
 
-        return RandomWordModel.create(filtered_data_wrap, self.rand).word(**kwargs)
+        if not num_words:
+            num_words = 10
 
-
-#####################################################################################
-###### WORD MODELS
-#####################################################################################
-
-
-class ProbabilityWordModel(BaseCachedWordModel):
-    """
-    A WordModel that uses occurences counts to generate words
-    """
-
-    def __init__(self, data_wrap, rand):
-
-        self.rand = rand
-        self.word_list, self.counts = zip_tuple(data_wrap.data)
-
-    def word(self, **kwargs):
-        return self.rand.choices(self.word_list, k=1, weights=self.counts)[0]
-
-
-class TopWordModel(BaseCachedWordModel):
-    """
-    A WordModel that spits out the words sequentially
-
-    Useful for things like trigrams, where you often just
-    want to print out the top few
-    """
-
-    def __init__(self, data_wrap, rand):
-
-        self.rand = rand
-        # don't need counts
-        self.word_list, _ = zip_tuple(data_wrap.data)
-
-        self.reset()
-
-    def reset(self):
-        self.iterator = self.new_iterator()
-
-    def new_iterator(self):
-        return iter(self.word_list)
-
-    def word(self, **kwargs):
-        return next(self.iterator)
-
-
-class RandomWordModel(BaseCachedWordModel):
-    """
-    A WordModel which picks words completely randomly
-    """
-
-    def __init__(self, data_wrap, rand):
-
-        self.rand = rand
-        # don't need counts
-        self.word_list, _ = zip_tuple(data_wrap.data)
-
-    def word(self, **kwargs):
-        return self.rand.choice(self.word_list)
+        gen = sequential_gen(filtered_data_wrap)
+        return [next(gen) for n in range(num_words)]
 
 
 #####################################################################################
