@@ -208,7 +208,7 @@ class RandomModel(BaseSentenceModel):
         return punc_func(sent)
 
 
-@lru_cache
+@lru_cache(maxsize=None)
 def sequential_gen(data_wrap):
     for word, _ in cycle(data_wrap.data):
         yield word
