@@ -30,8 +30,9 @@ class MarkovSource(BaseSource):
     TODO Add test here
     """
 
-    def __init__(self, data_file):
+    def __init__(self, data_file, meta):
         self.data_file = data_file
+        self.meta = meta
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
@@ -90,12 +91,12 @@ class MarkovModel(BaseSentenceModel):
         passing around the objects from function to function
         """
 
-        glyphs_tuple = (
-            available_glyphs.glyphs_tuple if available_glyphs.limited else None
+        glyphs_string = (
+            available_glyphs.glyphs_string if available_glyphs.limited else None
         )
 
         # filter chain_data by available
-        data = filter_available(data, glyphs_tuple, uc=uc, lc=lc)
+        data = filter_available(data, glyphs_string, uc=uc, lc=lc)
 
         # use chain data as hash to cache object instances
         # Note: in the case of markov chains, not only filtering the data is costly,
@@ -110,7 +111,15 @@ class MarkovModel(BaseSentenceModel):
 
     @classmethod
     def create_model(
-        cls, data_wrap, available_glyphs, font_info, rand, uc=False, lc=False, **kwargs
+        cls,
+        data_wrap,
+        available_glyphs,
+        font_info,
+        rand,
+        language,
+        uc=False,
+        lc=False,
+        **kwargs
     ):
         """Creates model, returning (model, **kwargs)"""
 
@@ -160,7 +169,7 @@ class MarkovDataWrapper(DataWrapper):
 
 @lru_cache(maxsize=None)
 def filter_available(
-    markov_data, available_glyphs_tuple, uc=False, lc=False, cap=False
+    markov_data, available_glyphs_string, uc=False, lc=False, cap=False
 ):
     def uc_it(w):
         return w if w in (BEGIN, END) else w.upper()
@@ -188,26 +197,28 @@ def filter_available(
 
     # we produce a copy of the chain here
     filtered_chain = tuple(
-        filter_available_gen(chain, available_glyphs_tuple, case_function)
+        filter_available_gen(chain, available_glyphs_string, case_function)
     )
 
     return MarkovDataWrapper.new_with_chain(markov_data, filtered_chain)
 
 
 # TODO: different filtering strategy in here, using an iterator, isn't congruent with word counts
-def filter_available_gen(chain, available_glyphs_tuple, case_function):
+def filter_available_gen(chain, available_glyphs_string, case_function):
 
     for state_list, follow in chain:
         # assume only using a state size of 1
         state_word = case_function(state_list[0])
 
-        if state_word in (BEGIN, END) or has_glyphs(state_word, available_glyphs_tuple):
+        if state_word in (BEGIN, END) or has_glyphs(
+            state_word, available_glyphs_string
+        ):
             filtered_follow_dict = HashabledictKeys(
                 {
                     case_function(follow_word): prob
                     for follow_word, prob in follow.items()
                     if follow_word in (BEGIN, END)
-                    or has_glyphs(case_function(follow_word), available_glyphs_tuple)
+                    or has_glyphs(case_function(follow_word), available_glyphs_string)
                 }
             )
 

@@ -111,6 +111,7 @@ class WordSiv:
             self.available_glyphs,
             self.font_info,
             self.rand,
+            source_obj.meta["lang"],
             **kwargs,
         )
 
@@ -127,8 +128,10 @@ class WordSiv:
         return model.sentence(**params)
 
     def sentences(self, num_sents=5, source=None, model=None, **kwargs):
-        model, params = self.create_model(source, model, **kwargs)
-        return [model.sentence(**params) for _ in range(num_sents)]
+        return [
+            self.sentence(source=source, model=model, **kwargs)
+            for _ in range(num_sents)
+        ]
 
     def paragraph(self, source=None, model=None, **kwargs):
         """Return a paragraph string"""
