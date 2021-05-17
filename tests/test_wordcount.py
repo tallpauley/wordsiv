@@ -69,6 +69,14 @@ def test_font_file(wsv_font_file_wc, prob):
 
 
 @pytest.mark.parametrize("prob", [True, False])
+def test_width_no_font_file(wsv_limit_glyphs_wc, prob):
+    with pytest.raises(TypeError):
+        wsv_limit_glyphs_wc.word(
+            prob=prob, source="wctest", model="rand", min_width=10000
+        )
+
+
+@pytest.mark.parametrize("prob", [True, False])
 def test_width(wsv_font_file_wc, prob):
     assert (
         wsv_font_file_wc.word(prob=prob, source="wctest", model="rand", width=15622)

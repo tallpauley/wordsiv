@@ -25,10 +25,7 @@ from ..datawrapper import DataWrapper
 
 
 class MarkovSource(BaseSource):
-    """A source that is a compiled & serialized JSON Markovify.Text Object
-
-    TODO Add test here
-    """
+    """A source that is a compiled & serialized JSON Markovify.Text Object"""
 
     def __init__(self, data_file, meta):
         self.data_file = data_file
@@ -203,7 +200,6 @@ def filter_available(
     return MarkovDataWrapper.new_with_chain(markov_data, filtered_chain)
 
 
-# TODO: different filtering strategy in here, using an iterator, isn't congruent with word counts
 def filter_available_gen(chain, available_glyphs_string, case_function):
 
     for state_list, follow in chain:
