@@ -16,6 +16,10 @@ from ..punctuation import punctuate
 
 BIG_NUM = 100000
 
+DEFAULT_MIN_SENLEN = 7
+DEFAULT_MAX_SENTLEN = 20
+DEFAULT_SEQ_NUM_WORDS = 10
+
 TEST_MODULES_DIR = (
     Path(os.path.dirname(os.path.realpath(__file__)))
     / "../../tests/test_source_modules"
@@ -151,12 +155,22 @@ class RandomModel(BaseSentenceModel):
         return next(gen)
 
     def words(
-        self, num_words=None, cap_first=False, uc=False, lc=False, cap=False, **kwargs
+        self,
+        num_words=None,
+        min_num_words=DEFAULT_MIN_SENLEN,
+        max_num_words=DEFAULT_MAX_SENTLEN,
+        cap_first=False,
+        uc=False,
+        lc=False,
+        cap=False,
+        **kwargs
     ):
         """Return a list of random words
 
         Keyword Args:
-            num_words: Number of words to generate (sentence length)
+            min_num_words: Minimum number of words
+            max_num_words: Maximum number of words
+            num_words: Number of words to generate
             cap_first (bool): Capitalize first word in word list
             prob: favor words with higher wordcounts
             uc (bool): Uppercase all words
@@ -165,14 +179,14 @@ class RandomModel(BaseSentenceModel):
             num_top (int): Limit number of words drawn from
             min_wl (int): Minimum word length
             max_wl (int): Maximum word length
-            wl (int): Word length,
+            wl (int): Word length
             min_width (int): Minimum approximate rendered word width
             max_width (int): Maximum approximate rendered word width
             width (int): Approximate rendered word width
         """
 
         if not num_words:
-            num_words = self.rand.randint(7, 20)
+            num_words = self.rand.randint(min_num_words, max_num_words)
 
         def should_cap_first(n):
             return cap or (cap_first and n == 0)
@@ -182,11 +196,21 @@ class RandomModel(BaseSentenceModel):
             for n in range(num_words)
         ]
 
-    def sentence(self, cap_sent=True, sent_len=None, punc_func=None, **kwargs):
+    def sentence(
+        self,
+        cap_sent=True,
+        min_sentlen=DEFAULT_MIN_SENLEN,
+        max_sentlen=DEFAULT_MAX_SENTLEN,
+        sentlen=None,
+        punc_func=None,
+        **kwargs
+    ):
         """Return a random sentence
 
         Keyword Args:
-            num_words: Number of words to generate (sentence length)
+            min_sentlen: Minimum number of words per sentence
+            max_sentlen: Maximum number of words per sentence
+            sentlen: Number of words per sentence
             cap_first (bool): Capitalize first word of sentence
             punc_func (function): Function which wraps sentence with punctuation
             prob: favor words with higher wordcounts
@@ -196,13 +220,19 @@ class RandomModel(BaseSentenceModel):
             num_top (int): Limit number of words drawn from
             min_wl (int): Minimum word length
             max_wl (int): Maximum word length
-            wl (int): Word length,
+            wl (int): Word length
             min_width (int): Minimum approximate rendered word width
             max_width (int): Maximum approximate rendered word width
             width (int): Approximate rendered word width
         """
 
-        words = self.words(cap_first=cap_sent, **kwargs)
+        words = self.words(
+            cap_first=cap_sent,
+            min_num_words=min_sentlen,
+            max_num_words=max_sentlen,
+            num_words=sentlen,
+            **kwargs
+        )
         return punctuate(
             words,
             self.available_glyphs.glyphs_string,
@@ -239,7 +269,7 @@ class SequentialModel(BaseSentenceModel):
 
     def words(
         self,
-        num_words=None,
+        num_words=DEFAULT_SEQ_NUM_WORDS,
         uc=False,
         lc=False,
         cap=False,
@@ -279,9 +309,6 @@ class SequentialModel(BaseSentenceModel):
             max_width=max_width,
             width=width,
         )
-
-        if not num_words:
-            num_words = 10
 
         gen = sequential_gen(filtered_data_wrap)
         return [next(gen) for n in range(num_words)]
