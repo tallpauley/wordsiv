@@ -56,11 +56,11 @@ def punctuate(words, glyphs_string, rand, language, punc_func=None):
 
 default_punctuation = {
     "en": {
-        "start": {"": 10},
+        "start": {"": 100},
         # make no ending punctuation extremely low probability so
         # it only happens when period is not available
-        "end": {"": 0.00001, ".": 10, "?": 4, "!": 2},
-        "inner": {"": 10, ",": 6, "—": 4, ":": 3, ";": 2},
-        "wrap": {("", ""): 10, ("“", "”"): 2},
+        "end": {"": 0.00001, ".": 100, "?": 40, "!": 20},
+        "inner": {"": 100, ",": 60, "—": 40, ":": 30, ";": 20},
+        "wrap": {("", ""): 100, ("“", "”"): 9, ("‘", "’"): 6},
     }
 }
