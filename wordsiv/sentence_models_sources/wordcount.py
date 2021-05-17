@@ -292,6 +292,7 @@ class SequentialModel(BaseSentenceModel):
 #####################################################################################
 
 
+@lru_cache(maxsize=None)
 def filter_data(
     data_wrap,
     available_glyphs,

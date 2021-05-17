@@ -3,9 +3,11 @@ from wordsiv.sentence_models_sources import WordCountSource
 from pathlib import Path
 from test_source_modules import wctest
 import pytest
+from collections import Counter
 
 HERE = Path(__file__).parent.absolute()
 LIMITED_CHARS = "HAMBURGERFONTSIVhamburgerfontsiv"
+LIMITED_PUNCT = ".,:;”“"
 
 
 @pytest.fixture(scope="session")
@@ -105,6 +107,34 @@ def test_sequential(wsv_wc):
 
 def test_sequential_loops(wsv_wc):
     assert len(wsv_wc.words(source="wctest", model="seq", num_words=100)) == 100
+
+
+#####################################################################################
+###### TEST PUNCTUATION
+#####################################################################################
+
+
+@pytest.fixture(scope="session")
+def wsv_limit_glyphs_wc_punc():
+    w = wordsiv.WordSiv(limit_glyphs=LIMITED_CHARS + LIMITED_PUNCT)
+    w.add_source_module(wctest)
+    return w
+
+
+def test_default_punc_func(wsv_limit_glyphs_wc_punc):
+    text = wsv_limit_glyphs_wc_punc.text(source="wctest", num_paras=100)
+    assert all(c in text for c in LIMITED_PUNCT)
+
+
+def test_default_punc_freq(wsv_limit_glyphs_wc_punc):
+    text = wsv_limit_glyphs_wc_punc.text(source="wctest", num_paras=100)
+    text_len = len(text)
+    counts = dict(
+        {c: count for c, count in Counter(text).items() if c in LIMITED_PUNCT}
+    )
+    punc_count = sum(counts.values())
+    punc_percents = {c: (float(count) / punc_count) for c, count in counts.items()}
+    assert (0.4 < punc_percents["."] < 0.6) and (0.1 < punc_percents[","] < 0.3)
 
 
 #####################################################################################
