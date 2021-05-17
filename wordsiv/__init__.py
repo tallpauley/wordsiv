@@ -20,6 +20,8 @@ from .sentence_models_sources import (
 from .utilities import installed_source_modules
 
 DEFAULT_SEED = 11
+DEFAULT_MIN_PARA_LEN = 4
+DEFAULT_MAX_PARA_LEN = 7
 
 
 class WordSiv:
@@ -127,17 +129,35 @@ class WordSiv:
         model, params = self.create_model(source, model, **kwargs)
         return model.sentence(**params)
 
-    def sentences(self, num_sents=5, source=None, model=None, **kwargs):
+    def sentences(
+        self,
+        min_para_len=DEFAULT_MIN_PARA_LEN,
+        max_para_len=DEFAULT_MAX_PARA_LEN,
+        para_len=None,
+        source=None,
+        model=None,
+        **kwargs,
+    ):
+        """Return a list of sentence strings"""
+
+        if not para_len:
+            para_len = self.rand.randint(min_para_len, max_para_len)
+
         return [
-            self.sentence(source=source, model=model, **kwargs)
-            for _ in range(num_sents)
+            self.sentence(source=source, model=model, **kwargs) for _ in range(para_len)
         ]
 
     def paragraph(self, source=None, model=None, **kwargs):
         """Return a paragraph string"""
         return " ".join(self.sentences(source=source, model=model, **kwargs))
 
-    def paragraphs(self, num_paras=3, source=None, model=None, **kwargs):
+    def paragraphs(
+        self,
+        num_paras=3,
+        source=None,
+        model=None,
+        **kwargs,
+    ):
         """Return a list of paragraphs"""
         return [
             self.paragraph(source=source, model=model, **kwargs)

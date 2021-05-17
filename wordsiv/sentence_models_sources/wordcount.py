@@ -16,8 +16,8 @@ from ..punctuation import punctuate
 
 BIG_NUM = 100000
 
-DEFAULT_MIN_SENLEN = 7
-DEFAULT_MAX_SENTLEN = 20
+DEFAULT_MIN_SENT_LEN = 7
+DEFAULT_MAX_SENT_LEN = 20
 DEFAULT_SEQ_NUM_WORDS = 10
 
 TEST_MODULES_DIR = (
@@ -157,8 +157,8 @@ class RandomModel(BaseSentenceModel):
     def words(
         self,
         num_words=None,
-        min_num_words=DEFAULT_MIN_SENLEN,
-        max_num_words=DEFAULT_MAX_SENTLEN,
+        min_num_words=DEFAULT_MIN_SENT_LEN,
+        max_num_words=DEFAULT_MAX_SENT_LEN,
         cap_first=False,
         uc=False,
         lc=False,
@@ -199,18 +199,18 @@ class RandomModel(BaseSentenceModel):
     def sentence(
         self,
         cap_sent=True,
-        min_sentlen=DEFAULT_MIN_SENLEN,
-        max_sentlen=DEFAULT_MAX_SENTLEN,
-        sentlen=None,
+        min_sent_len=DEFAULT_MIN_SENT_LEN,
+        max_sent_len=DEFAULT_MAX_SENT_LEN,
+        sent_len=None,
         punc_func=None,
         **kwargs
     ):
         """Return a random sentence
 
         Keyword Args:
-            min_sentlen: Minimum number of words per sentence
-            max_sentlen: Maximum number of words per sentence
-            sentlen: Number of words per sentence
+            min_sent_len: Minimum number of words per sentence
+            max_sent_len: Maximum number of words per sentence
+            sent_len: Number of words per sentence
             cap_first (bool): Capitalize first word of sentence
             punc_func (function): Function which wraps sentence with punctuation
             prob: favor words with higher wordcounts
@@ -228,9 +228,9 @@ class RandomModel(BaseSentenceModel):
 
         words = self.words(
             cap_first=cap_sent,
-            min_num_words=min_sentlen,
-            max_num_words=max_sentlen,
-            num_words=sentlen,
+            min_num_words=min_sent_len,
+            max_num_words=max_sent_len,
+            num_words=sent_len,
             **kwargs
         )
         return punctuate(
