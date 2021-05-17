@@ -97,3 +97,21 @@ def test_uc_string(wsv_mk, wsv_func):
 def test_cap_sent_sentence(wsv_mk):
     with pytest.raises(TypeError):
         sent = wsv_mk.sentence(source="mkvtest", model="mkv", cap_sent=True)
+
+
+#####################################################################################
+###### TEST SENTENCE LENGTH
+#####################################################################################
+
+
+@pytest.mark.parametrize("min_sl,max_sl", [(3, 7)])
+def test_sentence_length(wsv_mk, min_sl, max_sl):
+    sentence = wsv_mk.sentence(
+        source="mkvtest",
+        model="mkv",
+        min_sent_len=min_sl,
+        max_sent_len=max_sl,
+    )
+    sentence_len = len(sentence.split(" "))
+
+    assert min_sl < sentence_len < max_sl

@@ -19,6 +19,7 @@ from ..source import BaseSource
 from .base_sentence_model import BaseSentenceModel
 from ..datawrapper import DataWrapper
 
+
 #####################################################################################
 ###### SOURCE
 #####################################################################################
@@ -63,11 +64,13 @@ class MarkovModel(BaseSentenceModel):
 
         return markov_text
 
-    def sentence(self):
+    def sentence(self, min_sent_len=None, max_sent_len=None):
         """Generate a markov chain sentence"""
 
         # Ignore sent_len: handled by actual markov model
-        return self.markov_text.make_sentence()
+        return self.markov_text.make_sentence(
+            min_words=min_sent_len, max_words=max_sent_len
+        )
 
     def word(self, **kwargs):
         """No single word generation, just sentences and larger"""
