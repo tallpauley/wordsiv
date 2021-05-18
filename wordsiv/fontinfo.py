@@ -73,13 +73,14 @@ class FontInfo:
     def char_widths_tuple(self):
         return tuple(self.char_widths.items())
 
+    @property
+    @lru_cache(maxsize=None)
+    def units_per_em(self):
+        return self.font["head"].unitsPerEm
+
     @lru_cache(maxsize=None)
     def rough_word_width(self, string):
-        return sum(self.char_width(c) for c in string)
-
-    # def word_width(self, string):
-    #     drawBot.font(self.font_file, 1000)
-    #     return int(drawBot.textSize(string)[0])
+        return sum(self.char_width(c) for c in string) / float(self.units_per_em)
 
     ## A pen for checking if a glyph contains any path data (probably a simpler way to do this???)
     class PathExistsPen(NullPen):

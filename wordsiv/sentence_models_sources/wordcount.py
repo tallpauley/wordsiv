@@ -19,6 +19,7 @@ BIG_NUM = 100000
 DEFAULT_MIN_SENT_LEN = 7
 DEFAULT_MAX_SENT_LEN = 20
 DEFAULT_SEQ_NUM_WORDS = 10
+DEFAULT_WIDTH_TOLERANCE = 0.05
 
 TEST_MODULES_DIR = (
     Path(os.path.dirname(os.path.realpath(__file__)))
@@ -92,14 +93,12 @@ class WordCountSource(BaseSource):
 #####################################################################################
 
 
-@lru_cache(maxsize=None)
 def prob_wordcount_gen(data_wrap, rand):
     word_list, counts = zip_tuple(data_wrap.data)
     while True:
         yield rand.choices(word_list, k=1, weights=counts)[0]
 
 
-@lru_cache(maxsize=None)
 def rand_wordcount_gen(data_wrap, rand):
     word_list, _ = zip_tuple(data_wrap.data)
     while True:
@@ -351,6 +350,7 @@ def filter_data(
     wl=None,
     min_width=0,
     max_width=BIG_NUM,
+    width_tolerance=DEFAULT_WIDTH_TOLERANCE,
     width=None,
 ):
 
@@ -370,17 +370,18 @@ def filter_data(
     if min_wl or max_wl != BIG_NUM or wl:
         dw = length_filter(dw, min_wl, max_wl, wl)
 
-    if min_width or max_width != BIG_NUM or width:
+    if min_width or max_width != BIG_NUM or width != None:
         if not font_info:
             raise TypeError(
-                "No font_file supplied, filtering by width is not available!"
+                "No font_file supplied: filtering by width is not available"
             )
-        dw = width_filter(
-            dw, font_info.char_widths_tuple(), min_width, max_width, width
-        )
+        dw = width_filter(dw, font_info, min_width, max_width, width, width_tolerance)
 
     if num_top:
         dw = top_filter(dw, num_top)
+
+    if not dw.data:
+        raise ValueError("No words available with specified parameters")
 
     return dw
 
@@ -493,52 +494,54 @@ def length_filter(words_count, min_wl=0, max_wl=BIG_NUM, wl=None):
     Example:
     """
 
-    if min_wl or (max_wl < BIG_NUM):
-        return tuple(
-            (word, count)
-            for word, count in words_count
-            if min_wl <= len(word) <= max_wl
-        )
-    elif wl:
-        return tuple((word, count) for word, count in words_count if wl == len(word))
-    else:
-        return words_count
+    if wl != None:
+        min_wl = wl
+        max_wl = wl
+
+    return tuple(
+        (word, count) for word, count in words_count if min_wl <= len(word) <= max_wl
+    )
 
 
 @unwrap(DataWrapper)
 @lru_cache(maxsize=None)
-def width_filter(words_count, char_widths, min_width=0, max_width=BIG_NUM, width=None):
+def width_filter(
+    words_count,
+    font_info,
+    min_width=0,
+    max_width=BIG_NUM,
+    width=None,
+    width_tolerance=DEFAULT_WIDTH_TOLERANCE,
+):
     """
     Filters by length of approximate width of words rendered
 
     char_widths is a tuple of format (('a', 300), ('b', 540))
 
     Example:
+    >>> class FontInfoMock:
+    >>>     __init__(widths):
+    >>>         self.widths = {'a': 5, 'b': 10, 'c': 15, 'o': 20}
+    >>>     def rough_word_width(word):
+    >>>         sum(self.widths[c] for c in word)
     >>> data = (("ba", 1), ("cab", 1), ("cabo", 1))
-    >>> widths = (('a', 5), ('b', 10), ('c', 15), ('o', 20))
-    >>> width_filter(data, widths)
+    >>> width_filter(data, FontInfoMock())
     (('ba', 1), ('cab', 1), ('cabo', 1))
-    >>> width_filter(data, widths, min_width = 30)
+    >>> width_filter(data, FontInfoMock(), min_width = 30)
     (('cab', 1), ('cabo', 1))
-    >>> width_filter(data, widths, max_width = 30)
+    >>> width_filter(data, FontInfoMock(), max_width = 30)
     (('ba', 1), ('cab', 1))
-    >>> width_filter(data, widths, width = 15)
+    >>> width_filter(data, FontInfoMock(), width = 15)
     (('ba', 1),)
+    >>> width_filter(data, FontInfoMock(), width = 15, width_tolerance = 30)
+    (('ba', 1), ('cab', 1), ('cabo', 1))
     """
-    width_dict = dict(char_widths)
+    if width != None:
+        min_width = width - abs(width_tolerance)
+        max_width = width + abs(width_tolerance)
 
-    def word_width(word):
-        return sum(width_dict[c] for c in word)
-
-    if min_width or max_width < BIG_NUM:
-        return tuple(
-            (word, count)
-            for word, count in words_count
-            if min_width <= word_width(word) <= max_width
-        )
-    elif width:
-        return tuple(
-            (word, count) for word, count in words_count if width == word_width(word)
-        )
-    else:
-        return words_count
+    return tuple(
+        (word, count)
+        for word, count in words_count
+        if min_width <= font_info.rough_word_width(word) <= max_width
+    )

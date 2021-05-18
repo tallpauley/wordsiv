@@ -77,24 +77,24 @@ def test_width_no_font_file(wsv_limit_glyphs_wc, prob):
         )
 
 
-@pytest.mark.parametrize("prob", [True, False])
-def test_width(wsv_font_file_wc, prob):
-    assert (
-        wsv_font_file_wc.word(prob=prob, source="wctest", model="rand", width=15622)
-        == "instrumentation"
+@pytest.mark.parametrize("width,result", [(3.1, "gather"), (1.9, "safe")])
+def test_width(wsv_font_file_wc, width, result):
+    word = wsv_font_file_wc.word(prob=False, source="wctest", model="rand", width=width)
+    assert word == result
+
+
+def test_width_tolerance(wsv_font_file_wc):
+    with pytest.raises(ValueError):
+        word = wsv_font_file_wc.word(
+            prob=False, source="wctest", model="rand", width=3.1, width_tolerance=0.0001
+        )
+
+
+def test_width_range(wsv_font_file_wc):
+    words = wsv_font_file_wc.words(
+        num_words=3, source="wctest", model="seq", min_width=4, max_width=10
     )
-
-
-@pytest.mark.parametrize("model", ["seq", "rand"])
-def test_width_range(wsv_font_file_wc, model):
-    # TODO I think whatever the width filter does is NOT deterministic
-    assert wsv_font_file_wc.words(
-        num_words=5,
-        source="wctest",
-        model=model,
-        min_width=1000,
-        max_width=5000,
-    )[4]
+    assert words == ["information", "management", "instrumentation"]
 
 
 #####################################################################################
@@ -278,6 +278,12 @@ def test_cap_sent_sentence(wsv_wc):
 #####################################################################################
 
 
+@pytest.mark.parametrize("model", ["seq", "rand"])
+def test_no_words(wsv_wc, model):
+    with pytest.raises(ValueError):
+        wsv_wc.words(source="wctest", model=model, min_wl=1000)
+
+
 @pytest.mark.rangetest
 @pytest.mark.parametrize("wl", range(1, 20))
 @pytest.mark.parametrize("model", ["seq", "rand"])
@@ -298,8 +304,3 @@ def gen_range_tuples(max):
 def test_word_length(wsv_wc, min_len, max_len):
     word = wsv_wc.word(source="wctest", model="rand", min_wl=min_len, max_wl=max_len)
     assert len(word) >= min_len and len(word) <= max_len
-
-
-#####################################################################################
-###### TEST
-#####################################################################################
