@@ -2,19 +2,22 @@
 
 # Wordsiv
 
-Wordsiv is a Python library for generating text with a limited character set. The library was designed specifically for [type proofing](https://ohnotype.co/blog/proof-it), but there may be other applications.
+Wordsiv is a Python package for generating text with a limited character set. It is designed for [type proofing](https://ohnotype.co/blog/proof-it), but it may be useful for generating [lipograms](https://en.wikipedia.org/wiki/Lipogram).
 
-**WARNING:** Wordsiv is early in the development process. Change is likely!
+Let's say you have the letters `HAMBURGERFONTSIVhamburgerfontsiv` and punctuation `.,` in your font. Wordsiv might generate the following:
+```text
+True enough, for a fine enough to him at the thrones above, some time for at that first the business. She is that he hath set as a thought he even from its substratums It is the rest of it is not the things the savings of a movement that he measures about the matter, Ahab gives to the boats at noon, or from the Green Forest, this high as on Ahab.
+```
 
 ## Why Wordsiv?
 
-When designing a typeface, it is useful to see text set in the type before the character set is complete. We need a the ability to make realistic-*looking* text with whatever glyphs we have already designed.
+While designing a typeface, it is useful to examine text with a partial character set. Wordsiv tries its best to generate realistic-*looking* text with whatever glyphs are available.
 
-### Features
+Wordsiv can do things like:
 
-- Generate text given an incomplete font file and/or a specified character set.
-- Generate text in a variety of ways, some which are somewhat realistic-*looking* (Markov chains).
-- Comes with ready-to-use language data sets for generating text.
+- Determine the character set from a font file
+- Generate sorta-realistic-*looking* text with a variety of models
+- Filter words by number of characters and approximate rendered width
 
 ### Vision
 
