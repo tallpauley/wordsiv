@@ -147,9 +147,9 @@ class WordSiv:
             self.sentence(source=source, model=model, **kwargs) for _ in range(para_len)
         ]
 
-    def paragraph(self, source=None, model=None, **kwargs):
+    def paragraph(self, sent_sep=" ", source=None, model=None, **kwargs):
         """Return a paragraph string"""
-        return " ".join(self.sentences(source=source, model=model, **kwargs))
+        return sent_sep.join(self.sentences(source=source, model=model, **kwargs))
 
     def paragraphs(
         self,
