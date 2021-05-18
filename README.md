@@ -4,10 +4,9 @@
 
 Wordsiv is a Python package for generating text with a limited character set. It is designed for [type proofing](https://ohnotype.co/blog/proof-it), but it may be useful for generating [lipograms](https://en.wikipedia.org/wiki/Lipogram).
 
-Let's say you have the letters `HAMBURGERFONTSIVhamburgerfontsiv` and punctuation `.,` in your font. Wordsiv might generate the following:
-```text
-True enough, for a fine enough to him at the thrones above, some time for at that first the business. She is that he hath set as a thought he even from its substratums It is the rest of it is not the things the savings of a movement that he measures about the matter, Ahab gives to the boats at noon, or from the Green Forest, this high as on Ahab.
-```
+Let's say you have the letters `HAMBURGERFONTSIVhamburgerfontsiv` and punctuation `.,` in your font. Wordsiv might generate the following drivel:
+
+> True enough, for a fine enough to him at the thrones above, some time for at that first the business. She is that he hath set as a thought he even from its substratums It is the rest of it is not the things the savings of a movement that he measures about the matter, Ahab gives to the boats at noon, or from the Green Forest, this high as on Ahab.
 
 ## Why Wordsiv?
 
