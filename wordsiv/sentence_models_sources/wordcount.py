@@ -242,7 +242,6 @@ class RandomModel(BaseSentenceModel):
         )
 
 
-@lru_cache(maxsize=None)
 def sequential_gen(data_wrap):
     for word, _ in cycle(data_wrap.data):
         yield word
@@ -312,6 +311,25 @@ class SequentialModel(BaseSentenceModel):
 
         gen = sequential_gen(filtered_data_wrap)
         return [next(gen) for n in range(num_words)]
+
+    def sentence(self, sent_len=DEFAULT_SEQ_NUM_WORDS, **kwargs):
+        """Return a sentence sequential words from the source
+
+        Keyword Args:
+            sent_len: Number of words in sentence
+            uc (bool): Uppercase all words
+            lc (bool): Lowercase all words
+            cap (bool): Capitalize all words
+            min_wl (int): Minimum word length
+            max_wl (int): Maximum word length
+            wl (int): Word length
+            min_width (int): Minimum approximate rendered word width
+            max_width (int): Maximum approximate rendered word width
+            width (int): Approximate rendered word width
+        """
+
+        words = self.words(num_words=sent_len, **kwargs)
+        return " ".join(words)
 
 
 #####################################################################################

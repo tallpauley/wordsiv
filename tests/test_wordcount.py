@@ -145,6 +145,16 @@ def test_num_paras(wsv_wc, num):
     assert len(wsv_wc.text(source="wctest", num_paras=num).split("\n\n")) == num
 
 
+@pytest.mark.parametrize("w,h", [(1, 1), (3, 2), (6, 9)])
+def test_block_para(wsv_wc, w, h):
+    para = wsv_wc.paragraph(
+        source="wctest", model="seq", para_len=h, sent_len=w, sent_sep="\n"
+    )
+    num_lines = para.count("\n") + 1
+    first_line = para.split("\n")[0]
+    assert num_lines == h and len(first_line.split(" ")) == w
+
+
 #####################################################################################
 ###### TEST MODEL BEHAVIORS
 #####################################################################################
