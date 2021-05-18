@@ -352,11 +352,14 @@ def filter_data(
     if min_wl or max_wl != BIG_NUM or wl:
         dw = length_filter(dw, min_wl, max_wl, wl)
 
-    if font_info:
-        if min_width or max_width != BIG_NUM or width:
-            dw = width_filter(
-                dw, font_info.char_widths_tuple(), min_width, max_width, width
+    if min_width or max_width != BIG_NUM or width:
+        if not font_info:
+            raise TypeError(
+                "No font_file supplied, filtering by width is not available!"
             )
+        dw = width_filter(
+            dw, font_info.char_widths_tuple(), min_width, max_width, width
+        )
 
     if num_top:
         dw = top_filter(dw, num_top)

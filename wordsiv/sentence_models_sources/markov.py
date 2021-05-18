@@ -19,16 +19,14 @@ from ..source import BaseSource
 from .base_sentence_model import BaseSentenceModel
 from ..datawrapper import DataWrapper
 
+
 #####################################################################################
 ###### SOURCE
 #####################################################################################
 
 
 class MarkovSource(BaseSource):
-    """A source that is a compiled & serialized JSON Markovify.Text Object
-
-    TODO Add test here
-    """
+    """A source that is a compiled & serialized JSON Markovify.Text Object"""
 
     def __init__(self, data_file, meta):
         self.data_file = data_file
@@ -66,11 +64,13 @@ class MarkovModel(BaseSentenceModel):
 
         return markov_text
 
-    def sentence(self):
+    def sentence(self, min_sent_len=None, max_sent_len=None):
         """Generate a markov chain sentence"""
 
         # Ignore sent_len: handled by actual markov model
-        return self.markov_text.make_sentence()
+        return self.markov_text.make_sentence(
+            min_words=min_sent_len, max_words=max_sent_len
+        )
 
     def word(self, **kwargs):
         """No single word generation, just sentences and larger"""
@@ -203,7 +203,6 @@ def filter_available(
     return MarkovDataWrapper.new_with_chain(markov_data, filtered_chain)
 
 
-# TODO: different filtering strategy in here, using an iterator, isn't congruent with word counts
 def filter_available_gen(chain, available_glyphs_string, case_function):
 
     for state_list, follow in chain:

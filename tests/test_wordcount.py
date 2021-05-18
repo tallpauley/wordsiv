@@ -4,6 +4,7 @@ from pathlib import Path
 from test_source_modules import wctest
 import pytest
 from collections import Counter
+import re
 
 HERE = Path(__file__).parent.absolute()
 LIMITED_CHARS = "HAMBURGERFONTSIVhamburgerfontsiv"
@@ -69,6 +70,14 @@ def test_font_file(wsv_font_file_wc, prob):
 
 
 @pytest.mark.parametrize("prob", [True, False])
+def test_width_no_font_file(wsv_limit_glyphs_wc, prob):
+    with pytest.raises(TypeError):
+        wsv_limit_glyphs_wc.word(
+            prob=prob, source="wctest", model="rand", min_width=10000
+        )
+
+
+@pytest.mark.parametrize("prob", [True, False])
 def test_width(wsv_font_file_wc, prob):
     assert (
         wsv_font_file_wc.word(prob=prob, source="wctest", model="rand", width=15622)
@@ -86,6 +95,54 @@ def test_width_range(wsv_font_file_wc, model):
         min_width=1000,
         max_width=5000,
     )[4]
+
+
+#####################################################################################
+###### TEST NUM_WORDS AND SENTENCE/PARAGRAPH LENGTHS
+#####################################################################################
+
+
+@pytest.mark.parametrize("num", [1, 10, 20])
+def test_num_words(wsv_wc, num):
+    assert len(wsv_wc.words(source="wctest", num_words=num)) == num
+
+
+@pytest.mark.parametrize("num", [3, 10, 20])
+def test_num_words(wsv_wc, num):
+    assert len(wsv_wc.sentence(source="wctest", sent_len=num).split(" ")) == num
+
+
+@pytest.mark.parametrize("range", ((1, 10), (5, 9)))
+def test_num_words_range(wsv_wc, range):
+    assert (
+        range[0]
+        <= len(
+            wsv_wc.sentence(
+                source="wctest", min_sent_len=range[0], max_sent_len=range[1]
+            ).split(" ")
+        )
+        <= range[1]
+    )
+
+
+@pytest.mark.parametrize("num", [1, 3, 15])
+def test_para_len(wsv_wc, num):
+    def mock_punc_func(words, rand, start, end, inner, wrap):
+        return " ".join(words) + "."
+
+    assert (
+        len(
+            wsv_wc.paragraph(
+                source="wctest", sent_len=3, punc_func=mock_punc_func, para_len=num
+            ).split(".")[:-1]
+        )
+        == num
+    )
+
+
+@pytest.mark.parametrize("num", [1, 3, 15])
+def test_num_paras(wsv_wc, num):
+    assert len(wsv_wc.text(source="wctest", num_paras=num).split("\n\n")) == num
 
 
 #####################################################################################
@@ -202,7 +259,8 @@ def test_cap_first_words(wsv_wc):
 
 def test_cap_sent_sentence(wsv_wc):
     sent = wsv_wc.sentence(source="wctest", model="rand", cap_sent=True)
-    assert sent[0].isupper() and sent[1].islower()
+    sent_no_punc = re.sub(r"[^\w\s]", "", sent)
+    assert sent_no_punc[0].isupper() and not (sent_no_punc[1:].isupper())
 
 
 #####################################################################################
