@@ -87,7 +87,7 @@ to install Wordsiv:
       [source packages][source-packages] repo's [releases page][releases] under
       the **assets** drop down.
 
-3. When you write your DrawBot script, you can each source using
+3. When you write your DrawBot script, you will add each source using
    `add_source_module()`:
 
     ```python
