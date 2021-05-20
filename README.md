@@ -135,8 +135,8 @@ If we want text that is somewhat natural-*looking*, we might use our
 
 A [Markov model](https://en.wikipedia.org/wiki/Markov_model) is trained on real
 text, and forecasts each word by looking at the preceding word(s). We keep the
-model as stupid as possible (one word state) to generate as many different
-sentences as possible.
+model as stupid as possible though (one word state) to generate as many
+different sentences as possible.
 
 ### WordCount Models
 
@@ -148,10 +148,11 @@ randomly choose words, favoring more popular words:
 
 ```python
 # Default: probability by occurence count
+>>> wsv.paragraph(source='en_wordcount_web', model='rand') # byexample: +skip
 'Day music, commencement protection to threads who and dimension...'
 ```
 
-The **RandomModel** can also be set to ignore occurence counts and choose
+The **RandomModel** can also be set to ignore occurence counts and choose words
 completely randomly:
 
 ```python
@@ -173,7 +174,7 @@ trigrams in the English language:
 ### Limiting Glyphs with a Font File
 
 Wordsiv is built around the idea of selecting words which can be rendered with
-the *glyphs* in an incomplete font file. WordSiv can automatically determine
+the glyphs in an incomplete font file. WordSiv can automatically determine
 what glyphs are in a font file.
 
 Let's load a font with the characters `HAMBURGERFONTSIVhamburgerfontsiv`
@@ -186,7 +187,7 @@ Let's load a font with the characters `HAMBURGERFONTSIVhamburgerfontsiv`
 
 ### Limiting Glyphs Manually
 
-We can do the same thing, by using the `limit_glyphs` parameter manually.
+We can limit the glyphs in the same way, but manually with `limit_glyphs`
 
 ```python
 >>> wsv = WordSiv(limit_glyphs='HAMBURGERFONTSIVhamburgerfontsiv')
@@ -239,9 +240,8 @@ turn this off:
 ```
 
 ### Punctuation
-Notice that in the preceding example we got quotes? This comes from the default
-punctuation function and probabilities for punctuation in the given langauge
-of the source.
+By default the [WordCount][wordcount-model] models insert punctuation with
+probabilities roughly derived from usage in the English language.
 
 We can turn this off by passing our own function for punctuation:
 ```python
@@ -269,9 +269,9 @@ and `sentence()` APIs:
 
 ### Paragraph and Text Parameters
 
-Wordsiv itself takes care of formatting everything beyond the sentence. See the
-source code for the [WordSiv Class][wordsiv-object] to learn the parameters for
-`sentences()`, `paragraph()`, `paragraphs()` and `text()`.
+The **WordSiv** object itself handles `sentences()`, `paragraph()`,
+`paragraphs()` and `text` calls with their parameters. See the [WordSiv
+Class][wordsiv-object] source code to learn how to customize the text output.
 
 ## Technical Notes
 
@@ -290,7 +290,7 @@ object:
 
 ```python
 >>> wsv = WordSiv(seed=6)
->>> wsv.sentence(source="en_markov_gutenberg", min_sent_len=6)
+>>> wsv.sentence(source="en_markov_gutenberg", min_sent_len=7)
 'even if i forgot the go in their'
 ```
 
@@ -340,9 +340,9 @@ It's tricky filtering out "offensive" words, since:
 - offensiveness is largely subjective
 - "offensive" word lists could potentially be used to silence important discussions
 
-Since we're generating nonsensical text for proofing, we should try our best to filter wordlists by [offensive](https://github.com/reimertz/curse-words) [words](https://github.com/MauriceButler/badwords) [lists](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/). If you really need swears in your text, you can always add them back in to sources for your own purposes.
+Since we're generating nonsensical text for proofing, we should try our best to filter wordlists by [offensive](https://github.com/reimertz/curse-words) [words](https://github.com/MauriceButler/badwords) [lists](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/). If you really need swears in your text, you can create sources for your own purposes.
 
-We can't prevent random words from forming offensive sentences, but we can at least restrict some words that *tend to form* offensive sentences.
+We can't prevent random words from forming offensive sentences, but we can at least restrict words that *tend to form* offensive sentences.
 
 #### Stay away from offensive sources
 
