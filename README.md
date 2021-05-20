@@ -46,10 +46,8 @@ First, install wordsiv with pip:
 $ pip install git+https://github.com/tallpauley/wordsiv # byexample: +pass
 ```
 
-Next, install one or more source packages from the [releases
-page](https://github.com/tallpauley/wordsiv-source-packages/releases) of the
-[wordsiv-source-packages](https://github.com/tallpauley/wordsiv-source-packages)
-repo:
+Next, install one or more source packages from the [releases page][releases] of
+the [source packages][source-packages] repo:
 
 ```bash
 $ base=https://github.com/tallpauley/wordsiv-source-packages/releases/download
@@ -66,6 +64,41 @@ Now you can make bogus sentences in Python!
 ('I might go over the instant to the streets in the air of those the same be '
  'haunting')
 ```
+
+## Installing in DrawBot App
+
+If you prefer to work in the [DrawBot app][drawbot], you can follow this procedure
+to install Wordsiv:
+
+1. Install the `wordsiv` package via **Python->Install Python Packages**:
+     - Enter ```git+https://github.com/tallpauley/wordsiv``` and click **Go!**
+     - ***Note:*** you'll probably see lots of red text but it
+       should still work just fine
+
+    ![Screenshot of DrawBot "Install Python
+    Packages" Window](docs/images/drawbot-install.jpg)
+
+2. Install the desired Source packages in the same window, but add `--no-deps`
+    at the end:
+
+    ```https://github.com/tallpauley/wordsiv-source-packages/releases/download/en_wordcount_web-0.1.0/en_wordcount_web-0.1.0-py3-none-any.whl --no-deps```
+
+    - ***Tip:*** You can copy the `.whl` or `.tar.gz` package URLs from the
+      [source packages][source-packages] repo's [releases page][releases] under
+      the **assets** drop down.
+
+3. When you write your DrawBot script, you will add each source using
+   `add_source_module()`:
+
+    ```python
+    import wordsiv
+    import en_wordcount_web
+    wsv = wordsiv.WordSiv()
+    wsv.add_source_module(en_wordcount_web)
+    print(wsv.sentence(source="en_wordcount_web"))
+    ```
+
+    ![Screenshot of DrawBot](docs/images/drawbot.jpg)
 
 ## Sources
 
@@ -174,7 +207,7 @@ trigrams in the English language:
 ### Limiting Glyphs with a Font File
 
 Wordsiv is built around the idea of selecting words which can be rendered with
-the glyphs in an incomplete font file. WordSiv can automatically determine
+the glyphs in an incomplete font file. Wordsiv can automatically determine
 what glyphs are in a font file.
 
 Let's load a font with the characters `HAMBURGERFONTSIVhamburgerfontsiv`
@@ -395,3 +428,6 @@ wiped out 4 hours of work with a careless Git mistake.
 [punc-func]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L214
 [word-o-mat]: https://github.com/ninastoessinger/word-o-mat
 [wordsiv-object]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/__init__.py#L132
+[drawbot]: https://www.drawbot.com
+[releases]: https://github.com/tallpauley/wordsiv-source-packages/releases
+[source-packages]: https://github.com/tallpauley/wordsiv-source-packages
