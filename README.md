@@ -42,9 +42,8 @@ whatever glyphs are available.
 First, install wordsiv with pip:
 
 ```bash
-# For now, we install straight from git
-# byexample: +timeout=10 +pass
-$ pip install git+https://github.com/tallpauley/wordsiv -qq
+# we install straight from git (for now!)
+$ pip install git+https://github.com/tallpauley/wordsiv # byexample: +pass
 ```
 
 Next, install one or more source packages from the [releases
@@ -53,17 +52,14 @@ page](https://github.com/tallpauley/wordsiv-source-packages/releases) of the
 repo:
 
 ```bash
-
 $ base=https://github.com/tallpauley/wordsiv-source-packages/releases/download
 $ pkg=en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl
-$ pip install $base/$pkg   # byexample: +timeout=10 +pass
-
+$ pip install $base/$pkg # byexample: +pass
 ```
 
 Now you can make bogus sentences in Python!
 
 ```python
-
 >>> import wordsiv
 >>> wsv = wordsiv.WordSiv(limit_glyphs=('HAMBURGERFONTSIVhamburgerfontsiv'))
 >>> wsv.sentence(source='en_markov_gutenberg')
@@ -82,20 +78,19 @@ Packages](https://github.com/tallpauley/wordsiv-source-packages), which are
 simply Python Packages. Let's install some:
 
 ```bash
-
 base=https://github.com/tallpauley/wordsiv-source-packages/releases/download
 
 # A markov model trained on public domain books
 $ pkg=en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl
-$ pip install $base/$pkg   # byexample: +timeout=10 +pass
+$ pip install $base/$pkg   # byexample: +pass
 
 # Most common English words compiled by Peter Norvig with data from Google
 $ pkg=en_wordcount_web-0.1.0/en_wordcount_web-0.1.0-py3-none-any.whl
-$ pip install $base/$pkg   # byexample: +timeout=10 +pass
+$ pip install $base/$pkg   # byexample: +pass
 
 # Most common Trigrams compiled by Peter Norvig with data from Google
 $ pkg=en_wordcount_trigrams-0.1.0/en_wordcount_trigrams-0.1.0-py3-none-any.whl
-$ pip install $base/$pkg   # byexample: +timeout=10 +pass
+$ pip install $base/$pkg   # byexample: +pass
 ```
 
 Wordsiv auto-discovers these installed packages, and and can use these sources
@@ -106,30 +101,36 @@ language in modern usage:
 >>> from wordsiv import WordSiv
 >>> wsv = WordSiv()
 >>> wsv.sentence(source='en_wordcount_web')
-('Faced museums smaller sign subscriber i resorts since lake with show for '
- 'offers robust.')
+('Maple canvas sporting pages transferred with superior government brand with '
+ 'women for key assign.')
 ```
 
 ## Models
 
 How does a Wordsiv know how to arrange words from a Source into a sentence? This
-is where **Models** come into play. The source `en_wordcount_web` uses model
-`rand` by default.
+is where **Models** come into play.
+
+The source `en_wordcount_web` uses model `rand` by default. Here we explicitly
+select the model `rand` to achieve the same result as above:
 
 ```python
-# This does the same thing as the preceding example!
->>> wsv.sentence(source='en_wordcount_web', model='rand') # byexample: +skip
+>>> wsv = WordSiv()
+>>> wsv.sentence(source='en_wordcount_web', model="rand")
+('Maple canvas sporting pages transferred with superior government brand with '
+ 'women for key assign.')
 ```
+
+Notice we get the same sentence when we initialize a new WordSiv() object. This
+is because Wordsiv is [designed to be determinisic](#determinism).
 
 ### Markov Model
 
-If we want text that is somewhat natural-looking, we might use our
+If we want text that is somewhat natural-*looking*, we might use our
 [MarkovModel][markov-model] (`model='mkv'`).
 
 ```python
-# Note: We could leave out model="mkv", as it's default for this source
->>> wsv.paragraph(source="en_wordcount_web", model="mkv") # byexample: +skip
-"Why don't think so desirous of hugeness. Our pie is worship...
+>>> wsv.paragraph(source="en_markov_gutenberg", model="mkv") # byexample: +skip
+"Why don't think so desirous of hugeness. Our pie is worship..."
 ```
 
 A [Markov model](https://en.wikipedia.org/wiki/Markov_model) is trained on real
@@ -139,25 +140,28 @@ sentences as possible.
 
 ### WordCount Models
 
-If we need are working with smaller character sets, [WordCount][wordcount-model] Sources and
-Models provide more potential sentence outcomes. They also give us more control
-on sentence parameters (such sentence length).
+[WordCount][wordcount-model] Sources and Models work with simple lists of words
+and occurence counts to generate words.
 
-The [RandomModel][random-model] (`model='rand'`) selects words randomly from the source. By
-default it uses word occurences to favor words with higher occurence counts, but
-this can be turned off for completely random word generation.
+The [RandomModel][random-model] (`model='rand'`) uses occurence counts to
+randomly choose words, favoring more popular words:
 
 ```python
 # Default: probability by occurence count
->>> wsv.sentence(source='en_wordcount_web', model='rand', sent_len=10) # byexample: +skip
 'Day music, commencement protection to threads who and dimension...'
+```
 
-# completely random words ('rand' is default for this source)
+The **RandomModel** can also be set to ignore occurence counts and choose
+completely randomly:
+
+```python
 >>> wsv.sentence(source='en_wordcount_web', sent_len=5, prob=False) # byexample: +skip
 'Conceivably championships consecration ects— anointed.'
 ```
 
-The **SequentialModel** (`model='seq'`) is useful when we want to just spit out words from a WordCount Source in order. Trigram Sources use this model by default:
+The [SequentialModel][sequential-model] (`model='seq'`) spits out words in the
+order they appear in the Source. We could use this Model to display the top 5
+trigrams in the English language:
 
 ```python
 >>> wsv.words(source='en_wordcount_trigrams', num_words=5) # byexample: +skip
@@ -166,7 +170,7 @@ The **SequentialModel** (`model='seq'`) is useful when we want to just spit out 
 
 ## Limiting Glyphs
 
-### Limiting Glyphs With a Font File
+### Limiting Glyphs with a Font File
 
 Wordsiv is built around the idea of selecting words which can be rendered with
 the *glyphs* in an incomplete font file. WordSiv can automatically determine
@@ -178,8 +182,6 @@ Let's load a font with the characters `HAMBURGERFONTSIVhamburgerfontsiv`
 >>> wsv = WordSiv(font_file='tests/data/noto-sans-subset.ttf')
 >>> wsv.sentence(source='en_markov_gutenberg', max_sent_len=10)
 'Nor is fair to be in as these annuities'
-
-
 ```
 
 ### Limiting Glyphs Manually
@@ -189,11 +191,10 @@ We can do the same thing, by using the `limit_glyphs` parameter manually.
 ```python
 >>> wsv = WordSiv(limit_glyphs='HAMBURGERFONTSIVhamburgerfontsiv')
 >>> wsv.sentence(source='en_wordcount_web')
-'Marine shot mar are fit to bar as s to are of our bureau'
-
+'Manage miss ago are motor to rather at first to be of has forget'
 ```
 
-### Combined Limiting
+### Limiting Glyphs with `font_file` AND `limit_glyphs`
 
 It can be useful at times to specify the character set we *want to display*, and
 only using those characters if we have them in the font file. We can do
@@ -204,9 +205,8 @@ this by specifying both `font_file` and `limit_glyphs`:
 ...    font_file='tests/data/noto-sans-subset.ttf',
 ...    limit_glyphs='abcdefghijklmnop'
 ... )
->>> # don't capitalize sentence (default), since we have no uppercase
->>> wsv.sentence('en_wordcount_web', cap_sent=False, min_wl=3) # byexample: +skip
-'ambien omega being gaming beam man age high men going home feb aag omaha'
+>>> wsv.sentence('en_wordcount_web', cap_sent=False, min_wl=3)
+'eng gnome gene game egg one aim him again one game one image boom'
 ```
 
 ## Customizing Text
@@ -221,21 +221,21 @@ capitalized or not:
 
 ```python
 >>> wsv = WordSiv()
->>> wsv.sentence('en_wordcount_web', uc=True, max_sent_len=10)
-'“FACED, MUSEUMS SMALLER SIGN SUBSCRIBER I RESORTS SINCE LAKE WITH.”'
+>>> wsv.sentence('en_wordcount_web', uc=True, max_sent_len=8)
+'MAPLE CANVAS SPORTING PAGES TRANSFERRED, WITH SUPERIOR GOVERNMENT.'
 
 >>> wsv.sentence(
 ...    'en_markov_gutenberg', lc=True, min_sent_len=7, max_sent_len=10
 ... )
-'for the tiger got one is a man'
+'i besought the bosom of the sun so'
 ```
 
 The [RandomModel][random-model] by capitalizes sentences by default, but we can
 turn this off:
 
 ```python
->>> wsv.sentence('en_wordcount_web', cap_sent=False)
-'“home certainly c up and to powered new meet data open hertz times format.”'
+>>> wsv.sentence('en_wordcount_web', cap_sent=False, sent_len=10)
+'egcs very and mortgage expressed about and online truss controls.'
 ```
 
 ### Punctuation
@@ -249,26 +249,36 @@ We can turn this off by passing our own function for punctuation:
 >>> wsv.paragraph(
 ...    source='en_wordcount_web', punc_func=only_period, sent_len=5, para_len=2
 ... )
-'An i failure mellon you. To the extranet all economy.'
-
+'By schools sign I avoid. Or about fascism writers what.'
 ```
 
 For more details on `punc_func`, see [punctuation.py](./wordsiv/punctuation.py).
 This only applies for [WordCount][wordcount-model] models, as the
-[MarkovModel][markov-model] has uses the punctuation in it's source data.
+[MarkovModel][markov-model] uses the punctuation in it's source data.
 
+### Sentence and Word Parameters
 
-### Text, Paragraph, sentence, and word length
+[Models](#models) take care of generating *sentences* and *words*, so parameters
+relating to these are handled by the models. For now, please refer to the source
+code for these models to learn the parameters accepted for `word()`, `words()`,
+and `sentence()` APIs:
 
-Wordsiv
+- [Random Model][random-model]
+- [Sequential Model][sequential-model]
+- [Markov Model][markov-model]
 
+### Paragraph and Text Parameters
+
+Wordsiv itself takes care of formatting everything beyond the sentence. See the
+source code for the [WordSiv Class][wordsiv-object] to learn the parameters for
+`sentences()`, `paragraph()`, `paragraphs()` and `text()`.
 
 ## Technical Notes
 
 ### Determinism
 
 When proofing type, we probably want our proof to stay the same as long as we
-have the same character set. This helps us compare how our changes are working.
+have the same character set. This helps us compare changes in the type.
 
 For this reason, Wordsiv uses a single
 [pseudo-random](https://docs.python.org/3/library/random.html) number generator,
@@ -279,18 +289,10 @@ If you want your script to generate different words, you can seed the WordSiv
 object:
 
 ```python
-
-wsv = WordSiv(seed=123)
+>>> wsv = WordSiv(seed=6)
+>>> wsv.sentence(source="en_markov_gutenberg", min_sent_len=6)
+'even if i forgot the go in their'
 ```
-
-## Similar Tools
-
-- **[adhesiontext](https://adhesiontext.com)**: a web-based tool by Miguel Sousa
-  for generating text from a limited character set.
-- **[word-o-mat](https://github.com/ninastoessinger/word-o-mat)**: Nina
-  Stössinger's RoboFont extension for making test words. Also ported to
-  [Glyphs](https://github.com/schriftgestalt/word-o-mat) and
-  [Javascript](https://github.com/kennethormandy/word-o-mat).
 
 ## Ethical Guidelines
 
@@ -340,7 +342,7 @@ It's tricky filtering out "offensive" words, since:
 
 Since we're generating nonsensical text for proofing, we should try our best to filter wordlists by [offensive](https://github.com/reimertz/curse-words) [words](https://github.com/MauriceButler/badwords) [lists](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/). If you really need swears in your text, you can always add them back in to sources for your own purposes.
 
-We can't prevent random words from forming "offensive" sentences, but we can at least restrict some words that *tend to form* "offensive" sentences.
+We can't prevent random words from forming offensive sentences, but we can at least restrict some words that *tend to form* offensive sentences.
 
 #### Stay away from offensive sources
 
@@ -359,7 +361,37 @@ I trained [en_markov_gutenberg](https://github.com/tallpauley/wordsiv-source-pac
 
 If you notice any particular models generating offensive sentences more than not, please file an issue at the [wordsiv-source-packages](https://github.com/tallpauley/wordsiv-source-packages/issues) repo.
 
+## Similar Tools
+
+I'm definitely not the first to generate words for proofing. Check out these
+cool projects, And let me know if you know of more I should add!
+
+- **[word-o-mat][word-o-mat]**: Nina
+  Stössinger's RoboFont extension for making test words. Also ported to
+  [Glyphs](https://github.com/schriftgestalt/word-o-mat) and
+  [Javascript](https://github.com/kennethormandy/word-o-mat).
+- **[adhesiontext](https://adhesiontext.com)**: a web-based tool by Miguel Sousa
+  for generating text from a limited character set.
+
+## Acknowledgements
+
+I probably wouldn't have got very far without the inspiration of [word-o-mat],
+and a nice [DrawBot](https://www.drawbot.com/) script that [Rob
+Stenson](https://robstenson.com/) shared with me. The latter is where I got the
+idea to [seed the random number generator](#determinism) to make it
+deterministic.
+
+I also borrowed heavily from [spaCy](https://spacy.io) in how I set up
+the [Source packages](https://github.com/tallpauley/wordsiv-source-packages/).
+
+Also want to thank my wife Pammy for kindly listening as I explain each
+esoteric challenge I've tackled, and lending me emotional support when I almost
+wiped out 4 hours of work with a careless Git mistake.
+
 [markov-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/markov.py#L46
-[wordcount-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py
+[wordcount-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L108
 [random-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L108
+[sequential-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L249
 [punc-func]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L214
+[word-o-mat]: https://github.com/ninastoessinger/word-o-mat
+[wordsiv-object]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/__init__.py#L132
