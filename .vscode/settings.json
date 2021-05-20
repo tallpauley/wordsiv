@@ -1,9 +1,6 @@
 {
     "python.pythonPath": ".venv/bin/python",
     "python.formatting.provider": "black",
-    "editor.rulers": [
-        88
-    ],
     "python.testing.pytestArgs": [
         "."
     ],
@@ -11,5 +8,15 @@
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": true,
     "files.trimTrailingWhitespace": true,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.rulers": [
+            88
+        ]
+    },
+    "[markdown]": {
+        "editor.rulers": [
+            80
+        ]
+    }
 }
