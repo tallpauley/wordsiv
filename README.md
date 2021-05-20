@@ -72,6 +72,8 @@ to install Wordsiv:
 
 1. Install the `wordsiv` package via **Python->Install Python Packages**:
      - Enter ```git+https://github.com/tallpauley/wordsiv``` and click **Go!**
+     - ***Note:*** you'll probably see lots of red text but it
+       should still work just fine
 
     ![Screenshot of DrawBot "Install Python
     Packages" Window](docs/images/drawbot-install.jpg)
@@ -93,6 +95,7 @@ to install Wordsiv:
     import en_wordcount_web
     wsv = wordsiv.WordSiv()
     wsv.add_source_module(en_wordcount_web)
+    print(wsv.sentence(source="en_wordcount_web"))
     ```
 
     ![Screenshot of DrawBot](docs/images/drawbot.jpg)
