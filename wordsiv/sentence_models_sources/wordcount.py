@@ -54,8 +54,16 @@ def stream_file_tuples(file, lines=None):
     with open(file, "r") as f:
         lc = 0
         for line in f:
-            word, count = re.split("\s+", line.strip())
-            yield (word, int(count))
+            line_items = re.split("\s+", line.strip())
+            if len(line_items) > 1:
+                # files with words and counts
+                word, count = line_items
+                yield (word, int(count))
+            else:
+                # files with just words
+                # set wordcounts all to 1
+                word = line_items[0]
+                yield (word, 1)
 
             if lines:
                 if lc >= lines:
