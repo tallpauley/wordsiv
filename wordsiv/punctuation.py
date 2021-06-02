@@ -39,23 +39,22 @@ def punctuate(words, glyphs_string, rand, language, punc_func=None):
 
     """
 
+    lang_key = language if language in punc_probabilities else "default"
+    punc_dict = punc_probabilities[lang_key]
+
     if not punc_func:
         punc_func = default_punc_func
 
-    start = random_available(
-        default_punctuation[language]["start"], glyphs_string, rand
-    )
-    end = random_available(default_punctuation[language]["end"], glyphs_string, rand)
-    inner = random_available(
-        default_punctuation[language]["inner"], glyphs_string, rand
-    )
-    wrap = random_available(default_punctuation[language]["wrap"], glyphs_string, rand)
+    start = random_available(punc_dict["start"], glyphs_string, rand)
+    end = random_available(punc_dict["end"], glyphs_string, rand)
+    inner = random_available(punc_dict["inner"], glyphs_string, rand)
+    wrap = random_available(punc_dict["wrap"], glyphs_string, rand)
 
     return punc_func(words, rand, start, end, inner, wrap)
 
 
-default_punctuation = {
-    "en": {
+punc_probabilities = {
+    "default": {
         "start": {"": 100},
         # make no ending punctuation extremely low probability so
         # it only happens when period is not available
