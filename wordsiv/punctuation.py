@@ -69,6 +69,7 @@ punc_probabilities = {
         "end": {"": 0.00001, ".": 100, "?": 40, "!": 20},
         "inner": {"": 100, ",": 60, ":": 30, ";": 20},
         "wrap": {("", ""): 100, ("“", "”"): 9, ("‘", "’"): 6},
+    },
     "fa": {
         "start": {"": 100},
         # make no ending punctuation extremely low probability so
