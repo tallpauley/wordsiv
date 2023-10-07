@@ -5,6 +5,7 @@ import random
 import reprlib
 from pathlib import Path
 import os
+import io
 import re
 import json
 
@@ -51,7 +52,7 @@ def zip_tuple(a_tuple):
 def stream_file_tuples(file, lines=None):
     """Yield a tuple ('myword', 123) for each line of a file like 'myword 123'"""
 
-    with open(file, "r", encoding="utf-8") as f:
+    with io.open(file, "r", encoding="utf-8") as f:
         lc = 0
         for line in f:
             line_items = re.split("\s+", line.strip())
