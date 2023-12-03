@@ -39,43 +39,52 @@ def punctuate(words, glyphs_string, rand, language, punc_func=None):
 
     """
 
-    lang_key = language if language in punc_probabilities else "default"
-    punc_dict = punc_probabilities[lang_key]
-
     if not punc_func:
         punc_func = default_punc_func
 
-    start = random_available(punc_dict["start"], glyphs_string, rand)
-    end = random_available(punc_dict["end"], glyphs_string, rand)
-    inner = random_available(punc_dict["inner"], glyphs_string, rand)
-    wrap = random_available(punc_dict["wrap"], glyphs_string, rand)
+    start = random_available(
+        default_punctuation[language]["start"], glyphs_string, rand
+    )
+    end = random_available(default_punctuation[language]["end"], glyphs_string, rand)
+    inner = random_available(
+        default_punctuation[language]["inner"], glyphs_string, rand
+    )
+    wrap = random_available(default_punctuation[language]["wrap"], glyphs_string, rand)
 
     return punc_func(words, rand, start, end, inner, wrap)
 
 
-punc_probabilities = {
-    "default": {
+default_punctuation = {
+    "en": {
         "start": {"": 100},
         # make no ending punctuation extremely low probability so
         # it only happens when period is not available
         "end": {"": 0.00001, ".": 100, "?": 40, "!": 20},
-        "inner": {"": 100, ",": 60, "—": 40, ":": 30, ";": 20},
+        "inner": {"": 100, ",": 80, "-": 40, ":": 30, ";": 20},
         "wrap": {("", ""): 100, ("“", "”"): 9, ("‘", "’"): 6},
     },
     "ar": {
         "start": {"": 100},
         # make no ending punctuation extremely low probability so
         # it only happens when period is not available
-        "end": {"": 0.00001, ".": 100, "?": 40, "!": 20},
-        "inner": {"": 100, ",": 60, ":": 30, ";": 20},
-        "wrap": {("", ""): 100, ("“", "”"): 9, ("‘", "’"): 6},
+        "end": {"": 0.00001, ".": 100, "؟": 40, "!": 20},
+        "inner": {"": 100, "،": 80, ":": 30, "؛": 20},
+        "wrap": {("", ""): 100, ("”", "“"): 9, ("’", "‘"): 6},
     },
     "fa": {
         "start": {"": 100},
         # make no ending punctuation extremely low probability so
         # it only happens when period is not available
-        "end": {"": 0.00001, ".": 100, "?": 40, "!": 20},
-        "inner": {"": 100, ",": 60, ":": 30, ";": 20},
-        "wrap": {("", ""): 100, ("“", "”"): 9, ("‘", "’"): 6},
-    }
+        "end": {"": 0.00001, ".": 100, "؟": 40, "!": 20},
+        "inner": {"": 100, "،": 80, ":": 30, "؛": 20},
+        "wrap": {("", ""): 100, ("”", "“"): 9, ("’", "‘"): 6},
+    },
+    "es": {
+        "start": {"": 100},
+        # make no ending punctuation extremely low probability so
+        # it only happens when period is not available
+        "end": {"": 0.00001, ".": 100, "!": 20},
+        "inner": {"": 100, ",": 80, "-": 40, ":": 30, ";": 20},
+        "wrap": {("", ""): 100, ("¿", "?"): 45, ("“", "”"): 18, ("‘", "’"): 12},
+    },
 }
