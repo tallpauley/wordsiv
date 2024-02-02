@@ -25,8 +25,8 @@ ipython = "^7.23.1"
 snakeviz = "^2.1.0"
 
 [tool.poe.tasks]
-test = "poetry run pytest --doctest-modules --ignore scripts --maxfail=5 -m 'not rangetest'"
-test-full = "poetry run pytest --doctest-modules --ignore scripts --maxfail=5"
+test = "poetry run python -m pytest --doctest-modules --ignore scripts --maxfail=5 -m 'not rangetest'"
+test-full = "poetry run python -m pytest --doctest-modules --ignore scripts --maxfail=5"
 clean = "black ."
 
 [build-system]
