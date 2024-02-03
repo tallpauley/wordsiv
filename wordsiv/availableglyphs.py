@@ -59,10 +59,3 @@ class AvailableGlyphs:
 
     def ascii_printable(self):
         return "".join(c for c in string.printable if c in self.glyphs_set)
-
-    @lru_cache(maxsize=None)
-    def have_glyphs(self, word):
-        if self.limited:
-            return not any(char not in self.glyphs_set for char in word)
-        else:
-            return True

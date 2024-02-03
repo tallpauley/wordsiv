@@ -8,7 +8,7 @@ import os
 import re
 import json
 
-from ..utilities import has_glyphs, Hashabledict, HashabledictKeys
+from ..utilities import Hashabledict, HashabledictKeys
 from ..source import BaseSource
 from .base_sentence_model import BaseSentenceModel
 from ..datawrapper import DataWrapper, unwrap
@@ -423,7 +423,7 @@ def available_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word, count))
         for word, count in words_count
-        if has_glyphs(word, available_glyphs_string)
+        if not any(char not in available_glyphs_string for char in word)
     )
 
 
@@ -438,7 +438,7 @@ def lc_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word.lower(), count))
         for word, count in words_count
-        if has_glyphs(word.lower(), available_glyphs_string)
+        if not any(char not in available_glyphs_string for char in word.lower())
     )
 
 
@@ -457,7 +457,7 @@ def uc_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word.upper(), count))
         for word, count in words_count
-        if has_glyphs(word.upper(), available_glyphs_string)
+        if not any(char not in available_glyphs_string for char in word.upper())
     )
 
 
@@ -477,7 +477,7 @@ def cap_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word.capitalize(), count))
         for word, count in words_count
-        if has_glyphs(word.capitalize(), available_glyphs_string)
+        if not any(char not in available_glyphs_string for char in word.capitalize())
     )
 
 

@@ -30,7 +30,7 @@ def has_glyphs(word, available_glyphs_string):
     """
 
     if available_glyphs_string:
-        return all(char in available_glyphs_string for char in word)
+        return not any(char not in available_glyphs_string for char in word)
     else:
         return True
 
