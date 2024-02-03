@@ -63,6 +63,6 @@ class AvailableGlyphs:
     @lru_cache(maxsize=None)
     def have_glyphs(self, word):
         if self.limited:
-            return all(char in self.glyphs_set for char in word)
+            return not any(char not in self.glyphs_set for char in word)
         else:
             return True

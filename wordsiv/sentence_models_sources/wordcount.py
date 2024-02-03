@@ -412,7 +412,7 @@ def top_filter(words_count, num_top=1000):
 @lru_cache(maxsize=None)
 def available_filter(words_count, available_glyphs_string):
     """
-    return tuple of unique words that have all chars in available_glyph_list
+    return tuple of words that have all chars in available_glyph_list
     words_count is in format (("word", 123), ("word2", 34))
 
     Example:
@@ -431,44 +431,34 @@ def available_filter(words_count, available_glyphs_string):
 @lru_cache(maxsize=None)
 def lc_filter(words_count, available_glyphs_string):
     """
-    Lowercase words and return tuple of unique words that have all chars in available_glyph_list
+    Lowercase words and return tuple of words that have all chars in available_glyph_list
     words_count is in format (("word", 123), ("word2", 34))
-    If there are duplicate words with multiple casings in words_count, keep the first count
-
-    Example:
-    >>> lc_filter((("Duck", 1), ("pig", 2), ("PIG", 3), ("goose", 4), ("LamB", 5)), "lambpig")
-    (('pig', 2), ('lamb', 5))
     """
 
-    output = OrderedDict()
-    for word, count in words_count:
-        word_lc = word.lower()
-        if has_glyphs(word_lc, available_glyphs_string) and word_lc not in output:
-            output[word_lc] = count
-
-    return tuple(output.items())
+    return tuple(
+        tuple((word.lower(), count))
+        for word, count in words_count
+        if has_glyphs(word.lower(), available_glyphs_string)
+    )
 
 
 @unwrap(DataWrapper)
 @lru_cache(maxsize=None)
 def uc_filter(words_count, available_glyphs_string):
     """
-    Uppercase words and return tuple of unique words that have all chars in available_glyph_list
+    Uppercase words and return tuple of words that have all chars in available_glyph_list
     words_count is in format (("word", 123), ("word2", 34))
-    If there are duplicate words with multiple casings in words_count, keep the first count
 
     Example:
     >>> uc_filter((("Duck", 1), ("pig", 2), ("PIG", 3), ("goose", 4), ("LamB", 5)), "LAMBPIG")
     (('PIG', 2), ('LAMB', 5))
     """
 
-    output = OrderedDict()
-    for word, count in words_count:
-        word_uc = word.upper()
-        if has_glyphs(word_uc, available_glyphs_string) and word_uc not in output:
-            output[word_uc] = count
-
-    return tuple(output.items())
+    return tuple(
+        tuple((word.upper(), count))
+        for word, count in words_count
+        if has_glyphs(word.upper(), available_glyphs_string)
+    )
 
 
 @unwrap(DataWrapper)
@@ -484,13 +474,11 @@ def cap_filter(words_count, available_glyphs_string):
     (('Pig', 2), ('Lamb', 5))
     """
 
-    output = OrderedDict()
-    for word, count in words_count:
-        word_cap = word.capitalize()
-        if has_glyphs(word_cap, available_glyphs_string) and word_cap not in output:
-            output[word_cap] = count
-
-    return tuple(output.items())
+    return tuple(
+        tuple((word.capitalize(), count))
+        for word, count in words_count
+        if has_glyphs(word.capitalize(), available_glyphs_string)
+    )
 
 
 @unwrap(DataWrapper)
