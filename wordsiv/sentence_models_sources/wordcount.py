@@ -423,7 +423,7 @@ def available_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word, count))
         for word, count in words_count
-        if not any(char not in available_glyphs_string for char in word)
+        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word)
     )
 
 
@@ -438,7 +438,7 @@ def lc_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word.lower(), count))
         for word, count in words_count
-        if not any(char not in available_glyphs_string for char in word.lower())
+        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word.lower())
     )
 
 
@@ -457,7 +457,7 @@ def uc_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word.upper(), count))
         for word, count in words_count
-        if not any(char not in available_glyphs_string for char in word.upper())
+        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word.upper())
     )
 
 
@@ -477,7 +477,7 @@ def cap_filter(words_count, available_glyphs_string):
     return tuple(
         tuple((word.capitalize(), count))
         for word, count in words_count
-        if not any(char not in available_glyphs_string for char in word.capitalize())
+        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word.capitalize())
     )
 
 
