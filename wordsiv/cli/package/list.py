@@ -11,7 +11,3 @@ def list_packages():
         print(f"Sources")
         for s in m.sources:
             print(f"   {s}")
-
-        print(f"Pipelines")
-        for p in m.pipelines:
-            print(f"   {p}")
