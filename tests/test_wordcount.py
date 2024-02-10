@@ -19,13 +19,13 @@ def wsv_wc():
 
 
 #####################################################################################
-###### TEST LIMIT_GLYPHS
+###### TEST glyphs
 #####################################################################################
 
 
 @pytest.fixture(scope="session")
 def wsv_limit_glyphs_wc():
-    w = wordsiv.WordSiv(limit_glyphs=LIMITED_CHARS)
+    w = wordsiv.WordSiv(glyphs=LIMITED_CHARS)
     w.add_source_module(wctest)
     return w
 
@@ -41,60 +41,6 @@ def test_limit_glyphs(wsv_limit_glyphs_wc):
         )
     )
     assert not unexpected_chars
-
-
-#####################################################################################
-###### TEST FONT FILE
-#####################################################################################
-
-
-@pytest.fixture(scope="session")
-def wsv_font_file_wc():
-    w = wordsiv.WordSiv(font_file=HERE / "data/noto-sans-subset.ttf")
-    w.add_source_module(wctest)
-    return w
-
-
-@pytest.mark.parametrize("prob", [True, False])
-def test_font_file(wsv_font_file_wc, prob):
-    unexpected_chars = " ".join(
-        set(
-            c
-            for c in wsv_font_file_wc.text(
-                prob=prob, source="wctest", model="rand", num_paras=10
-            )
-            if c not in LIMITED_CHARS + " \n"
-        )
-    )
-    assert not unexpected_chars
-
-
-@pytest.mark.parametrize("prob", [True, False])
-def test_width_no_font_file(wsv_limit_glyphs_wc, prob):
-    with pytest.raises(TypeError):
-        wsv_limit_glyphs_wc.word(
-            prob=prob, source="wctest", model="rand", min_width=10000
-        )
-
-
-@pytest.mark.parametrize("width,result", [(3.1, "gather"), (1.9, "safe")])
-def test_width(wsv_font_file_wc, width, result):
-    word = wsv_font_file_wc.word(prob=False, source="wctest", model="rand", width=width)
-    assert word == result
-
-
-def test_width_tolerance(wsv_font_file_wc):
-    with pytest.raises(ValueError):
-        word = wsv_font_file_wc.word(
-            prob=False, source="wctest", model="rand", width=3.1, width_tolerance=0.0001
-        )
-
-
-def test_width_range(wsv_font_file_wc):
-    words = wsv_font_file_wc.words(
-        num_words=3, source="wctest", model="seq", min_width=4, max_width=10
-    )
-    assert words == ["information", "management", "instrumentation"]
 
 
 #####################################################################################
@@ -183,7 +129,7 @@ def test_sequential_loops(wsv_wc):
 
 @pytest.fixture(scope="session")
 def wsv_limit_glyphs_wc_punc():
-    w = wordsiv.WordSiv(limit_glyphs=LIMITED_CHARS + LIMITED_PUNCT)
+    w = wordsiv.WordSiv(glyphs=LIMITED_CHARS + LIMITED_PUNCT)
     w.add_source_module(wctest)
     return w
 

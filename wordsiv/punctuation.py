@@ -15,7 +15,7 @@ def random_available(option_weight, glyphs_string, rand):
         *{
             cs: prob
             for cs, prob in option_weight.items()
-            if all(c in glyphs_string for c in cs)
+            if not glyphs_string or all(c in glyphs_string for c in cs)
         }.items()
     )
     return rand.choices(options, weights=weights, k=1)[0]

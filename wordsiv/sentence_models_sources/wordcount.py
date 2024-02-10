@@ -1,26 +1,20 @@
 from functools import lru_cache
-from collections import OrderedDict
-from itertools import islice, cycle
-import random
-import reprlib
+from itertools import islice, cycle, accumulate
 from pathlib import Path
+import itertools
 import os
 import io
-import re
-import json
+import regex
 
-from ..utilities import Hashabledict, HashabledictKeys
 from ..source import BaseSource
 from .base_sentence_model import BaseSentenceModel
-from ..datawrapper import DataWrapper, unwrap
 from ..punctuation import punctuate
 
-BIG_NUM = 100000
+BIG_NUM = 2 ** 10
 
 DEFAULT_MIN_SENT_LEN = 7
 DEFAULT_MAX_SENT_LEN = 20
 DEFAULT_SEQ_NUM_WORDS = 10
-DEFAULT_WIDTH_TOLERANCE = 0.05
 
 TEST_MODULES_DIR = (
     Path(os.path.dirname(os.path.realpath(__file__)))
@@ -33,15 +27,8 @@ TEST_MODULES_DIR = (
 
 
 @lru_cache(maxsize=None)
-def zip_tuple(a_tuple):
-    """Zip a tuple of tuple pairs into a tuple (cached)
-
-    >>> zip_tuple((('hi', 123), ('hello', 321)))
-    (('hi', 'hello'), (123, 321))
-    """
-
-    tuple1, tuple2 = zip(*a_tuple)
-    return tuple1, tuple2
+def accumulate_weights(a_tuple):
+    return [i[0] for i in a_tuple], list(accumulate(i[1] for i in a_tuple))
 
 
 #####################################################################################
@@ -49,39 +36,11 @@ def zip_tuple(a_tuple):
 ######################################################################################
 
 
-def stream_file_tuples(file, lines=None):
-    """Yield a tuple ('myword', 123) for each line of a file like 'myword 123'"""
-
-    with io.open(file, "r", encoding="utf-8") as f:
-        lc = 0
-        for line in f:
-            line_items = re.split("\s+", line.strip())
-            if len(line_items) > 1:
-                # files with words and counts
-                word, count = line_items
-                yield (word, int(count))
-            else:
-                # files with just words
-                # set wordcounts all to 1
-                word = line_items[0]
-                yield (word, 1)
-
-            if lines:
-                if lc >= lines:
-                    break
-
-                lc += 1
-
-
 class WordCountSource(BaseSource):
     """A Source that expects a txt file with words and counts
 
     file looks like this: "koala 235\ncobra 123\n"
 
-    >>> obj = WordCountSource( \
-            TEST_MODULES_DIR / "wctest/data/count-source.txt", {}, lines=3)
-    >>> obj.data_wrap.data
-    (('gather', 94), ('to', 119), ('sublimedirectory', 204), ('sublimedirectory', 12))
     """
 
     def __init__(self, data_file, meta, lines=None):
@@ -91,47 +50,49 @@ class WordCountSource(BaseSource):
 
     @property  # type: ignore
     @lru_cache(maxsize=None)
-    def data_wrap(self):
+    def data(self):
         """for a WordCountSource, data is a tuple of tuples"""
 
-        return DataWrapper(tuple(stream_file_tuples(self.data_file, self.lines)))
+        rows = []
+        with io.open(self.data_file, "r", encoding="utf8") as f:
+            for i, l in enumerate(f):
+                rows.append(l)
+                if i == self.lines:
+                    break
+        output = "".join(rows).strip()
+        return output
 
 
+#
 #####################################################################################
 ###### WORDTEXT MODELS
 #####################################################################################
 
 
-def prob_wordcount_gen(data_wrap, rand):
-    word_list, counts = zip_tuple(data_wrap.data)
-    while True:
-        yield rand.choices(word_list, k=1, weights=counts)[0]
+def sample_word_weighted(data, rand):
+    word_list, counts = accumulate_weights(data)
+    return rand.choices(word_list, cum_weights=counts)[0]
 
 
-def rand_wordcount_gen(data_wrap, rand):
-    word_list, _ = zip_tuple(data_wrap.data)
-    while True:
-        yield rand.choice(word_list)
+def sample_word(word_list, rand):
+    return rand.choice([word_list[0] for w in word_list])[0]
 
 
 class RandomModel(BaseSentenceModel):
     """SentenceModel which randomly selects words"""
 
     @classmethod
-    def create_model(
-        cls, data_wrap, available_glyphs, font_info, rand, language, **kwargs
-    ):
+    def create_model(cls, data, available_glyphs, rand, language, **kwargs):
         """Creates model, returning (model, **kwargs)"""
 
-        model = cls(data_wrap, available_glyphs, font_info, rand, language)
+        model = cls(data, available_glyphs, rand, language)
         return model, kwargs
 
-    def __init__(self, data_wrap, available_glyphs, font_info, rand, language):
+    def __init__(self, data, available_glyphs, rand, language):
 
         # No filtering on initialization since filtering happens at word level
-        self.data_wrap = data_wrap
+        self.data = data
         self.available_glyphs = available_glyphs
-        self.font_info = font_info
         self.rand = rand
         self.language = language
 
@@ -147,20 +108,15 @@ class RandomModel(BaseSentenceModel):
             min_wl (int): Minimum word length,
             max_wl (int): Maximum word length,
             wl (int): Word length,
-            min_width (int): Minimum approximate rendered word width
-            max_width (int): Maximum approximate rendered word width
-            width (int): Approximate rendered word width
         """
 
-        filtered_data_wrap = filter_data(
-            self.data_wrap, self.available_glyphs, self.font_info, **kwargs
-        )
-        if prob:
-            gen = prob_wordcount_gen(filtered_data_wrap, self.rand)
-        else:
-            gen = rand_wordcount_gen(filtered_data_wrap, self.rand)
+        filtered_data = filter_data(self.data, self.available_glyphs, **kwargs)
 
-        return next(gen)
+        return (
+            sample_word_weighted(filtered_data, self.rand)
+            if prob
+            else sample_word(filtered_data, self.rand)
+        )
 
     def words(
         self,
@@ -171,7 +127,7 @@ class RandomModel(BaseSentenceModel):
         uc=False,
         lc=False,
         cap=False,
-        **kwargs
+        **kwargs,
     ):
         """Return a list of random words
 
@@ -188,9 +144,6 @@ class RandomModel(BaseSentenceModel):
             min_wl (int): Minimum word length
             max_wl (int): Maximum word length
             wl (int): Word length
-            min_width (int): Minimum approximate rendered word width
-            max_width (int): Maximum approximate rendered word width
-            width (int): Approximate rendered word width
         """
 
         if not num_words:
@@ -211,7 +164,7 @@ class RandomModel(BaseSentenceModel):
         max_sent_len=DEFAULT_MAX_SENT_LEN,
         sent_len=None,
         punc_func=None,
-        **kwargs
+        **kwargs,
     ):
         """Return a random sentence
 
@@ -229,9 +182,6 @@ class RandomModel(BaseSentenceModel):
             min_wl (int): Minimum word length
             max_wl (int): Maximum word length
             wl (int): Word length
-            min_width (int): Minimum approximate rendered word width
-            max_width (int): Maximum approximate rendered word width
-            width (int): Approximate rendered word width
         """
 
         words = self.words(
@@ -239,19 +189,19 @@ class RandomModel(BaseSentenceModel):
             min_num_words=min_sent_len,
             max_num_words=max_sent_len,
             num_words=sent_len,
-            **kwargs
+            **kwargs,
         )
         return punctuate(
             words,
-            self.available_glyphs.glyphs_string,
+            self.available_glyphs,
             self.rand,
             self.language,
             punc_func,
         )
 
 
-def sequential_gen(data_wrap):
-    for word, _ in cycle(data_wrap.data):
+def sequential_gen(data):
+    for word, _ in cycle(data):
         yield word
 
 
@@ -259,20 +209,17 @@ class SequentialModel(BaseSentenceModel):
     """SentenceModel which returns words sequentially in the order of the source data"""
 
     @classmethod
-    def create_model(
-        cls, data_wrap, available_glyphs, font_info, rand, language, **kwargs
-    ):
+    def create_model(cls, data, available_glyphs, rand, language, **kwargs):
         """Creates model, returning (model, **kwargs)"""
 
-        model = cls(data_wrap, available_glyphs, font_info)
+        model = cls(data, available_glyphs)
         return model, kwargs
 
-    def __init__(self, data_wrap, available_glyphs, font_info):
+    def __init__(self, data, available_glyphs):
 
         # No filtering on initialization since filtering happens at word level
-        self.data_wrap = data_wrap
+        self.data = data
         self.available_glyphs = available_glyphs
-        self.font_info = font_info
 
     def words(
         self,
@@ -283,9 +230,6 @@ class SequentialModel(BaseSentenceModel):
         min_wl=0,
         max_wl=BIG_NUM,
         wl=None,
-        min_width=0,
-        max_width=BIG_NUM,
-        width=None,
     ):
         """Return a list of sequential words from the source
 
@@ -297,27 +241,20 @@ class SequentialModel(BaseSentenceModel):
             min_wl (int): Minimum word length
             max_wl (int): Maximum word length
             wl (int): Word length
-            min_width (int): Minimum approximate rendered word width
-            max_width (int): Maximum approximate rendered word width
-            width (int): Approximate rendered word width
         """
 
-        filtered_data_wrap = filter_data(
-            self.data_wrap,
+        filtered_data = filter_data(
+            self.data,
             self.available_glyphs,
-            self.font_info,
             uc=uc,
             lc=lc,
             cap=cap,
             min_wl=min_wl,
             max_wl=max_wl,
             wl=wl,
-            min_width=min_width,
-            max_width=max_width,
-            width=width,
         )
 
-        gen = sequential_gen(filtered_data_wrap)
+        gen = sequential_gen(filtered_data)
         return [next(gen) for n in range(num_words)]
 
     def sentence(self, sent_len=DEFAULT_SEQ_NUM_WORDS, **kwargs):
@@ -331,9 +268,6 @@ class SequentialModel(BaseSentenceModel):
             min_wl (int): Minimum word length
             max_wl (int): Maximum word length
             wl (int): Word length
-            min_width (int): Minimum approximate rendered word width
-            max_width (int): Maximum approximate rendered word width
-            width (int): Approximate rendered word width
         """
 
         words = self.words(num_words=sent_len, **kwargs)
@@ -347,198 +281,172 @@ class SequentialModel(BaseSentenceModel):
 
 @lru_cache(maxsize=None)
 def filter_data(
-    data_wrap,
+    wc_str,
     available_glyphs,
-    font_info,
-    num_top=None,
+    num_top=BIG_NUM,
     uc=False,
     lc=False,
     cap=False,
     min_wl=0,
     max_wl=BIG_NUM,
     wl=None,
-    min_width=0,
-    max_width=BIG_NUM,
-    width_tolerance=DEFAULT_WIDTH_TOLERANCE,
-    width=None,
+    contains=None,
+    regexp=None,
 ):
 
-    dw = data_wrap
-
-    glyphs_string = available_glyphs.glyphs_string if available_glyphs.limited else None
+    if available_glyphs:
+        limited_glyphs = True
+        lc_glyphs = "".join([c for c in available_glyphs if c.islower()])
+        uc_glyphs = "".join([c for c in available_glyphs if c.isupper()])
+    else:
+        limited_glyphs = False
+        lc_glyphs = None
+        uc_glyphs = None
 
     if uc:
-        dw = uc_filter(dw, glyphs_string)
+        wc_list = uc_filter(wc_str, uc_glyphs, limited_glyphs)
     elif lc:
-        dw = lc_filter(dw, glyphs_string)
+        wc_list = lc_filter(wc_str, lc_glyphs, limited_glyphs)
     elif cap:
-        dw = cap_filter(dw, glyphs_string)
+        wc_list = cap_filter(wc_str, lc_glyphs, uc_glyphs, limited_glyphs)
     else:
-        dw = available_filter(dw, glyphs_string)
+        wc_list = available_filter(wc_str, available_glyphs, limited_glyphs)
 
     if min_wl or max_wl != BIG_NUM or wl:
-        dw = length_filter(dw, min_wl, max_wl, wl)
+        if wl:
+            min_wl = wl
+            max_wl = wl
 
-    if min_width or max_width != BIG_NUM or width != None:
-        if not font_info:
-            raise TypeError(
-                "No font_file supplied: filtering by width is not available"
+    if regexp:
+        pattern = regex.compile(regexp)
+        wc_list = list(
+            islice(
+                (
+                    (word, count)
+                    for word, count in wc_list
+                    if min_wl <= len(word) <= max_wl and regex.match(pattern, word)
+                ),
+                num_top,
             )
-        dw = width_filter(dw, font_info, min_width, max_width, width, width_tolerance)
+        )
+    elif contains:
+        wc_list = list(
+            islice(
+                (
+                    (word, count)
+                    for word, count in wc_list
+                    if min_wl <= len(word) <= max_wl and contains in word
+                ),
+                num_top,
+            )
+        )
+    else:
+        wc_list = list(
+            islice(
+                (
+                    (word, count)
+                    for word, count in wc_list
+                    if min_wl <= len(word) <= max_wl
+                ),
+                num_top,
+            )
+        )
 
-    if num_top:
-        dw = top_filter(dw, num_top)
-
-    if not dw.data:
+    if not wc_list:
         raise ValueError("No words available with specified parameters")
 
-    return dw
+    return tuple(wc_list)
 
 
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def top_filter(words_count, num_top=1000):
+def available_filter(
+    words_count: str, available_glyphs_string: str, limited_glyphs: bool
+) -> list:
     """
-    return top items from a given words_count tuple
-
-    Example:
-    >>> data = (("Duck", 1), ("pig", 2), ("thing", 3))
-    >>> top_filter(data, 2)
-    (('Duck', 1), ('pig', 2))
-    """
-    return tuple(islice(words_count, num_top))
-
-
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def available_filter(words_count, available_glyphs_string):
-    """
-    return tuple of words that have all chars in available_glyph_list
-    words_count is in format (("word", 123), ("word2", 34))
-
-    Example:
-    >>> available_filter((("Duck", 1), ("pig", 2), ("PIG", 3), ("goose", 4), ("LamB", 5)), "DuckPIG")
-    (('Duck', 1), ('PIG', 3))
-    """
-
-    return tuple(
-        tuple((word, count))
-        for word, count in words_count
-        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word)
-    )
-
-
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def lc_filter(words_count, available_glyphs_string):
-    """
-    Lowercase words and return tuple of words that have all chars in available_glyph_list
+    simply filters out words that have characters not in available_glyphs_string
+    keeps casing same as the wordlist
     words_count is in format (("word", 123), ("word2", 34))
     """
 
-    return tuple(
-        tuple((word.lower(), count))
-        for word, count in words_count
-        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word.lower())
-    )
+    if limited_glyphs:
+        pattern = regex.compile(fr"^[{available_glyphs_string}]+\s+.*", regex.MULTILINE)
+        lines = regex.findall(pattern, words_count)
+
+        # no change of case, leave as appears in wordlist
+        return [(l.split()[0], int(l.split()[1])) for l in lines]
+    else:
+        # simply convert input to list of lists tuples if we're not filtering
+        return [(l.split()[0], int(l.split()[1])) for l in words_count.split("\n")]
 
 
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def uc_filter(words_count, available_glyphs_string):
+def lc_filter(words_count: str, lc_glyphs: str, limited_glyphs: bool) -> list:
     """
-    Uppercase words and return tuple of words that have all chars in available_glyph_list
-    words_count is in format (("word", 123), ("word2", 34))
-
-    Example:
-    >>> uc_filter((("Duck", 1), ("pig", 2), ("PIG", 3), ("goose", 4), ("LamB", 5)), "LAMBPIG")
-    (('PIG', 2), ('LAMB', 5))
+    finds only words that can be spelled with lowercase glyphs
     """
 
-    return tuple(
-        tuple((word.upper(), count))
-        for word, count in words_count
-        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word.upper())
-    )
+    if limited_glyphs:
+        # we only want to look for words that can be spelled with lc_glyphs
+        # we wouldn't want to include Berlin (proper), or SMTP (acronym) if we want lowercase
+        # if we haven't restricted available glyphs, lc_glyphs will be all unicode
+        pattern = regex.compile(fr"^[{lc_glyphs}]+\s+.*", regex.MULTILINE)
+        lines = regex.findall(pattern, words_count)
+
+        # no need to lowercase, we only searched for lowercase words
+        return [(l.split()[0], int(l.split()[1])) for l in lines]
+    else:
+        # if we have all glyphs, simply find lowercase words
+        pattern = regex.compile(r"^\p{Ll}+\s+.*", regex.MULTILINE)
+        lines = regex.findall(pattern, words_count)
+        return [(l.split()[0], int(l.split()[1])) for l in lines]
 
 
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def cap_filter(words_count, available_glyphs_string):
+def uc_filter(words_count: str, uc_glyphs: str, limited_glyphs: bool) -> list:
     """
-    Uppercase words and return tuple of unique words that have all chars in available_glyph_list
-    words_count is in format (("word", 123), ("word2", 34))
-    If there are duplicate words with multiple casings in words_count, keep the first count
-
-    Example:
-    >>> cap_filter((("Duck", 1), ("pig", 2), ("PIG", 3), ("goose", 4), ("LamB", 5)), "LambPig")
-    (('Pig', 2), ('Lamb', 5))
-    """
-
-    return tuple(
-        tuple((word.capitalize(), count))
-        for word, count in words_count
-        if not available_glyphs_string or not any(char not in available_glyphs_string for char in word.capitalize())
-    )
-
-
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def length_filter(words_count, min_wl=0, max_wl=BIG_NUM, wl=None):
-    """
-    Filters by number of characters in words
-
-    Example:
+    finds words from wordlist that can be spelled with uc_glyphs AND
+    words in wordlist that can be made uppercase and spelled with uc_glyphs
     """
 
-    if wl != None:
-        min_wl = wl
-        max_wl = wl
+    if limited_glyphs:
+        # if our uc_glyphs is 'HAM', we need to also search for 'ham'
+        uc_glyphs_lowered = uc_glyphs.lower()
 
-    return tuple(
-        (word, count) for word, count in words_count if min_wl <= len(word) <= max_wl
-    )
+        pattern = regex.compile(fr"^[{uc_glyphs}{uc_glyphs_lowered}]+\s+.*")
+        lines = regex.findall(pattern, words_count)
+
+        # force uppercase on all words
+        return [(l.split()[0].upper(), int(l.split()[1])) for l in lines]
+    else:
+        # no filtering w/ unicode needed if we're uppercasing
+        # any word can be made all uppercase
+        return [
+            (l.split()[0].upper(), int(l.split()[1])) for l in words_count.split("\n")
+        ]
 
 
-@unwrap(DataWrapper)
-@lru_cache(maxsize=None)
-def width_filter(
-    words_count,
-    font_info,
-    min_width=0,
-    max_width=BIG_NUM,
-    width=None,
-    width_tolerance=DEFAULT_WIDTH_TOLERANCE,
-):
+def cap_filter(
+    words_count: str, lc_glyphs: str, uc_glyphs: str, limited_glyphs: bool
+) -> list:
     """
-    Filters by length of approximate width of words rendered
-
-    char_widths is a tuple of format (('a', 300), ('b', 540))
-
-    Example:
-    >>> class FontInfoMock:
-    >>>     __init__(widths):
-    >>>         self.widths = {'a': 5, 'b': 10, 'c': 15, 'o': 20}
-    >>>     def rough_word_width(word):
-    >>>         sum(self.widths[c] for c in word)
-    >>> data = (("ba", 1), ("cab", 1), ("cabo", 1))
-    >>> width_filter(data, FontInfoMock())
-    (('ba', 1), ('cab', 1), ('cabo', 1))
-    >>> width_filter(data, FontInfoMock(), min_width = 30)
-    (('cab', 1), ('cabo', 1))
-    >>> width_filter(data, FontInfoMock(), max_width = 30)
-    (('ba', 1), ('cab', 1))
-    >>> width_filter(data, FontInfoMock(), width = 15)
-    (('ba', 1),)
-    >>> width_filter(data, FontInfoMock(), width = 15, width_tolerance = 30)
-    (('ba', 1), ('cab', 1), ('cabo', 1))
+    finds capitalized words in the wordlist, and words in the wordlist that can be
+    capitalized
     """
-    if width != None:
-        min_width = width - abs(width_tolerance)
-        max_width = width + abs(width_tolerance)
 
-    return tuple(
-        (word, count)
-        for word, count in words_count
-        if min_width <= font_info.rough_word_width(word) <= max_width
-    )
+    if limited_glyphs:
+        # if our available_glyphs is 'Bar', we also need to search for 'bar'
+        uc_glyphs_lowered = uc_glyphs.lower()
+
+        # uc_glyphs_lowered is only searched for in the first letter, because word is capitalized
+        pattern = regex.compile(
+            fr"^[{uc_glyphs}{uc_glyphs_lowered}][{lc_glyphs}]*\s+.*", regex.MULTILINE
+        )
+        lines = regex.findall(pattern, words_count)
+
+        # force capitalization
+        return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
+    else:
+        # if we're not restricting glyph set, find words that all BUT first letter are lc
+        # Basically just DON'T include acronyms like SMTP (or DDoS!)
+        pattern = regex.compile(r"^.\p{Ll}*\s+.*", regex.MULTILINE)
+        lines = regex.findall(pattern, words_count)
+
+        # force capitalization
+        return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]

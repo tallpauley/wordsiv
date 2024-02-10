@@ -1,10 +1,9 @@
 import wordsiv
 from wordsiv.sentence_models_sources import WordCountSource
-from wordsiv.sentence_models_sources import MarkovSource
 from pathlib import Path
 import pytest
 
-from test_source_modules import wctest, mkvtest
+from test_source_modules import wctest
 
 HERE = Path(__file__).parent.absolute()
 
@@ -19,7 +18,6 @@ def wsv_no_source():
 def wsv_default():
     w = wordsiv.WordSiv()
     w.add_source_module(wctest)
-    w.add_source_module(mkvtest)
     return w
 
 
@@ -33,7 +31,6 @@ def test_default_not_exist(wsv_default):
         wsv_default.set_default_source("not_exist")
 
 
-@pytest.mark.parametrize("source_name", ("wctest", "mkvtest"))
-def test_default_exists(wsv_default, source_name):
-    wsv_default.set_default_source(source_name)
+def test_default_exists(wsv_default):
+    wsv_default.set_default_source("wctest")
     assert type(wsv_default.sentence()) == str

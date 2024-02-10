@@ -1,21 +1,11 @@
 """Wordsiv is a Python library for generating text with a limited character set."""
 
-import string
 from random import Random
-import json
-from functools import partial
-import pprint
-import importlib
-import pkg_resources
 
-from .fontinfo import FontInfo
-from .availableglyphs import AvailableGlyphs
 from .sentence_models_sources import (
     WordCountSource,
     RandomModel,
     SequentialModel,
-    MarkovSource,
-    MarkovModel,
 )
 from .utilities import installed_source_modules
 
@@ -25,22 +15,11 @@ DEFAULT_MAX_PARA_LEN = 7
 
 
 class WordSiv:
-    def __init__(self, font_file=None, limit_glyphs=None, seed=DEFAULT_SEED):
+    def __init__(self, glyphs=None, seed=DEFAULT_SEED):
 
         # set up available characters
-        self.font_info = FontInfo(font_file) if font_file else None
 
-        if font_file:
-            font_chars = self.font_info.characters
-
-            if limit_glyphs:
-                glyphs = sorted(c for c in font_chars if c in limit_glyphs)
-            else:
-                glyphs = font_chars
-        else:
-            glyphs = limit_glyphs
-
-        self.available_glyphs = AvailableGlyphs(limit_glyphs=glyphs)
+        self.available_glyphs = glyphs
 
         # create shared Random() object
         self.rand = Random(seed)
@@ -52,11 +31,7 @@ class WordSiv:
         # populate sources from data source packages
         self.load_sources()
 
-        self.model_classes = {
-            "rand": RandomModel,
-            "seq": SequentialModel,
-            "mkv": MarkovModel,
-        }
+        self.model_classes = {"rand": RandomModel, "seq": SequentialModel}
 
     def add_source_module(self, source_module):
         for source_name, params in source_module.sources.items():
@@ -109,9 +84,8 @@ class WordSiv:
         source_obj, model_class = self.select_source_model(source=source, model=model)
 
         return model_class.create_model(
-            source_obj.data_wrap,
+            source_obj.data,
             self.available_glyphs,
-            self.font_info,
             self.rand,
             source_obj.meta["lang"],
             **kwargs,

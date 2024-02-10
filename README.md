@@ -21,13 +21,12 @@ While designing a typeface, it is useful to examine text with a partial
 character set. Wordsiv tries its best to generate realistic-*looking* text with
 whatever glyphs are available.
 
-### Wordsiv can do things like...
+### Wordsiv can do things like
 
 - Determine available glyphs from a font file
 - Generate sorta-realistic-*looking* text with a variety of models
-- Filter words by number of characters and approximate rendered width
 
-### Wordsiv hopes to:
+### Wordsiv hopes to
 
 - be an easy-to-use and easy-to-extend meaningless language generation framework
 - support many languages and scripts (please help me!)
@@ -50,16 +49,16 @@ Next, install one or more source packages from the [releases page][releases] of
 the [source packages][source-packages] repo:
 
 ```bash
-$ base=https://github.com/tallpauley/wordsiv-source-packages/releases/download
-$ pkg=en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl
-$ pip install $base/$pkg # byexample: +pass
+base=https://github.com/tallpauley/wordsiv-source-packages/releases/download
+pkg=en_markov_gutenberg-0.1.0/en_markov_gutenberg-0.1.0-py3-none-any.whl
+pip install $base/$pkg # byexample: +pass
 ```
 
 Now you can make bogus sentences in Python!
 
 ```python
 >>> import wordsiv
->>> wsv = wordsiv.WordSiv(limit_glyphs=('HAMBURGERFONTSIVhamburgerfontsiv'))
+>>> wsv = wordsiv.WordSiv(glyphs=('HAMBURGERFONTSIVhamburgerfontsiv'))
 >>> wsv.sentence(source='en_markov_gutenberg')
 ('I might go over the instant to the streets in the air of those the same be '
  'haunting')
@@ -220,24 +219,24 @@ Let's load a font with the characters `HAMBURGERFONTSIVhamburgerfontsiv`
 
 ### Limiting Glyphs Manually
 
-We can limit the glyphs in the same way, but manually with `limit_glyphs`
+We can limit the glyphs in the same way, but manually with `glyphs`
 
 ```python
->>> wsv = WordSiv(limit_glyphs='HAMBURGERFONTSIVhamburgerfontsiv')
+>>> wsv = WordSiv(glyphs='HAMBURGERFONTSIVhamburgerfontsiv')
 >>> wsv.sentence(source='en_wordcount_web')
 'Manage miss ago are motor to rather at first to be of has forget'
 ```
 
-### Limiting Glyphs with `font_file` AND `limit_glyphs`
+### Limiting Glyphs with `font_file` AND `glyphs`
 
 It can be useful at times to specify the character set we *want to display*, and
 only using those characters if we have them in the font file. We can do
-this by specifying both `font_file` and `limit_glyphs`:
+this by specifying both `font_file` and `glyphs`:
 
 ```python
 >>> wsv = WordSiv(
 ...    font_file='tests/data/noto-sans-subset.ttf',
-...    limit_glyphs='abcdefghijklmnop'
+...    glyphs='abcdefghijklmnop'
 ... )
 >>> wsv.sentence('en_wordcount_web', cap_sent=False, min_wl=3)
 'eng gnome gene game egg one aim him again one game one image boom'
@@ -273,10 +272,12 @@ turn this off:
 ```
 
 ### Punctuation
+
 By default the [WordCount][wordcount-model] models insert punctuation with
 probabilities roughly derived from usage in the English language.
 
 We can turn this off by passing our own function for punctuation:
+
 ```python
 >>> def only_period(words, *args): return ' '.join(words) + '.'
 >>> wsv.paragraph(
@@ -425,7 +426,6 @@ wiped out 4 hours of work with a careless Git mistake.
 [wordcount-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L108
 [random-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L108
 [sequential-model]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L249
-[punc-func]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/sentence_models_sources/wordcount.py#L214
 [word-o-mat]: https://github.com/ninastoessinger/word-o-mat
 [wordsiv-object]: https://github.com/tallpauley/wordsiv/blob/main/wordsiv/__init__.py#L132
 [drawbot]: https://www.drawbot.com

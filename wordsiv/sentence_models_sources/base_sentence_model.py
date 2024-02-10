@@ -10,9 +10,7 @@ class BaseSentenceModel(ABC):
 
     @classmethod
     @abstractmethod
-    def create_model(
-        cls, data_wrap, available_glyphs, font_info, rand, language, **kwargs
-    ):
+    def create_model(cls, data, available_glyphs, rand, language, **kwargs):
         """Create model, and return (model, **kwargs)
 
         Allows model to define what kwargs are needed for model initialization and which
