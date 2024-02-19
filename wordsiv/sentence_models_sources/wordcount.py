@@ -5,6 +5,7 @@ import itertools
 import os
 import io
 import regex
+import time
 
 from ..source import BaseSource
 from .base_sentence_model import BaseSentenceModel
@@ -291,6 +292,8 @@ def filter_data(
     max_wl=BIG_NUM,
     wl=None,
     contains=None,
+    startswith=None,
+    endswith=None,
     regexp=None,
 ):
 
@@ -312,45 +315,38 @@ def filter_data(
     else:
         wc_list = available_filter(wc_str, available_glyphs, limited_glyphs)
 
+    # filter by word length
     if min_wl or max_wl != BIG_NUM or wl:
         if wl:
             min_wl = wl
             max_wl = wl
 
+        wc_list = [(w,c) for w,c in wc_list if min_wl <= len(w) <= max_wl]
+
+    # filter by either regex or contains, startswith, endswith
     if regexp:
-        pattern = regex.compile(regexp)
-        wc_list = list(
-            islice(
-                (
-                    (word, count)
-                    for word, count in wc_list
-                    if min_wl <= len(word) <= max_wl and regex.match(pattern, word)
-                ),
-                num_top,
-            )
-        )
-    elif contains:
-        wc_list = list(
-            islice(
-                (
-                    (word, count)
-                    for word, count in wc_list
-                    if min_wl <= len(word) <= max_wl and contains in word
-                ),
-                num_top,
-            )
-        )
+        if contains or startswith or endswith:
+            raise ValueError("Cannot use regexp with contains, startswith or endswith.")
+
+        wc_list = regex_filter(wc_list, regexp)
     else:
-        wc_list = list(
-            islice(
-                (
-                    (word, count)
-                    for word, count in wc_list
-                    if min_wl <= len(word) <= max_wl
-                ),
-                num_top,
-            )
-        )
+        if contains:
+            if type(contains) is str:
+                contains = [contains]
+
+            for contains_search in contains:
+                wc_list = [(w,c) for w,c in wc_list if contains_search in w]
+
+
+        if startswith:
+            wc_list = [(w,c) for w,c in wc_list if w.startswith(startswith)]
+
+        if endswith:
+            wc_list = [(w,c) for w,c in wc_list if w.endswith(endswith)]
+
+    # limit number of words if num_top is set
+    if num_top:
+       wc_list = list(islice(wc_list, num_top))
 
     if not wc_list:
         raise ValueError("No words available with specified parameters")
@@ -359,26 +355,26 @@ def filter_data(
 
 
 def available_filter(
-    words_count: str, available_glyphs_string: str, limited_glyphs: bool
+    wc_list: str, available_glyphs_string: str, limited_glyphs: bool
 ) -> list:
     """
     simply filters out words that have characters not in available_glyphs_string
     keeps casing same as the wordlist
-    words_count is in format (("word", 123), ("word2", 34))
+    wc_list is in format (("word", 123), ("word2", 34))
     """
 
     if limited_glyphs:
         pattern = regex.compile(fr"^[{available_glyphs_string}]+\s+.*", regex.MULTILINE)
-        lines = regex.findall(pattern, words_count)
+        lines = regex.findall(pattern, wc_list)
 
         # no change of case, leave as appears in wordlist
         return [(l.split()[0], int(l.split()[1])) for l in lines]
     else:
         # simply convert input to list of lists tuples if we're not filtering
-        return [(l.split()[0], int(l.split()[1])) for l in words_count.split("\n")]
+        return [(l.split()[0], int(l.split()[1])) for l in wc_list.split("\n")]
 
 
-def lc_filter(words_count: str, lc_glyphs: str, limited_glyphs: bool) -> list:
+def lc_filter(wc_list: str, lc_glyphs: str, limited_glyphs: bool) -> list:
     """
     finds only words that can be spelled with lowercase glyphs
     """
@@ -388,18 +384,18 @@ def lc_filter(words_count: str, lc_glyphs: str, limited_glyphs: bool) -> list:
         # we wouldn't want to include Berlin (proper), or SMTP (acronym) if we want lowercase
         # if we haven't restricted available glyphs, lc_glyphs will be all unicode
         pattern = regex.compile(fr"^[{lc_glyphs}]+\s+.*", regex.MULTILINE)
-        lines = regex.findall(pattern, words_count)
+        lines = regex.findall(pattern, wc_list)
 
         # no need to lowercase, we only searched for lowercase words
         return [(l.split()[0], int(l.split()[1])) for l in lines]
     else:
         # if we have all glyphs, simply find lowercase words
         pattern = regex.compile(r"^\p{Ll}+\s+.*", regex.MULTILINE)
-        lines = regex.findall(pattern, words_count)
+        lines = regex.findall(pattern, wc_list)
         return [(l.split()[0], int(l.split()[1])) for l in lines]
 
 
-def uc_filter(words_count: str, uc_glyphs: str, limited_glyphs: bool) -> list:
+def uc_filter(wc_list: str, uc_glyphs: str, limited_glyphs: bool) -> list:
     """
     finds words from wordlist that can be spelled with uc_glyphs AND
     words in wordlist that can be made uppercase and spelled with uc_glyphs
@@ -410,7 +406,7 @@ def uc_filter(words_count: str, uc_glyphs: str, limited_glyphs: bool) -> list:
         uc_glyphs_lowered = uc_glyphs.lower()
 
         pattern = regex.compile(fr"^[{uc_glyphs}{uc_glyphs_lowered}]+\s+.*")
-        lines = regex.findall(pattern, words_count)
+        lines = regex.findall(pattern, wc_list)
 
         # force uppercase on all words
         return [(l.split()[0].upper(), int(l.split()[1])) for l in lines]
@@ -418,12 +414,12 @@ def uc_filter(words_count: str, uc_glyphs: str, limited_glyphs: bool) -> list:
         # no filtering w/ unicode needed if we're uppercasing
         # any word can be made all uppercase
         return [
-            (l.split()[0].upper(), int(l.split()[1])) for l in words_count.split("\n")
+            (l.split()[0].upper(), int(l.split()[1])) for l in wc_list.split("\n")
         ]
 
 
 def cap_filter(
-    words_count: str, lc_glyphs: str, uc_glyphs: str, limited_glyphs: bool
+    wc_list: str, lc_glyphs: str, uc_glyphs: str, limited_glyphs: bool
 ) -> list:
     """
     finds capitalized words in the wordlist, and words in the wordlist that can be
@@ -438,7 +434,7 @@ def cap_filter(
         pattern = regex.compile(
             fr"^[{uc_glyphs}{uc_glyphs_lowered}][{lc_glyphs}]*\s+.*", regex.MULTILINE
         )
-        lines = regex.findall(pattern, words_count)
+        lines = regex.findall(pattern, wc_list)
 
         # force capitalization
         return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
@@ -446,7 +442,15 @@ def cap_filter(
         # if we're not restricting glyph set, find words that all BUT first letter are lc
         # Basically just DON'T include acronyms like SMTP (or DDoS!)
         pattern = regex.compile(r"^.\p{Ll}*\s+.*", regex.MULTILINE)
-        lines = regex.findall(pattern, words_count)
+        lines = regex.findall(pattern, wc_list)
 
         # force capitalization
         return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
+
+def regex_filter(wc_list, regexp):
+    pattern = regex.compile(r"^" + regexp + r"\s+.*", regex.MULTILINE)
+    wc_str = '\n'.join(f"{w}\t{c}" for w, c in wc_list)
+    print(wc_str[0:100])
+    lines = regex.findall(pattern, wc_str)
+
+    return [(l.split()[0], int(l.split()[1])) for l in lines]
