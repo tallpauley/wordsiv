@@ -48,7 +48,7 @@ class WordSiv:
         if source in self.sources:
             self.default_source_name = source
         else:
-            raise KeyError(f"No source installed with name {source}!")
+            raise KeyError(f"No source installed with name '{source}'")
         if model:
             self.default_model_class_name = model
 
