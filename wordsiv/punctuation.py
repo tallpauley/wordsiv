@@ -1,90 +1,39 @@
-def default_punc_func(words, rand, start, end, inner, wrap):
-    # Sort of derived from wikipedia, but increased freq of lesser used punctuation
-    # https://en.wikipedia.org/wiki/English_punctuation#Frequency
+from random import Random
+
+
+def default_punc_func(words, rand: Random, start, end, inner, wrap):
 
     # place "inner" punctuation (like comma, hyphen, etc)
-    insert_index = rand.randrange(len(words) - 1)
-    words[insert_index] = words[insert_index] + inner
+    if len(words) > 2:
+        insert_index = rand.randrange(len(words) - 1)
+        words[insert_index] = words[insert_index] + inner
 
     # place surrounding punctuation
     return wrap[0] + start + " ".join(words) + end + wrap[1]
 
 
-def random_available(option_weight, glyphs_string, rand):
+def random_available(option_weight, glyphs: str, rand):
     options, weights = zip(
         *{
             cs: prob
             for cs, prob in option_weight.items()
-            if not glyphs_string or all(c in glyphs_string for c in cs)
+            if not glyphs or all(c in glyphs for c in cs)
         }.items()
     )
     return rand.choices(options, weights=weights, k=1)[0]
 
 
-def punctuate(words, glyphs_string, rand, language, punc_func=None):
-    """Punctuate a list of words and join into a sentence using punc_func
-
-    Example w/ no punc available:
-    >>> import random
-    >>> words = ["hamburger", "fonts", "vise", "gurb", "ram"]
-    >>> glyphs_string = 'HAMBURGERFONTSIVhamburgerfontsiv'
-    >>> rand = random.Random(5)
-    >>> punctuate(words, glyphs_string, rand, "en", default_punc_func)
-    'hamburger fonts vise gurb ram'
-
-    Example w/ punc available:
-    >>> glyphs_string = 'HAMBURGERFONTSIVhamburgerfontsiv.,'
-    >>> punctuate(words, glyphs_string, rand, "en", default_punc_func)
-    'hamburger fonts vise gurb ram.'
-
-    """
+def punctuate(
+    punctuation: dict, rand: Random, words: list[str], glyphs: str, punc_func=None
+):
+    """Punctuate a list of words and join into a sentence using punc_func"""
 
     if not punc_func:
         punc_func = default_punc_func
 
-    start = random_available(
-        default_punctuation[language]["start"], glyphs_string, rand
-    )
-    end = random_available(default_punctuation[language]["end"], glyphs_string, rand)
-    inner = random_available(
-        default_punctuation[language]["inner"], glyphs_string, rand
-    )
-    wrap = random_available(default_punctuation[language]["wrap"], glyphs_string, rand)
+    start = random_available(punctuation["start"], glyphs, rand)
+    end = random_available(punctuation["end"], glyphs, rand)
+    inner = random_available(punctuation["inner"], glyphs, rand)
+    wrap = random_available(punctuation["wrap"], glyphs, rand)
 
     return punc_func(words, rand, start, end, inner, wrap)
-
-
-default_punctuation = {
-    "en": {
-        "start": {"": 100},
-        # make no ending punctuation extremely low probability so
-        # it only happens when period is not available
-        "end": {"": 0.00001, ".": 100, "?": 40, "!": 20},
-        "inner": {"": 100, ",": 80, "-": 40, ":": 30, ";": 20},
-        "wrap": {("", ""): 100, ("“", "”"): 9, ("‘", "’"): 6},
-    },
-    "ar": {
-        "start": {"": 100},
-        # make no ending punctuation extremely low probability so
-        # it only happens when period is not available
-        "end": {"": 0.00001, ".": 100, "؟": 40, "!": 20},
-        "inner": {"": 100, "،": 80, ":": 30, "؛": 20},
-        "wrap": {("", ""): 100, ("”", "“"): 9, ("’", "‘"): 6},
-    },
-    "fa": {
-        "start": {"": 100},
-        # make no ending punctuation extremely low probability so
-        # it only happens when period is not available
-        "end": {"": 0.00001, ".": 100, "؟": 40, "!": 20},
-        "inner": {"": 100, "،": 80, ":": 30, "؛": 20},
-        "wrap": {("", ""): 100, ("”", "“"): 9, ("’", "‘"): 6},
-    },
-    "es": {
-        "start": {"": 100},
-        # make no ending punctuation extremely low probability so
-        # it only happens when period is not available
-        "end": {"": 0.00001, ".": 100, "!": 20},
-        "inner": {"": 100, ",": 80, "-": 40, ":": 30, ";": 20},
-        "wrap": {("", ""): 100, ("¿", "?"): 45, ("“", "”"): 18, ("‘", "’"): 12},
-    },
-}

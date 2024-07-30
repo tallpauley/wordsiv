@@ -1,143 +1,189 @@
-"""Wordsiv is a Python library for generating text with a limited character set."""
+"""Wordsiv is a Python library for generating proofing text with a limited character set."""
 
-from random import Random
+from importlib_metadata import entry_points
 
-from .sentence_models_sources import (
-    WordCountSource,
-    RandomModel,
-    SequentialModel,
-)
-from .utilities import installed_source_modules
 
-DEFAULT_SEED = 11
-DEFAULT_MIN_PARA_LEN = 4
-DEFAULT_MAX_PARA_LEN = 7
+class ModelNotFoundError(Exception):
+    pass
+
+
+class MultipleModelsFoundError(Exception):
+    pass
+
+
+class ModelDuplicateError(Exception):
+    pass
+
+
+class SourceDuplicateError(Exception):
+    pass
+
+
+class ModelEntry:
+    def __init__(self, namespace, model_name, model):
+        self.namespace = namespace
+        self.model_name = model_name
+        self.full_name = f"{namespace}.{model_name}"
+        self.model = model
+
+
+class SourceEntry:
+    def __init__(self, namespace, source_name, source):
+        self.namespace = namespace
+        self.source_name = source_name
+        self.full_name = f"{namespace}.{source_name}"
+        self.source = source
 
 
 class WordSiv:
-    def __init__(self, glyphs=None, seed=DEFAULT_SEED):
+    def __init__(self, glyphs: str = None, model: str = None, load_langpacks=True):
+        self.default_glyphs = glyphs
+        self.default_model = model
 
-        # set up available characters
+        self.source_entries = []
+        self.model_entries = []
 
-        self.available_glyphs = glyphs
+        if load_langpacks:
+            self.load_langpacks()
 
-        # create shared Random() object
-        self.rand = Random(seed)
+    def set_glyphs(self, default_glyphs):
+        self.default_glyphs = default_glyphs
 
-        self.sources = {}
-        self.default_source_name = None
-        self.default_model_class_name = None
+    def set_model(self, default_model):
+        self.default_model = default_model
 
-        # populate sources from data source packages
-        self.load_sources()
+    def add_model(self, model_name, model, namespace="default"):
+        if any(
+            me
+            for me in self.model_entries
+            if me.model_name == model_name and me.namespace == namespace
+        ):
+            raise ModelDuplicateError(
+                "Model name '{model_name}' already exists in namespace '{namespace}'"
+            )
 
-        self.model_classes = {"rand": RandomModel, "seq": SequentialModel}
+        self.model_entries.append(ModelEntry(namespace, model_name, model))
 
-    def add_source_module(self, source_module):
-        for source_name, params in source_module.sources.items():
-            if source_name not in self.sources:
-                self.sources[source_name] = params
-            else:
-                raise KeyError(f"Source {source_name} is already installed!")
+    def add_source(self, source_name, source, namespace="default"):
+        if any(
+            se
+            for se in self.source_entries
+            if se.source_name == source_name and se.namespace == namespace
+        ):
+            raise SourceDuplicateError(
+                "Source name '{source_name}' already exists in namespace '{namespace}'"
+            )
 
-    def load_sources(self):
-        for sm in installed_source_modules():
-            self.add_source_module(sm)
+        self.source_entries.append(SourceEntry(namespace, source_name, source))
 
-    def set_default_source(self, source, model=None):
-        if source in self.sources:
-            self.default_source_name = source
-        else:
-            raise KeyError(f"No source installed with name '{source}'")
-        if model:
-            self.default_model_class_name = model
+    def load_langpacks(self):
+        for ep in entry_points(group="wordsiv.langpack"):
+            langpack_module = ep.load()
+            self.load_langpack(langpack_module)
 
-    def select_source_model(self, source=None, model=None):
-        """Select source object and model class
+    def load_langpack(self, langpack_module):
+        # add sources if exist in langpack
+        for source_name, source in langpack_module.sources.items():
+            self.add_source(source_name, source, namespace=langpack_module.namespace)
 
-        Args:
-            source: name to lookup in self.sources
-            model: name to lookup in self.model_classes
+        # add models if exist in langpack
+        for model_name, model in langpack_module.models.items():
+            self.add_model(model_name, model, namespace=langpack_module.namespace)
 
-        Returns:
-            A tuple with (source_object, model_class)
-        """
+    def get_model(self, query: str):
 
-        if not self.sources:
-            raise KeyError("No data source packages installed!")
+        if not query and self.default_model:
+            query = self.default_model
 
-        source_name = source or self.default_source_name
-        source_obj = self.sources[source_name]["source"]
-
-        if model:
-            model_class = self.model_classes[model]
-        elif self.default_model_class_name:
-            model_class = self.model_classes[self.default_model_class_name]
-        else:
-            model_class = self.sources[source_name]["default_model_class"]
-
-        return source_obj, model_class
-
-    def create_model(self, source=None, model=None, **kwargs):
-        """creates a model, and returns model along with kwargs for function call"""
-
-        source_obj, model_class = self.select_source_model(source=source, model=model)
-
-        return model_class.create_model(
-            source_obj.data,
-            self.available_glyphs,
-            self.rand,
-            source_obj.meta["lang"],
-            **kwargs,
-        )
-
-    def word(self, source=None, model=None, **kwargs):
-        model, params = self.create_model(source, model, **kwargs)
-        return model.word(**params)
-
-    def words(self, source=None, model=None, **kwargs):
-        model, params = self.create_model(source, model, **kwargs)
-        return model.words(**params)
-
-    def sentence(self, source=None, model=None, **kwargs):
-        model, params = self.create_model(source, model, **kwargs)
-        return model.sentence(**params)
-
-    def sentences(
-        self,
-        min_para_len=DEFAULT_MIN_PARA_LEN,
-        max_para_len=DEFAULT_MAX_PARA_LEN,
-        para_len=None,
-        source=None,
-        model=None,
-        **kwargs,
-    ):
-        """Return a list of sentence strings"""
-
-        if not para_len:
-            para_len = self.rand.randint(min_para_len, max_para_len)
-
-        return [
-            self.sentence(source=source, model=model, **kwargs) for _ in range(para_len)
+        results = [
+            me
+            for me in self.model_entries
+            if me.full_name == query or me.model_name == query
         ]
+        if not results:
+            raise ModelNotFoundError(f"no model named'{query}'")
+        if len(results) > 1:
+            full_names = " or ".join([f"'{me.full_name}'" for me in results])
+            raise MultipleModelsFoundError(
+                f"models named '{query}' in multiple langpacks. Try {full_names}'"
+            )
 
-    def paragraph(self, sent_sep=" ", source=None, model=None, **kwargs):
-        """Return a paragraph string"""
-        return sent_sep.join(self.sentences(source=source, model=model, **kwargs))
+        return results[0].model
 
-    def paragraphs(
-        self,
-        num_paras=3,
-        source=None,
-        model=None,
-        **kwargs,
-    ):
-        """Return a list of paragraphs"""
-        return [
-            self.paragraph(source=source, model=model, **kwargs)
-            for _ in range(num_paras)
-        ]
+    def list_models(self):
+        return [me.full_name for me in self.model_entries]
 
-    def text(self, para_sep="\n\n", source=None, model=None, **kwargs):
-        """Return a string of multiple paragraphs seperated by par_sep"""
-        return para_sep.join(self.paragraphs(source=source, model=model, **kwargs))
+    def word(self, model: str = None, glyphs: str = None, **kwargs) -> str:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).word(glyphs=glyphs, **kwargs)
+
+    def words(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).words(glyphs=glyphs, **kwargs)
+
+    def sentence(self, model: str = None, glyphs: str = None, **kwargs) -> str:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).sentence(glyphs=glyphs, **kwargs)
+
+    def sentences(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).sentences(glyphs=glyphs, **kwargs)
+
+    def paragraph(self, model: str = None, glyphs: str = None, **kwargs) -> str:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).paragraph(glyphs=glyphs, **kwargs)
+
+    def paragraphs(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).paragraphs(glyphs=glyphs, **kwargs)
+
+    def text(self, model: str = None, glyphs: str = None, **kwargs) -> str:
+        glyphs = self.default_glyphs if not glyphs else glyphs
+
+        return self.get_model(model).text(glyphs=glyphs, **kwargs)
+
+
+_wordsiv_instance = WordSiv()
+
+
+def set_glyphs(default_glyphs):
+    _wordsiv_instance.set_glyphs(default_glyphs)
+
+
+def set_model(default_model):
+    _wordsiv_instance.set_model(default_model)
+
+
+# Top-level functions that reference the singleton
+def word(model: str = None, glyphs: str = None, **kwargs) -> str:
+    return _wordsiv_instance.word(model=model, glyphs=glyphs, **kwargs)
+
+
+def words(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    return _wordsiv_instance.words(model=model, glyphs=glyphs, **kwargs)
+
+
+def sentence(model: str = None, glyphs: str = None, **kwargs) -> str:
+    return _wordsiv_instance.sentence(model=model, glyphs=glyphs, **kwargs)
+
+
+def sentences(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    return _wordsiv_instance.sentences(model=model, glyphs=glyphs, **kwargs)
+
+
+def paragraph(model: str = None, glyphs: str = None, **kwargs) -> str:
+    return _wordsiv_instance.paragraph(model=model, glyphs=glyphs, **kwargs)
+
+
+def paragraphs(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    return _wordsiv_instance.paragraphs(model=model, glyphs=glyphs, **kwargs)
+
+
+def text(model: str = None, glyphs: str = None, **kwargs) -> str:
+    return _wordsiv_instance.text(model=model, glyphs=glyphs, **kwargs)

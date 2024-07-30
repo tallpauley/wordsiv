@@ -6,10 +6,12 @@ authors = ["Chris Pauley <cmpauley@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 typer = "^0.3.2"
 build = "^0.3.1"
 regex = "^2023.12.25"
+requests = "^2.32.3"
+importlib-metadata = "^8.2.0"
 
 [tool.poetry.scripts]
 wordsiv = 'wordsiv.cli:app'
