@@ -1,21 +1,10 @@
 from random import Random
 
 
-def default_punc_func(words, rand: Random, start, end, inner, wrap):
-
-    # place "inner" punctuation (like comma, hyphen, etc)
-    if len(words) > 2:
-        insert_index = rand.randrange(len(words) - 1)
-        words[insert_index] = words[insert_index] + inner
-
-    # place surrounding punctuation
-    return wrap[0] + start + " ".join(words) + end + wrap[1]
-
-
-def random_available(option_weight, glyphs: str, rand):
+def random_available(option_weight, glyphs: str, rand, punc_temp: float | int):
     options, weights = zip(
         *{
-            cs: prob
+            cs: prob ** (1 / punc_temp)
             for cs, prob in option_weight.items()
             if not glyphs or all(c in glyphs for c in cs)
         }.items()
@@ -24,16 +13,22 @@ def random_available(option_weight, glyphs: str, rand):
 
 
 def punctuate(
-    punctuation: dict, rand: Random, words: list[str], glyphs: str, punc_func=None
+    punctuation: dict,
+    rand: Random,
+    words: list[str],
+    glyphs: str,
+    punc_temp: float | int,
 ):
     """Punctuate a list of words and join into a sentence using punc_func"""
 
-    if not punc_func:
-        punc_func = default_punc_func
+    start = random_available(punctuation["start"], glyphs, rand, punc_temp)
+    end = random_available(punctuation["end"], glyphs, rand, punc_temp)
+    inner = random_available(punctuation["inner"], glyphs, rand, punc_temp)
+    wrap = random_available(punctuation["wrap"], glyphs, rand, punc_temp)
 
-    start = random_available(punctuation["start"], glyphs, rand)
-    end = random_available(punctuation["end"], glyphs, rand)
-    inner = random_available(punctuation["inner"], glyphs, rand)
-    wrap = random_available(punctuation["wrap"], glyphs, rand)
+    if len(words) > 2:
+        insert_index = rand.randrange(len(words) - 1)
+        words[insert_index] = words[insert_index] + inner
 
-    return punc_func(words, rand, start, end, inner, wrap)
+    # place surrounding punctuation
+    return wrap[0] + start + " ".join(words) + end + wrap[1]

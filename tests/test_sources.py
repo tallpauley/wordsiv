@@ -2,7 +2,7 @@ from wordsiv.sources import WordCountSource
 import pytest
 
 import pytest
-from wordsiv.sources import WordFilterError, SourceEmptyError, SourceFormatError
+from wordsiv.sources import FilterError, SourceEmptyError, SourceFormatError
 
 
 def test_wordcountsource_no_data():
@@ -14,7 +14,7 @@ def test_wordcountsource_no_data():
 
 
 def test_wordcountsource_bad_format():
-    test_data = "123 123"
+    test_data = "123\t123"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
     with pytest.raises(SourceFormatError):
@@ -22,100 +22,167 @@ def test_wordcountsource_bad_format():
 
 
 def test_wordcountsource_no_counts():
-    test_data = "apple\nbanana\ncherry\n"
+    test_data = "apple\nbanana\ncherry"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
     assert wc.filter_data(None) == (("apple", 1), ("banana", 1), ("cherry", 1))
 
 
 def test_filter_data_empty_glyphs():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data("xyz")
 
 
 def test_filter_data_empty_word_length():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data(None, min_wl=10)
 
 
 def test_filter_data_empty_contains():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data(None, contains="xyz")
 
 
 def test_filter_data_empty_startswith():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data(None, startswith="x")
 
 
 def test_filter_data_empty_endswith():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data(None, endswith="x")
 
 
 def test_filter_data_empty_regexp():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data(None, regexp="x+")
 
 
-def test_filter_data():
-    test_data = "apple\t5\nApple\t5\nAPPLE\t5"
+def test_filter_data_glyphs():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    # Test with limited glyphs
-    assert wc.filter_data("aple") == (("apple", 5),)
-    assert wc.filter_data("Aple") == (("Apple", 5),)
-    assert wc.filter_data("APLE") == (("APPLE", 5),)
+    # if we have the letters to spell the word exactly as it is in the source, we'll match it
+    assert wc.filter_data("aple") == (("apple", 2),)
+    assert wc.filter_data("BARTDoS") == (("BART", 5), ("DDoS", 6))
 
+    # if no exact matches for the glyph set, we'll match Cap and UC of lc source words
+    # no need to transform grape to UC or Cap since we have the letters to spell grape
+    assert wc.filter_data("GRAPEgrape") == (("grape", 1),)
+    # however, if we can't spell grape...
+    assert wc.filter_data("Grape") == (("Grape", 1),)
+    # in this case, we only have the letters for GRAPE, so it's uppercased
+    assert wc.filter_data("GRAPE") == (("GRAPE", 1),)
+    # also works for words that are capitalized in the source
+    assert wc.filter_data("APLE") == (("APPLE", 2), ("APPLE", 3))
 
-# test casing
-def test_filter_data_case():
-    test_data = "apple\t5\nBanana\t3\nPeACH\t2\nGRAPE\t1"
-    wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
+    # Capitalized, UC, CamelCaps words will not be lowercased,
+    # since lowercasing an acronym or proper noun is often incorrect, however...
+    with pytest.raises(FilterError):
+        wc.filter_data("bartdos")
 
-    # all glyphs available
-    assert wc.filter_data(None, case="cap") == (("Apple", 5), ("Banana", 3))
-    assert wc.filter_data(None, case="lc") == (("apple", 5),)
-    assert wc.filter_data(None, case="uc") == (
-        ("APPLE", 5),
-        ("BANANA", 3),
-        ("PEACH", 2),
-        ("GRAPE", 1),
+    # ... if you really want to maximize the number of matches, you can use respect_case=False
+    assert wc.filter_data("bartdos", respect_case=False) == (
+        ("bart", 4),
+        ("bart", 5),
+        ("ddos", 6),
     )
 
-    # limited glyphs and case specified
-    assert wc.filter_data("Aple", case="cap") == (("Apple", 5),)
-    assert wc.filter_data("apple", case="lc") == (("apple", 5),)
-    assert wc.filter_data("APLEPCH", case="uc") == (("APPLE", 5), ("PEACH", 2))
 
-    # limited glyphs, no UC glyphs available
-    with pytest.raises(WordFilterError):
-        wc.filter_data("aple", case="cap")
+def test_filter_data_case():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    with pytest.raises(WordFilterError):
-        wc.filter_data("grape", case="uc")
+    # if you do a fake case it'll throw a ValueError
+    with pytest.raises(ValueError):
+        wc.filter_data(None, case="fake")
 
-    # limited glyphs, no LC glyphs available
-    with pytest.raises(WordFilterError):
-        wc.filter_data("APLE", case="lc")
+    # with case='lc' and glyph = None, we'll just match words that are already lowercase
+    assert wc.filter_data(None, case="lc") == (("grape", 1), ("apple", 2))
+
+    # unless, you want to force them lowercase
+    assert wc.filter_data(None, case="lc", respect_case=False) == (
+        ("grape", 1),
+        ("apple", 2),
+        ("apple", 3),
+        ("bart", 4),
+        ("bart", 5),
+        ("ddos", 6),
+    )
+
+    # with case='uc', it assumes any word can be uppercased (no need to set respect_case=False)
+    assert wc.filter_data(None, case="uc") == (
+        ("GRAPE", 1),
+        ("APPLE", 2),
+        ("APPLE", 3),
+        ("BART", 4),
+        ("BART", 5),
+        ("DDOS", 6),
+    )
+
+    # with case='cap', by default it only matches lowercase and capitalized words in the source
+    assert wc.filter_data(None, case="cap") == (
+        ("Grape", 1),
+        ("Apple", 2),
+        ("Apple", 3),
+        ("Bart", 4),
+    )
+
+    # again, however, you can use respect_case=False for maximum possibilities
+    assert wc.filter_data(None, case="cap", respect_case=False) == (
+        ("Grape", 1),
+        ("Apple", 2),
+        ("Apple", 3),
+        ("Bart", 4),
+        ("Bart", 5),
+        ("Ddos", 6),
+    )
+
+
+def test_filter_data_glyphs_case():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
+
+    # simple cases
+    assert wc.filter_data(glyphs="aple", case="lc") == (("apple", 2),)
+    assert wc.filter_data(glyphs="Aple", case="cap") == (("Apple", 2), ("Apple", 3))
+    assert wc.filter_data(glyphs="APPLE", case="uc") == (("APPLE", 2), ("APPLE", 3))
+    assert wc.filter_data(glyphs="BART", case="uc") == (("BART", 4), ("BART", 5))
+    assert wc.filter_data(glyphs="DDOS", case="uc") == (("DDOS", 6),)
+
+    # cases with no matches...
+    with pytest.raises(FilterError):
+        wc.filter_data(glyphs="bart", case="lc")
+
+    with pytest.raises(FilterError):
+        wc.filter_data(glyphs="Ddos", case="cap")
+
+    # but now with the case relaxed
+    assert wc.filter_data(glyphs="bart", case="lc", respect_case=False) == (
+        ("bart", 4),
+        ("bart", 5),
+    )
+    assert wc.filter_data(glyphs="Ddos", case="cap", respect_case=False) == (
+        ("Ddos", 6),
+    )
 
 
 def test_filter_data_wl():
@@ -130,7 +197,7 @@ def test_filter_data_wl():
 
 
 def test_filter_data_startswith_endswith_contains():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
     assert wc.filter_data(None, startswith="a") == (("apple", 5),)
@@ -141,12 +208,12 @@ def test_filter_data_startswith_endswith_contains():
     )
     assert wc.filter_data(None, endswith="y") == (("cherry", 2), ("elderberry", 4))
 
-    with pytest.raises(WordFilterError):
+    with pytest.raises(FilterError):
         wc.filter_data(None, endswith="r")
 
 
 def test_filter_data_regex():
-    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4\n"
+    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
     # check for 2 of any letter

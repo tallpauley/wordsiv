@@ -1,7 +1,7 @@
 from functools import lru_cache
 from itertools import accumulate
 from .punctuation import punctuate
-from .sources import BIG_NUM
+from .sources import BIG_NUM, FilterError
 import random
 
 
@@ -12,26 +12,18 @@ DEFAULT_MIN_PARA_LEN = 4
 DEFAULT_MAX_PARA_LEN = 7
 
 
-class WordFilterError(Exception):
-    pass
-
-
 @lru_cache(maxsize=None)
 def accumulate_weights(a_tuple):
     return [i[0] for i in a_tuple], list(accumulate(i[1] for i in a_tuple))
 
 
-def sample_word_weighted(word_count, rand):
+def sample_word_weighted(word_count, rand, temp):
     words, counts = accumulate_weights(word_count)
-    return rand.choices(words, cum_weights=counts)[0]
-
-
-def sample_word(word_count, rand):
-    return rand.choice([wc[0] for wc in word_count])
+    adjusted_counts = [count ** (1 / temp) for count in counts]
+    return rand.choices(words, cum_weights=adjusted_counts)[0]
 
 
 def gen_numeral(rand, glyphs=None, wl=None, min_wl=1, max_wl=4, seed=None):
-    available_numerals = "".join(str(n) for n in range(0, 10))
 
     if wl:
         min_wl = wl
@@ -40,17 +32,18 @@ def gen_numeral(rand, glyphs=None, wl=None, min_wl=1, max_wl=4, seed=None):
         if min_wl > max_wl:
             raise ValueError("'min_wl' must be less than or equal to 'max_wl'")
 
+    available_numerals = "".join(str(n) for n in range(0, 10))
     if glyphs:
         available_numerals = "".join(n for n in available_numerals if n in glyphs)
 
         if not available_numerals:
-            raise WordFilterError("No numerals available in glyphs")
+            raise FilterError("No numerals available in glyphs")
 
     length = random.randint(min_wl, max_wl)
     return "".join(rand.choice(available_numerals) for _ in range(length))
 
 
-class ProbDistModel:
+class WordProbModel:
     def __init__(self, wc_source, punctuation):
         self.wc_source = wc_source
         self.punctuation = punctuation
@@ -59,8 +52,10 @@ class ProbDistModel:
     def word(
         self,
         glyphs=None,
-        rand=0,
-        numeral=0,
+        temp=1.0,
+        word_temp=None,
+        punc_temp=None,
+        num_prob=0,
         seed=None,
         num_top=BIG_NUM,
         case=None,
@@ -71,6 +66,7 @@ class ProbDistModel:
         startswith=None,
         endswith=None,
         regexp=None,
+        respect_case=False,
     ):
         if seed:
             self.rand.seed(seed)
@@ -86,27 +82,21 @@ class ProbDistModel:
             startswith=startswith,
             endswith=endswith,
             regexp=regexp,
+            respect_case=respect_case,
         )
 
-        if (rand + numeral) > 1:
-            raise ValueError(
-                "sum of 'rand' and 'numeral' (probabilities) should be less or equal to 1"
-            )
-        if not (0 <= rand <= 1):
-            raise ValueError("'rand' must be between 0 and 1")
-        if not (0 <= numeral <= 1):
-            raise ValueError("'numeral' must be between 0 and 1")
+        word_temp = temp if word_temp is None else word_temp
 
-        # rand and numeral are probabilities of choosing a completely random word, or selecting a random numeral
-        word_type = random.choices(
-            ["sample_weighted", "sample", "numeral"],
-            weights=[1 - rand - numeral, rand, numeral],
+        if not (0 <= num_prob <= 1):
+            raise ValueError("'num_prob' must be between 0 and 1")
+
+        word_type = self.rand.choices(
+            ["sample_weighted", "numeral"],
+            weights=[1 - num_prob, num_prob],
         )[0]
 
         if word_type == "sample_weighted":
-            return sample_word_weighted(filtered_data, self.rand)
-        elif word_type == "sample":
-            return sample_word(filtered_data, self.rand)
+            return sample_word_weighted(filtered_data, self.rand, word_temp)
         elif word_type == "numeral":
             return gen_numeral(self.rand, glyphs=glyphs, min_wl=min_wl, max_wl=max_wl)
 
@@ -138,15 +128,25 @@ class ProbDistModel:
         self,
         glyphs=None,
         seed=None,
-        cap_sent=True,
+        cap_sent=None,
         min_sent_len=DEFAULT_MIN_SENT_LEN,
         max_sent_len=DEFAULT_MAX_SENT_LEN,
         sent_len=None,
-        punc_func=None,
+        punc_temp=None,
+        temp=1,
         **kwargs,
     ):
         if seed:
             self.rand.seed(seed)
+
+        punc_temp = temp if punc_temp is None else punc_temp
+
+        if cap_sent is None:
+            # if there are uppercase letters and cap_sent isn't set, default to true
+            if glyphs:
+                cap_sent = bool("".join([c for c in glyphs if c.isupper()]))
+            else:
+                cap_sent = True
 
         words = self.words(
             glyphs=glyphs,
@@ -156,7 +156,7 @@ class ProbDistModel:
             num_words=sent_len,
             **kwargs,
         )
-        return punctuate(self.punctuation, self.rand, words, glyphs, punc_func)
+        return punctuate(self.punctuation, self.rand, words, glyphs, punc_temp)
 
     def sentences(
         self,

@@ -1,7 +1,7 @@
 import wordsiv
 import pytest
 from wordsiv.sources import WordCountSource
-from wordsiv.models import ProbDistModel
+from wordsiv.models import WordProbModel, FilterError
 import string
 
 
@@ -20,12 +20,27 @@ def wsv_probdist():
     wc_source = WordCountSource(
         "fake/path", meta={"bicameral": "True"}, test_data=test_data
     )
-    w.add_model("test", ProbDistModel(wc_source, test_punct))
+    w.add_model("test", WordProbModel(wc_source, test_punct))
     w.set_model("test")
     return w
 
+
 def test_probdist_paragraph_no_punctuation(wsv_probdist):
-    assert not any(punct in wsv_probdist.paragraph(glyphs="Ccat") for punct in string.punctuation)
+    assert not any(
+        punct in wsv_probdist.paragraph(glyphs="Ccat") for punct in string.punctuation
+    )
+
+
+def test_probdist_sentence_cap_sent_default_true(wsv_probdist):
+    # do cap_sent by default if we have a capital
+    assert wsv_probdist.sentence(glyphs="Apple")[0].isupper()
+
+    # if we don't have any capitals, cap_sent should be false
+    assert wsv_probdist.sentence(glyphs="apple")[0].islower()
+
+    # if we are asking for cap_sent, and we don't have capitals, throw an error...
+    with pytest.raises(FilterError):
+        wsv_probdist.sentence(glyphs="apple", cap_sent=True)
 
 
 @pytest.mark.parametrize("num_words", [1, 2, 10, 20])

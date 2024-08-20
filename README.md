@@ -120,7 +120,7 @@ different sentences as possible.
 [WordCountSource][wordcount-model] Sources and Models work with simple lists of words
 and occurence counts to generate words.
 
-The [ProbDistModel][random-model] (`model='rand'`) uses occurence counts to
+The [WordProbModel][random-model] (`model='rand'`) uses occurence counts to
 randomly choose words, favoring more popular words:
 
 ```python
@@ -129,7 +129,7 @@ randomly choose words, favoring more popular words:
 'Day music, commencement protection to threads who and dimension...'
 ```
 
-The **ProbDistModel** can also be set to ignore occurence counts and choose words
+The **WordProbModel** can also be set to ignore occurence counts and choose words
 completely randomly:
 
 ```python
@@ -164,7 +164,7 @@ capitalized or not:
 'i besought the bosom of the sun so'
 ```
 
-The [ProbDistModel][random-model] by capitalizes sentences by default, but we can
+The [WordProbModel][random-model] by capitalizes sentences by default, but we can
 turn this off:
 
 ```python

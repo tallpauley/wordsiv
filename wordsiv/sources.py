@@ -7,7 +7,7 @@ from io import StringIO
 BIG_NUM = 2 ** 10
 
 
-class WordFilterError(Exception):
+class FilterError(Exception):
     pass
 
 
@@ -91,29 +91,39 @@ class WordCountSource:
         startswith=None,
         endswith=None,
         regexp=None,
+        respect_case=True,
     ):
         # start with data from the source
         wc_str = self.data
 
         # filter TSV string based on case type
         # output of each filter_ function is a list of tuples (word, count)
-        if not case or not self.bicameral:
+        if not self.bicameral:
             wc_list = filter_caseless(wc_str, glyphs)
+        elif case == None:
+            # filter caseless matches words in the word list that can be spelled as is with glyphs
+            wc_list = filter_caseless(wc_str, glyphs)
+            if not wc_list:
+                # if filter caseless is giving us nothing, filter_cap matches words that can be capitalized with glyphs
+                wc_list = filter_cap(wc_str, glyphs, respect_case=respect_case)
+            if not wc_list:
+                # if filter caseless and filter_cap are giving us nothing, filter_uc matches words that can be uppercased with glyphs
+                wc_list = filter_uc(wc_str, glyphs)
+            if not wc_list and not respect_case:
+                # if filter caseless and filter_cap are giving us nothing, filter_uc matches words that can be uppercased with glyphs
+                wc_list = filter_lc(wc_str, glyphs, respect_case=respect_case)
         elif case == "uc":
             wc_list = filter_uc(wc_str, glyphs)
         elif case == "lc":
-            wc_list = filter_lc(wc_str, glyphs)
+            wc_list = filter_lc(wc_str, glyphs, respect_case=respect_case)
         elif case == "cap":
-            wc_list = filter_cap(wc_str, glyphs)
+            wc_list = filter_cap(wc_str, glyphs, respect_case=respect_case)
         else:
-            print(
-                f"Error: no case option '{case}', leaving casing as is", file=sys.stderr
-            )
-            wc_list = filter_caseless(wc_str, glyphs)
+            raise ValueError(f"Invalid case option: {case}")
 
         if not wc_list:
-            raise WordFilterError(
-                f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
+            raise FilterError(
+                f"No words available after filtering glyphs='{glyphs}' with case='{case}' and respect_case='{respect_case}'"
             )
 
         # filter by word length
@@ -156,115 +166,77 @@ class WordCountSource:
 
 def check_wc_empty(wc_list, filter_name):
     if not wc_list:
-        raise WordFilterError(f"No words available after {filter_name} filter")
+        raise FilterError(f"No words available after {filter_name} filter")
 
 
-def filter_uc(wc_str, glyphs):
+def filter_uc(wc_str: str, glyphs: str) -> list[tuple[str, int]]:
     """
-    Filter words to uppercase.
-
-    :param wc_str: The TSV string containing words and counts.
-    :param glyphs: A string of available glyphs.
-    :return: A list of tuples (word, count) with words in uppercase.
-
-    The pattern includes both uppercase and lowercase versions of the available glyphs
-    to ensure that words can be matched regardless of their original case. The word will
-    be uppercased after filtering, so we make sure we have the capital glyph, whether or
-    not the source word is capitalized.
+    Match words that are uppercase (or can be uppercased) and can be spelled with glyphs
     """
     if glyphs:
         uc_glyphs = "".join([c for c in glyphs if c.isupper()])
-        uc_glyphs_lowered = uc_glyphs.lower()
         if not uc_glyphs:
-            raise WordFilterError(
-                f"No uppercase glyphs available for filter_uc, glyphs='{glyphs}'"
-            )
-        pattern = fr"^[{uc_glyphs}{uc_glyphs_lowered}]+\s+\d+$"
+            return []
+        pattern = fr"^[{uc_glyphs}{uc_glyphs.lower()}]+\s+\d+$"
     else:
         pattern = r"^.+\s+\d+$"  # Any word can be made uppercase
     lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
     return [(l.split()[0].upper(), int(l.split()[1])) for l in lines]
 
 
-def filter_lc(wc_str, glyphs):
+def filter_lc(wc_str: str, glyphs: str, respect_case: bool) -> list[tuple[str, int]]:
     """
-    Filter words to lowercase.
-
-    :param wc_str: The TSV string containing words and counts.
-    :param glyphs: A string of available glyphs.
-    :return: A list of tuples (word, count) with words in lowercase.
-
-    The pattern matches only lowercase letters to ensure that only words that are entirely
-    in lowercase are matched. This is to avoid incorrect lowercasing of words like "Topeka".
+    Match words that are lowercase and can be spelled with glyphs
     """
     if glyphs:
         lc_glyphs = "".join([c for c in glyphs if c.islower()])
         if not lc_glyphs:
-            raise WordFilterError(
-                f"No lowercase glyphs available for filter_lc, glyphs='{glyphs}'"
-            )
-        pattern = fr"^[{lc_glyphs}]+\s+\d+$"
+            return []
+        search_glyphs = lc_glyphs if respect_case else lc_glyphs + lc_glyphs.upper()
+        pattern = fr"^[{search_glyphs}]+\s+\d+$"
     else:
-        pattern = r"^\p{Ll}+\s+\d+$"
+        pattern = r"^\p{Ll}+\s+\d+$" if respect_case else r"^.+\s+\d+$"
     lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
-    return [(l.split()[0], int(l.split()[1])) for l in lines]
+    return [(l.split()[0].lower(), int(l.split()[1])) for l in lines]
 
 
-def filter_cap(wc_str, glyphs):
+def filter_cap(wc_str: str, glyphs: str, respect_case: bool) -> list[tuple[str, int]]:
     """
-    Filter words to capitalized form.
-
-    :param wc_str: The TSV string containing words and counts.
-    :param glyphs: A string of available glyphs.
-    :return: A list of tuples (word, count) with words capitalized.
-
-    The pattern matches words that can be capitalized with the available glyphs. This includes
-    words that start with lowercase letters in the source file, but for which we have the
-    capital letters in available glyphs to capitalize them.
+    Match words that are capitalized (or can be capitalized) and can be spelled with glyphs
     """
     if glyphs:
         lc_glyphs = "".join([c for c in glyphs if c.islower()])
         uc_glyphs = "".join([c for c in glyphs if c.isupper()])
-        if not uc_glyphs:
-            raise WordFilterError(
-                f"No uppercase glyphs available for filter_cap, glyphs='{glyphs}'"
-            )
 
-        uc_glyphs_lowered = uc_glyphs.lower()
-        pattern = fr"^[{uc_glyphs}{uc_glyphs_lowered}][{lc_glyphs}]*\s+\d+$"
+        if not lc_glyphs or not uc_glyphs:
+            return []
+
+        search_glyphs = lc_glyphs if respect_case else lc_glyphs + lc_glyphs.upper()
+        pattern = fr"^[{uc_glyphs + uc_glyphs.lower()}][{search_glyphs}]*\s+\d+$"
     else:
-        pattern = r"^.\p{Ll}*\s+\d+$"
+        pattern = r"^.\p{Ll}*\s+\d+$" if respect_case else r"^.+\s+\d+$"
     lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
     return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
 
 
-def filter_caseless(wc_str, glyphs):
+def filter_caseless(wc_str: str, glyphs: str) -> list[tuple[str, int]]:
     """
-    Filter words without considering case.
-
-    :param wc_str: The TSV string containing words and counts.
-    :param glyphs: A string of available glyphs.
-    :return: A list of tuples (word, count) without case consideration.
-
-    The pattern matches any word regardless of case to ensure that all words are considered
-    without case sensitivity.
+    Match words that can be spelled with glyphs
     """
     if glyphs:
+        # match only words that can be spelled with glyphs
         pattern = fr"^[{glyphs}]+\s+\d+$"
+        lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
 
+        return [(l.split()[0], int(l.split()[1])) for l in lines]
     else:
-        pattern = r"^.*\s+\d+$"
-    lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
-    return [(l.split()[0], int(l.split()[1])) for l in lines]
+        # match everything
+        return [(l.split()[0], int(l.split()[1])) for l in wc_str.splitlines()]
 
 
-def regex_filter(wc_list, regexp):
+def regex_filter(wc_list: list[tuple[str, int]], regexp: str) -> list[tuple[str, int]]:
     """
     Filter words using a regular expression.
-
-    :param wc_list: A list of tuples (word, count).
-    :param regexp: The regular expression to filter words.
-    :return: A list of tuples (word, count) that match the regular expression.
     """
     pattern = regex.compile(r"^" + regexp + r"\s+\d+$", regex.MULTILINE)
     wc_str = "\n".join(f"{w}\t{c}" for w, c in wc_list)
