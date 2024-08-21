@@ -2,11 +2,12 @@ from functools import lru_cache
 from itertools import accumulate
 from .punctuation import punctuate
 from .sources import BIG_NUM, FilterError
+import sys
 import random
 
 
-DEFAULT_MIN_SENT_LEN = 5
-DEFAULT_MAX_SENT_LEN = 20
+DEFAULT_MIN_NUM_WORDS = 5
+DEFAULT_MAX_NUM_WORDS = 20
 DEFAULT_SEQ_NUM_WORDS = 10
 DEFAULT_MIN_PARA_LEN = 4
 DEFAULT_MAX_PARA_LEN = 7
@@ -23,7 +24,9 @@ def sample_word_weighted(word_count, rand, temp):
     return rand.choices(words, cum_weights=adjusted_counts)[0]
 
 
-def gen_numeral(rand, glyphs=None, wl=None, min_wl=1, max_wl=4, seed=None):
+def gen_numeral(rand, glyphs=None, wl=None, min_wl=1, max_wl=None, raise_errors=False):
+    if max_wl is None:
+        max_wl = 4
 
     if wl:
         min_wl = wl
@@ -37,7 +40,11 @@ def gen_numeral(rand, glyphs=None, wl=None, min_wl=1, max_wl=4, seed=None):
         available_numerals = "".join(n for n in available_numerals if n in glyphs)
 
         if not available_numerals:
-            raise FilterError("No numerals available in glyphs")
+            if raise_errors:
+                raise FilterError("No numerals available in glyphs")
+            else:
+                print("Error:", "No numerals available in glyphs", file=sys.stderr)
+                return ""
 
     length = random.randint(min_wl, max_wl)
     return "".join(rand.choice(available_numerals) for _ in range(length))
@@ -54,58 +61,76 @@ class WordProbModel:
         glyphs=None,
         temp=1.0,
         word_temp=None,
-        punc_temp=None,
-        num_prob=0,
+        n=None,
+        numerals=0,
         seed=None,
         num_top=BIG_NUM,
         case=None,
-        min_wl=0,
-        max_wl=BIG_NUM,
+        min_wl=1,
+        max_wl=None,
         wl=None,
         contains=None,
         startswith=None,
         endswith=None,
         regexp=None,
         respect_case=False,
+        raise_errors=False,
     ):
         if seed:
             self.rand.seed(seed)
 
-        filtered_data = self.wc_source.filter_data(
-            glyphs,
-            num_top=num_top,
-            case=case,
-            min_wl=min_wl,
-            max_wl=max_wl,
-            wl=wl,
-            contains=contains,
-            startswith=startswith,
-            endswith=endswith,
-            regexp=regexp,
-            respect_case=respect_case,
-        )
+        try:
+            filtered_data = self.wc_source.filter_data(
+                glyphs,
+                num_top=num_top,
+                case=case,
+                min_wl=min_wl,
+                max_wl=max_wl,
+                wl=wl,
+                contains=contains,
+                startswith=startswith,
+                endswith=endswith,
+                regexp=regexp,
+                respect_case=respect_case,
+            )
+        except FilterError as e:
+            if raise_errors:
+                raise e
+            else:
+                print("Error:", e.args[0], file=sys.stderr)
+                return ""
 
         word_temp = temp if word_temp is None else word_temp
 
-        if not (0 <= num_prob <= 1):
-            raise ValueError("'num_prob' must be between 0 and 1")
+        if not (0 <= numerals <= 1):
+            raise ValueError("'numerals' must be between 0 and 1")
 
-        word_type = self.rand.choices(
-            ["sample_weighted", "numeral"],
-            weights=[1 - num_prob, num_prob],
-        )[0]
-
-        if word_type == "sample_weighted":
-            return sample_word_weighted(filtered_data, self.rand, word_temp)
-        elif word_type == "numeral":
-            return gen_numeral(self.rand, glyphs=glyphs, min_wl=min_wl, max_wl=max_wl)
+        if n is None:
+            word_type = self.rand.choices(
+                ["sample_weighted", "numeral"],
+                weights=[1 - numerals, numerals],
+            )[0]
+            if word_type == "sample_weighted":
+                return sample_word_weighted(filtered_data, self.rand, word_temp)
+            elif word_type == "numeral":
+                return gen_numeral(
+                    self.rand,
+                    glyphs=glyphs,
+                    min_wl=min_wl,
+                    max_wl=max_wl,
+                    raise_errors=raise_errors,
+                )
+        else:
+            return filtered_data[n][0]
 
     def words(
         self,
+        glyphs=None,
         seed=None,
+        seq=False,
         num_words=None,
-        min_num_words=DEFAULT_MIN_SENT_LEN,
-        max_num_words=DEFAULT_MAX_SENT_LEN,
+        min_num_words=DEFAULT_MIN_NUM_WORDS,
+        max_num_words=DEFAULT_MAX_NUM_WORDS,
         cap_first=False,
         case=None,
         **kwargs,
@@ -116,22 +141,37 @@ class WordProbModel:
         if not num_words:
             num_words = self.rand.randint(min_num_words, max_num_words)
 
-        def case_per_word(n):
-            if not case and cap_first and n == 0:
+        if cap_first is None:
+            # if there are uppercase letters and cap_firs isn't set, default to true
+            if glyphs:
+                cap_first = bool("".join([c for c in glyphs if c.isupper()]))
+            else:
+                cap_first = True
+
+        def case_per_word(i):
+            # cap_first only applies case='cap' to first word if case is not set
+            if cap_first and not case and i == 0:
                 return "cap"
             else:
                 return case
 
-        return [self.word(case=case_per_word(n), **kwargs) for n in range(num_words)]
+        if seq:
+            word_list = [
+                self.word(glyphs=glyphs, case=case_per_word(i), n=i, **kwargs)
+                for i in range(num_words)
+            ]
+        else:
+            word_list = [
+                self.word(glyphs=glyphs, case=case_per_word(i), **kwargs)
+                for i in range(num_words)
+            ]
 
-    def sentence(
+        return [w for w in word_list if w]
+
+    def sent(
         self,
         glyphs=None,
         seed=None,
-        cap_sent=None,
-        min_sent_len=DEFAULT_MIN_SENT_LEN,
-        max_sent_len=DEFAULT_MAX_SENT_LEN,
-        sent_len=None,
         punc_temp=None,
         temp=1,
         **kwargs,
@@ -141,24 +181,13 @@ class WordProbModel:
 
         punc_temp = temp if punc_temp is None else punc_temp
 
-        if cap_sent is None:
-            # if there are uppercase letters and cap_sent isn't set, default to true
-            if glyphs:
-                cap_sent = bool("".join([c for c in glyphs if c.isupper()]))
-            else:
-                cap_sent = True
-
         words = self.words(
             glyphs=glyphs,
-            cap_first=cap_sent,
-            min_num_words=min_sent_len,
-            max_num_words=max_sent_len,
-            num_words=sent_len,
             **kwargs,
         )
         return punctuate(self.punctuation, self.rand, words, glyphs, punc_temp)
 
-    def sentences(
+    def sents(
         self,
         seed=None,
         min_para_len=DEFAULT_MIN_PARA_LEN,
@@ -172,15 +201,15 @@ class WordProbModel:
         if not para_len:
             para_len = random.randint(min_para_len, max_para_len)
 
-        return [self.sentence(**kwargs) for _ in range(para_len)]
+        return [self.sent(**kwargs) for _ in range(para_len)]
 
-    def paragraph(self, seed=None, sent_sep=" ", **kwargs):
+    def para(self, seed=None, sent_sep=" ", **kwargs):
         if seed:
             self.rand.seed(seed)
 
-        return sent_sep.join(self.sentences(**kwargs))
+        return sent_sep.join(self.sents(**kwargs))
 
-    def paragraphs(
+    def paras(
         self,
         seed=None,
         num_paras=3,
@@ -188,10 +217,10 @@ class WordProbModel:
     ):
         if seed:
             self.rand.seed(seed)
-        return [self.paragraph(**kwargs) for _ in range(num_paras)]
+        return [self.para(**kwargs) for _ in range(num_paras)]
 
     def text(self, seed=None, para_sep="\n\n", **kwargs):
         if seed:
             self.rand.seed(seed)
 
-        return para_sep.join(self.paragraphs(**kwargs))
+        return para_sep.join(self.paras(**kwargs))

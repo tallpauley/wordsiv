@@ -123,25 +123,25 @@ class WordSiv:
 
         return self.get_model(model).words(glyphs=glyphs, **kwargs)
 
-    def sentence(self, model: str = None, glyphs: str = None, **kwargs) -> str:
+    def sent(self, model: str = None, glyphs: str = None, **kwargs) -> str:
         glyphs = self.default_glyphs if not glyphs else glyphs
 
-        return self.get_model(model).sentence(glyphs=glyphs, **kwargs)
+        return self.get_model(model).sent(glyphs=glyphs, **kwargs)
 
-    def sentences(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    def sents(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
         glyphs = self.default_glyphs if not glyphs else glyphs
 
-        return self.get_model(model).sentences(glyphs=glyphs, **kwargs)
+        return self.get_model(model).sents(glyphs=glyphs, **kwargs)
 
-    def paragraph(self, model: str = None, glyphs: str = None, **kwargs) -> str:
+    def para(self, model: str = None, glyphs: str = None, **kwargs) -> str:
         glyphs = self.default_glyphs if not glyphs else glyphs
 
-        return self.get_model(model).paragraph(glyphs=glyphs, **kwargs)
+        return self.get_model(model).para(glyphs=glyphs, **kwargs)
 
-    def paragraphs(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    def paras(self, model: str = None, glyphs: str = None, **kwargs) -> list[str]:
         glyphs = self.default_glyphs if not glyphs else glyphs
 
-        return self.get_model(model).paragraphs(glyphs=glyphs, **kwargs)
+        return self.get_model(model).paras(glyphs=glyphs, **kwargs)
 
     def text(self, model: str = None, glyphs: str = None, **kwargs) -> str:
         glyphs = self.default_glyphs if not glyphs else glyphs
@@ -169,20 +169,20 @@ def words(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
     return _wordsiv_instance.words(model=model, glyphs=glyphs, **kwargs)
 
 
-def sentence(model: str = None, glyphs: str = None, **kwargs) -> str:
-    return _wordsiv_instance.sentence(model=model, glyphs=glyphs, **kwargs)
+def sent(model: str = None, glyphs: str = None, **kwargs) -> str:
+    return _wordsiv_instance.sent(model=model, glyphs=glyphs, **kwargs)
 
 
-def sentences(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
-    return _wordsiv_instance.sentences(model=model, glyphs=glyphs, **kwargs)
+def sents(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    return _wordsiv_instance.sents(model=model, glyphs=glyphs, **kwargs)
 
 
-def paragraph(model: str = None, glyphs: str = None, **kwargs) -> str:
-    return _wordsiv_instance.paragraph(model=model, glyphs=glyphs, **kwargs)
+def para(model: str = None, glyphs: str = None, **kwargs) -> str:
+    return _wordsiv_instance.para(model=model, glyphs=glyphs, **kwargs)
 
 
-def paragraphs(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
-    return _wordsiv_instance.paragraphs(model=model, glyphs=glyphs, **kwargs)
+def paras(model: str = None, glyphs: str = None, **kwargs) -> list[str]:
+    return _wordsiv_instance.paras(model=model, glyphs=glyphs, **kwargs)
 
 
 def text(model: str = None, glyphs: str = None, **kwargs) -> str:

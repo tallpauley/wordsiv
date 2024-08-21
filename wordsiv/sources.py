@@ -127,10 +127,12 @@ class WordCountSource:
             )
 
         # filter by word length
-        if min_wl or max_wl != BIG_NUM or wl:
-            if wl:
-                min_wl = wl
-                max_wl = wl
+        if wl:
+            wc_list = [(w, c) for w, c in wc_list if len(w) == wl]
+            check_wc_empty(wc_list, "min_wl, max_wl, wl")
+        elif min_wl or max_wl:
+            if not max_wl:
+                max_wl = BIG_NUM
 
             wc_list = [(w, c) for w, c in wc_list if min_wl <= len(w) <= max_wl]
             check_wc_empty(wc_list, "min_wl, max_wl, wl")

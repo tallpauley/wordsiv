@@ -39,7 +39,7 @@ Now you can make meaningless lipograms in Python:
 
 ```python
 >>> import wordsiv as wsv
->>> wsv.sentence(model='en_trillion', glyphs='HAMBUGERFONTSIVhambugerfontsiv.,')
+>>> wsv.sent(model='en_trillion', glyphs='HAMBUGERFONTSIVhambugerfontsiv.,')
 ('I might go over the instant to the streets in the air of those the same be '
  'haunting')
 ```
@@ -77,7 +77,7 @@ language in modern usage:
 ```python
 >>> from wordsiv import WordSiv
 >>> wsv = WordSiv()
->>> wsv.sentence(source='en_wordcount_web')
+>>> wsv.sent(source='en_wordcount_web')
 ('Maple canvas sporting pages transferred with superior government brand with '
  'women for key assign.')
 ```
@@ -92,7 +92,7 @@ select the model `rand` to achieve the same result as above:
 
 ```python
 >>> wsv = WordSiv()
->>> wsv.sentence(source='en_wordcount_web', model="rand")
+>>> wsv.sent(source='en_wordcount_web', model="rand")
 ('Maple canvas sporting pages transferred with superior government brand with '
  'women for key assign.')
 ```
@@ -106,7 +106,7 @@ If we want text that is somewhat natural-*looking*, we might use our
 [MarkovModel][markov-model] (`model='mkv'`).
 
 ```python
->>> wsv.paragraph(source="en_markov_gutenberg", model="mkv") # byexample: +skip
+>>> wsv.para(source="en_markov_gutenberg", model="mkv") # byexample: +skip
 "Why don't think so desirous of hugeness. Our pie is worship..."
 ```
 
@@ -125,7 +125,7 @@ randomly choose words, favoring more popular words:
 
 ```python
 # Default: probability by occurence count
->>> wsv.paragraph(source='en_wordcount_web', model='rand') # byexample: +skip
+>>> wsv.para(source='en_wordcount_web', model='rand') # byexample: +skip
 'Day music, commencement protection to threads who and dimension...'
 ```
 
@@ -133,7 +133,7 @@ The **WordProbModel** can also be set to ignore occurence counts and choose word
 completely randomly:
 
 ```python
->>> wsv.sentence(source='en_wordcount_web', sent_len=5, prob=False) # byexample: +skip
+>>> wsv.sent(source='en_wordcount_web', num_words=5, prob=False) # byexample: +skip
 'Conceivably championships consecration ects— anointed.'
 ```
 
@@ -155,11 +155,11 @@ capitalized or not:
 
 ```python
 >>> wsv = WordSiv()
->>> wsv.sentence('en_wordcount_web', uc=True, max_sent_len=8)
+>>> wsv.sent('en_wordcount_web', uc=True, max_num_words=8)
 'MAPLE CANVAS SPORTING PAGES TRANSFERRED, WITH SUPERIOR GOVERNMENT.'
 
->>> wsv.sentence(
-...    'en_markov_gutenberg', lc=True, min_sent_len=7, max_sent_len=10
+>>> wsv.sent(
+...    'en_markov_gutenberg', lc=True, min_num_words=7, max_num_words=10
 ... )
 'i besought the bosom of the sun so'
 ```
@@ -168,7 +168,7 @@ The [WordProbModel][random-model] by capitalizes sentences by default, but we ca
 turn this off:
 
 ```python
->>> wsv.sentence('en_wordcount_web', cap_sent=False, sent_len=10)
+>>> wsv.sent('en_wordcount_web', cap_sent=False, num_words=10)
 'egcs very and mortgage expressed about and online truss controls.'
 ```
 
@@ -181,8 +181,8 @@ We can turn this off by passing our own function for punctuation:
 
 ```python
 >>> def only_period(words, *args): return ' '.join(words) + '.'
->>> wsv.paragraph(
-...    source='en_wordcount_web', punc_func=only_period, sent_len=5, para_len=2
+>>> wsv.para(
+...    source='en_wordcount_web', punc_func=only_period, num_words=5, para_len=2
 ... )
 'By schools sign I avoid. Or about fascism writers what.'
 ```
@@ -196,7 +196,7 @@ This only applies for [WordCountSource][wordcount-model] models, as the
 [Models](#models) take care of generating *sentences* and *words*, so parameters
 relating to these are handled by the models. For now, please refer to the source
 code for these models to learn the parameters accepted for `word()`, `words()`,
-and `sentence()` APIs:
+and `sent()` APIs:
 
 - [Random Model][random-model]
 - [Sequential Model][sequential-model]
@@ -204,8 +204,8 @@ and `sentence()` APIs:
 
 ### Paragraph and Text Parameters
 
-The **WordSiv** object itself handles `sentences()`, `paragraph()`,
-`paragraphs()` and `text` calls with their parameters. See the [WordSiv
+The **WordSiv** object itself handles `sents()`, `para()`,
+`paras()` and `text` calls with their parameters. See the [WordSiv
 Class][wordsiv-object] source code to learn how to customize the text output.
 
 ## Technical Notes
@@ -225,7 +225,7 @@ object:
 
 ```python
 >>> wsv = WordSiv(seed=6)
->>> wsv.sentence(source="en_markov_gutenberg", min_sent_len=7)
+>>> wsv.sent(source="en_markov_gutenberg", min_num_words=7)
 'even if i forgot the go in their'
 ```
 
