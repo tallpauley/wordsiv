@@ -83,7 +83,7 @@ class WordCountSource:
         self,
         glyphs,
         num_top=BIG_NUM,
-        case=None,
+        case="any",
         min_wl=0,
         max_wl=BIG_NUM,
         wl=None,
@@ -91,39 +91,16 @@ class WordCountSource:
         startswith=None,
         endswith=None,
         regexp=None,
-        respect_case=True,
     ):
         # start with data from the source
         wc_str = self.data
 
-        # filter TSV string based on case type
-        # output of each filter_ function is a list of tuples (word, count)
-        if not self.bicameral:
-            wc_list = filter_caseless(wc_str, glyphs)
-        elif case == None:
-            # filter caseless matches words in the word list that can be spelled as is with glyphs
-            wc_list = filter_caseless(wc_str, glyphs)
-            if not wc_list:
-                # if filter caseless is giving us nothing, filter_cap matches words that can be capitalized with glyphs
-                wc_list = filter_cap(wc_str, glyphs, respect_case=respect_case)
-            if not wc_list:
-                # if filter caseless and filter_cap are giving us nothing, filter_uc matches words that can be uppercased with glyphs
-                wc_list = filter_uc(wc_str, glyphs)
-            if not wc_list and not respect_case:
-                # if filter caseless and filter_cap are giving us nothing, filter_uc matches words that can be uppercased with glyphs
-                wc_list = filter_lc(wc_str, glyphs, respect_case=respect_case)
-        elif case == "uc":
-            wc_list = filter_uc(wc_str, glyphs)
-        elif case == "lc":
-            wc_list = filter_lc(wc_str, glyphs, respect_case=respect_case)
-        elif case == "cap":
-            wc_list = filter_cap(wc_str, glyphs, respect_case=respect_case)
-        else:
-            raise ValueError(f"Invalid case option: {case}")
+        # filter by case
+        wc_list = case_filter(wc_str, case, glyphs, self.bicameral)
 
         if not wc_list:
             raise FilterError(
-                f"No words available after filtering glyphs='{glyphs}' with case='{case}' and respect_case='{respect_case}'"
+                f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
             )
 
         # filter by word length
@@ -171,69 +148,109 @@ def check_wc_empty(wc_list, filter_name):
         raise FilterError(f"No words available after {filter_name} filter")
 
 
-def filter_uc(wc_str: str, glyphs: str) -> list[tuple[str, int]]:
-    """
-    Match words that are uppercase (or can be uppercased) and can be spelled with glyphs
-    """
-    if glyphs:
-        uc_glyphs = "".join([c for c in glyphs if c.isupper()])
-        if not uc_glyphs:
-            return []
-        pattern = fr"^[{uc_glyphs}{uc_glyphs.lower()}]+\s+\d+$"
+def case_filter(wc_str, case, glyphs, bicameral):
+    if not bicameral:
+        if glyphs:
+            return case_regex(wc_str, f"[{glyphs}]")
+        else:
+            return case_regex(wc_str, "all")
     else:
-        pattern = r"^.+\s+\d+$"  # Any word can be made uppercase
-    lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
-    return [(l.split()[0].upper(), int(l.split()[1])) for l in lines]
+        if glyphs:
+            uc_glyphs = "".join([c for c in glyphs if c.isupper()])
+            lc_glyphs = "".join([c for c in glyphs if c.islower()])
 
+        if case == "any":
+            if glyphs:
+                wc_list = case_regex(wc_str, f"[{glyphs}]+")
+                if not wc_list and uc_glyphs and lc_glyphs:
+                    wc_list = case_regex(
+                        wc_str,
+                        f"[{uc_glyphs}{uc_glyphs.lower()}][{lc_glyphs}]*",
+                        change_case="cap",
+                    )
+                if not wc_list and uc_glyphs:
+                    wc_list = case_regex(
+                        wc_str, f"[{uc_glyphs}{uc_glyphs.lower()}]+", change_case="uc"
+                    )
+                return wc_list
+            else:
+                return case_regex(wc_str, "all")
+        elif case == "any_og":
+            if glyphs:
+                return case_regex(wc_str, f"[{glyphs}]+")
+            else:
+                return case_regex(wc_str, "all")
+        elif case == "lc":
+            if glyphs:
+                return case_regex(wc_str, f"[{lc_glyphs}]+")
+            else:
+                return case_regex(wc_str, r"\p{Ll}+")
+        elif case == "lc_force":
+            if glyphs:
+                if not lc_glyphs:
+                    raise FilterError("case='{case}' but no lowercase glyphs found")
+                return case_regex(
+                    wc_str, f"[{lc_glyphs}{lc_glyphs.upper()}]+", change_case="lc"
+                )
+            else:
+                return case_regex(wc_str, "all", change_case="lc")
+        elif case == "cap":
+            if glyphs:
+                if not lc_glyphs:
+                    raise FilterError("case='{case}' but no lowercase glyphs found")
 
-def filter_lc(wc_str: str, glyphs: str, respect_case: bool) -> list[tuple[str, int]]:
-    """
-    Match words that are lowercase and can be spelled with glyphs
-    """
-    if glyphs:
-        lc_glyphs = "".join([c for c in glyphs if c.islower()])
-        if not lc_glyphs:
-            return []
-        search_glyphs = lc_glyphs if respect_case else lc_glyphs + lc_glyphs.upper()
-        pattern = fr"^[{search_glyphs}]+\s+\d+$"
-    else:
-        pattern = r"^\p{Ll}+\s+\d+$" if respect_case else r"^.+\s+\d+$"
-    lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
-    return [(l.split()[0].lower(), int(l.split()[1])) for l in lines]
+                if not uc_glyphs:
+                    raise FilterError("case='{case}' but no uppercase glyphs found")
 
+                return case_regex(
+                    wc_str,
+                    f"[{uc_glyphs}{uc_glyphs.lower()}][{lc_glyphs}]*",
+                    change_case="cap",
+                )
+            else:
+                return case_regex(wc_str, r".\p{Ll}*", change_case="cap")
+        elif case == "cap_og":
+            if glyphs:
+                if not lc_glyphs:
+                    raise FilterError("case='{case}' but no lowercase glyphs found")
 
-def filter_cap(wc_str: str, glyphs: str, respect_case: bool) -> list[tuple[str, int]]:
-    """
-    Match words that are capitalized (or can be capitalized) and can be spelled with glyphs
-    """
-    if glyphs:
-        lc_glyphs = "".join([c for c in glyphs if c.islower()])
-        uc_glyphs = "".join([c for c in glyphs if c.isupper()])
+                if not uc_glyphs:
+                    raise FilterError("case='{case}' but no uppercase glyphs found")
+                return case_regex(wc_str, f"[{uc_glyphs}][{lc_glyphs}]*")
+            else:
+                return case_regex(wc_str, r"\p{Lu}\p{Ll}*")
+        elif case == "cap_force":
+            if glyphs:
+                if not lc_glyphs:
+                    raise FilterError("case='{case}' but no lowercase glyphs found")
 
-        if not lc_glyphs or not uc_glyphs:
-            return []
-
-        search_glyphs = lc_glyphs if respect_case else lc_glyphs + lc_glyphs.upper()
-        pattern = fr"^[{uc_glyphs + uc_glyphs.lower()}][{search_glyphs}]*\s+\d+$"
-    else:
-        pattern = r"^.\p{Ll}*\s+\d+$" if respect_case else r"^.+\s+\d+$"
-    lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
-    return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
-
-
-def filter_caseless(wc_str: str, glyphs: str) -> list[tuple[str, int]]:
-    """
-    Match words that can be spelled with glyphs
-    """
-    if glyphs:
-        # match only words that can be spelled with glyphs
-        pattern = fr"^[{glyphs}]+\s+\d+$"
-        lines = regex.findall(regex.compile(pattern, regex.MULTILINE), wc_str)
-
-        return [(l.split()[0], int(l.split()[1])) for l in lines]
-    else:
-        # match everything
-        return [(l.split()[0], int(l.split()[1])) for l in wc_str.splitlines()]
+                if not uc_glyphs:
+                    raise FilterError("case='{case}' but no uppercase glyphs found")
+                return case_regex(
+                    wc_str,
+                    f"[{uc_glyphs}{uc_glyphs.lower()}][{lc_glyphs}{lc_glyphs.upper()}]*",
+                    change_case="cap",
+                )
+            else:
+                return case_regex(wc_str, "all", change_case="cap")
+        elif case == "uc":
+            if glyphs:
+                if not uc_glyphs:
+                    raise FilterError("case='{case}' but no uppercase glyphs found")
+                return case_regex(
+                    wc_str, f"[{uc_glyphs}{uc_glyphs.lower()}]+", change_case="uc"
+                )
+            else:
+                return case_regex(wc_str, "all", change_case="uc")
+        elif case == "uc_og":
+            if glyphs:
+                if not uc_glyphs:
+                    raise FilterError("case='{case}' but no uppercase glyphs found")
+                return case_regex(wc_str, f"[{uc_glyphs}]+")
+            else:
+                return case_regex(wc_str, r"\p{Lu}+")
+        else:
+            raise ValueError(f"Invalid case option: {case}")
 
 
 def regex_filter(wc_list: list[tuple[str, int]], regexp: str) -> list[tuple[str, int]]:
@@ -245,3 +262,24 @@ def regex_filter(wc_list: list[tuple[str, int]], regexp: str) -> list[tuple[str,
     lines = regex.findall(pattern, wc_str)
 
     return [(l.split()[0], int(l.split()[1])) for l in lines]
+
+
+@lru_cache(maxsize=None)
+def case_regex(
+    wc_str: str, pattern: str, change_case: str = "none"
+) -> list[tuple[str, int]]:
+
+    if pattern == "all":
+        lines = wc_str.splitlines()
+    else:
+        p = regex.compile(fr"^{pattern}\t\d+$", regex.MULTILINE)
+        lines = regex.findall(p, wc_str)
+
+    if change_case == "uc":
+        return [(l.split()[0].upper(), int(l.split()[1])) for l in lines]
+    elif change_case == "lc":
+        return [(l.split()[0].lower(), int(l.split()[1])) for l in lines]
+    elif change_case == "cap":
+        return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
+    else:
+        return [(l.split()[0], int(l.split()[1])) for l in lines]

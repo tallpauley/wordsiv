@@ -85,26 +85,15 @@ def test_filter_data_glyphs():
     assert wc.filter_data("BARTDoS") == (("BART", 5), ("DDoS", 6))
 
     # if no exact matches for the glyph set, we'll match Cap and UC of lc source words
-    # no need to transform grape to UC or Cap since we have the letters to spell grape
     assert wc.filter_data("GRAPEgrape") == (("grape", 1),)
-    # however, if we can't spell grape...
     assert wc.filter_data("Grape") == (("Grape", 1),)
-    # in this case, we only have the letters for GRAPE, so it's uppercased
     assert wc.filter_data("GRAPE") == (("GRAPE", 1),)
-    # also works for words that are capitalized in the source
     assert wc.filter_data("APLE") == (("APPLE", 2), ("APPLE", 3))
 
     # Capitalized, UC, CamelCaps words will not be lowercased,
     # since lowercasing an acronym or proper noun is often incorrect, however...
     with pytest.raises(FilterError):
         wc.filter_data("bartdos")
-
-    # ... if you really want to maximize the number of matches, you can use respect_case=False
-    assert wc.filter_data("bartdos", respect_case=False) == (
-        ("bart", 4),
-        ("bart", 5),
-        ("ddos", 6),
-    )
 
 
 def test_filter_data_case():
@@ -119,7 +108,7 @@ def test_filter_data_case():
     assert wc.filter_data(None, case="lc") == (("grape", 1), ("apple", 2))
 
     # unless, you want to force them lowercase
-    assert wc.filter_data(None, case="lc", respect_case=False) == (
+    assert wc.filter_data(None, case="lc_force") == (
         ("grape", 1),
         ("apple", 2),
         ("apple", 3),
@@ -128,7 +117,7 @@ def test_filter_data_case():
         ("ddos", 6),
     )
 
-    # with case='uc', it assumes any word can be uppercased (no need to set respect_case=False)
+    # with case='uc', it assumes any word can be uppercased
     assert wc.filter_data(None, case="uc") == (
         ("GRAPE", 1),
         ("APPLE", 2),
@@ -146,8 +135,8 @@ def test_filter_data_case():
         ("Bart", 4),
     )
 
-    # again, however, you can use respect_case=False for maximum possibilities
-    assert wc.filter_data(None, case="cap", respect_case=False) == (
+    # unless you want to force it with 'cap_force
+    assert wc.filter_data(None, case="cap_force") == (
         ("Grape", 1),
         ("Apple", 2),
         ("Apple", 3),
@@ -175,14 +164,13 @@ def test_filter_data_glyphs_case():
     with pytest.raises(FilterError):
         wc.filter_data(glyphs="Ddos", case="cap")
 
-    # but now with the case relaxed
-    assert wc.filter_data(glyphs="bart", case="lc", respect_case=False) == (
+    # unless you want to force lc
+    assert wc.filter_data(glyphs="bart", case="lc_force") == (
         ("bart", 4),
         ("bart", 5),
     )
-    assert wc.filter_data(glyphs="Ddos", case="cap", respect_case=False) == (
-        ("Ddos", 6),
-    )
+    # or force cap
+    assert wc.filter_data(glyphs="Ddos", case="cap_force") == (("Ddos", 6),)
 
 
 def test_filter_data_wl():

@@ -65,7 +65,7 @@ class WordProbModel:
         numerals=0,
         seed=None,
         num_top=BIG_NUM,
-        case=None,
+        case="any",
         min_wl=1,
         max_wl=None,
         wl=None,
@@ -73,7 +73,6 @@ class WordProbModel:
         startswith=None,
         endswith=None,
         regexp=None,
-        respect_case=False,
         raise_errors=False,
     ):
         if seed:
@@ -91,7 +90,6 @@ class WordProbModel:
                 startswith=startswith,
                 endswith=endswith,
                 regexp=regexp,
-                respect_case=respect_case,
             )
         except FilterError as e:
             if raise_errors:
@@ -131,8 +129,8 @@ class WordProbModel:
         num_words=None,
         min_num_words=DEFAULT_MIN_NUM_WORDS,
         max_num_words=DEFAULT_MAX_NUM_WORDS,
-        cap_first=False,
-        case=None,
+        cap_first=None,
+        case="any",
         **kwargs,
     ):
         if seed:
@@ -142,7 +140,7 @@ class WordProbModel:
             num_words = self.rand.randint(min_num_words, max_num_words)
 
         if cap_first is None:
-            # if there are uppercase letters and cap_firs isn't set, default to true
+            # if there are uppercase letters and cap_first isn't set, default to true
             if glyphs:
                 cap_first = bool("".join([c for c in glyphs if c.isupper()]))
             else:
@@ -150,7 +148,7 @@ class WordProbModel:
 
         def case_per_word(i):
             # cap_first only applies case='cap' to first word if case is not set
-            if cap_first and not case and i == 0:
+            if cap_first and case == "any" and i == 0:
                 return "cap"
             else:
                 return case
