@@ -161,41 +161,57 @@ def case_filter(wc_str, case, glyphs, bicameral):
 
         if case == "any":
             if glyphs:
+                # case "any" is the default case, and tries to be as flexible as needed
+                # we first try to get unmodified words from source (same as "any_og")
                 wc_list = case_regex(wc_str, f"[{glyphs}]+")
+
+                # if no matches, get lowercase words from source we can display capitalized with glyphs
                 if not wc_list and uc_glyphs and lc_glyphs:
                     wc_list = case_regex(
                         wc_str,
-                        f"[{uc_glyphs}{uc_glyphs.lower()}][{lc_glyphs}]*",
+                        f"[{uc_glyphs.lower()}][{lc_glyphs}]*",
                         change_case="cap",
                     )
+
+                # if no matches still, get all words from source we can display uppercase with glyphs (like case='uc')
                 if not wc_list and uc_glyphs:
                     wc_list = case_regex(
                         wc_str, f"[{uc_glyphs}{uc_glyphs.lower()}]+", change_case="uc"
                     )
                 return wc_list
             else:
+                # for case='any' and no glyphs, return all words
                 return case_regex(wc_str, "all")
         elif case == "any_og":
+            # case "any_og" means any unmodified words from source
             if glyphs:
+                # return all source words we can display with glyphs as is
                 return case_regex(wc_str, f"[{glyphs}]+")
             else:
+                # return all source words
                 return case_regex(wc_str, "all")
         elif case == "lc":
             if glyphs:
+                # return words that are lowercase in the source and can be displayed with glyphs
                 return case_regex(wc_str, f"[{lc_glyphs}]+")
             else:
+                # return words that are lowercase in the source
                 return case_regex(wc_str, r"\p{Ll}+")
         elif case == "lc_force":
+            # we're "forcing" capitalization in that we're tampering with Capital, UC and CamelCase words in source
             if glyphs:
+                # return all source words, lowercased, which can be displayed with glyphs
                 if not lc_glyphs:
                     raise FilterError("case='{case}' but no lowercase glyphs found")
                 return case_regex(
                     wc_str, f"[{lc_glyphs}{lc_glyphs.upper()}]+", change_case="lc"
                 )
             else:
+                # return all source words, lowercased
                 return case_regex(wc_str, "all", change_case="lc")
         elif case == "cap":
             if glyphs:
+                # return words that are lowercase or capitalized in source, made capitalized, which can be displayed with glyphs
                 if not lc_glyphs:
                     raise FilterError("case='{case}' but no lowercase glyphs found")
 
@@ -208,9 +224,11 @@ def case_filter(wc_str, case, glyphs, bicameral):
                     change_case="cap",
                 )
             else:
+                # return words that are lowercase or capitalized in source, made capitalized
                 return case_regex(wc_str, r".\p{Ll}*", change_case="cap")
         elif case == "cap_og":
             if glyphs:
+                # return words that are capitalized in the source and can be displayed with glyphs
                 if not lc_glyphs:
                     raise FilterError("case='{case}' but no lowercase glyphs found")
 
@@ -218,9 +236,12 @@ def case_filter(wc_str, case, glyphs, bicameral):
                     raise FilterError("case='{case}' but no uppercase glyphs found")
                 return case_regex(wc_str, f"[{uc_glyphs}][{lc_glyphs}]*")
             else:
+                # return words that are capitalized in the source
                 return case_regex(wc_str, r"\p{Lu}\p{Ll}*")
         elif case == "cap_force":
+            # we're "forcing" capitalization in that we're tampering with UC and CamelCase words in source
             if glyphs:
+                # return all source words, made capitalized, which can be displayed with glyphs
                 if not lc_glyphs:
                     raise FilterError("case='{case}' but no lowercase glyphs found")
 
@@ -232,22 +253,27 @@ def case_filter(wc_str, case, glyphs, bicameral):
                     change_case="cap",
                 )
             else:
+                # return all source words, made capitalized
                 return case_regex(wc_str, "all", change_case="cap")
         elif case == "uc":
             if glyphs:
+                # return all source words, made uppercase, which can be displayed with glyphs
                 if not uc_glyphs:
                     raise FilterError("case='{case}' but no uppercase glyphs found")
                 return case_regex(
                     wc_str, f"[{uc_glyphs}{uc_glyphs.lower()}]+", change_case="uc"
                 )
             else:
+                # return all source words, made uppercase
                 return case_regex(wc_str, "all", change_case="uc")
         elif case == "uc_og":
             if glyphs:
+                # return words that are uppercase in the source and can be displayed with glyphs
                 if not uc_glyphs:
                     raise FilterError("case='{case}' but no uppercase glyphs found")
                 return case_regex(wc_str, f"[{uc_glyphs}]+")
             else:
+                # return words that are uppercase in the source
                 return case_regex(wc_str, r"\p{Lu}+")
         else:
             raise ValueError(f"Invalid case option: {case}")
