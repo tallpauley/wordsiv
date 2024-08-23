@@ -1,4 +1,4 @@
-"""Wordsiv is a Python library for generating proofing text with a limited character set."""
+"""WordSiv is a Python library for generating proofing text with a limited character set."""
 
 from importlib_metadata import entry_points
 
