@@ -11,9 +11,7 @@ WordSiv is a Python library/framework for generating text  with on a limited gly
 
 ## Why?
 
-When designing a typeface, it's important to evaluate the typeface in text while the glyph set is limited. Tools like [word-o-mat](https://github.com/ninastoessinger/word-o-mat) are great for evaluating words, but lack the ability to make "realistic-looking" text which is punctuated by common words.
-
-Also, I felt the need for an easy-to-use, extensible library for word/text generation to drop into [DrawBot](https://www.drawbot.com/) for dynamic type proof creation.
+When designing a typeface, it's important to evaluate the typeface in text while the glyph set is limited. Tools like [word-o-mat](https://github.com/ninastoessinger/word-o-mat) are great for evaluating words, but lack the ability to make "realistic-looking" text which is punctuated by common words. Also, I felt the need for an easy-to-use, extensible library for word/text generation to drop into [DrawBot](https://www.drawbot.com/) for dynamic type proof creation.
 
 
 ## Installation in DrawBot
@@ -58,7 +56,7 @@ pip install git+https://github.com/tallpauley/wordsiv-sources
 | [WordSiv](#) | CLI | Chris Pauley | Yes | word probability (for now) | Yes |
 | [Galvanized Jets](https://www.galvanizedjets.com/) | web tool | Samarskaya & Partners | No | static text | N/A |
 | [adhesiontext.com](https://adhesiontext.com/) | web tool | Miguel Sousa | Yes | random word |  No |
-| [word-o-mat](https://github.com/ninastoessinger/word-o-mat) | Robofont & Glyphs plug-in | Nina Stössinger | random word | random word | No
+| [word-o-mat](https://github.com/ninastoessinger/word-o-mat) | Robofont & Glyphs plug-in | Nina Stössinger | No | random word | No
 | [Just Another Test Text Generator](https://justanotherfoundry.com/generator) | web tool, [CLI](https://github.com/justanotherfoundry/text-generator/tree/master) | Tim Ahrens | Yes | trigram character prediction | Yes |
 
 ### Other Resources
