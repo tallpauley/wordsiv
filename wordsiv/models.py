@@ -64,7 +64,7 @@ class WordProbModel:
         n=None,
         numerals=0,
         seed=None,
-        num_top=BIG_NUM,
+        top_k=BIG_NUM,
         case="any",
         min_wl=1,
         max_wl=None,
@@ -81,7 +81,7 @@ class WordProbModel:
         try:
             filtered_data = self.wc_source.filter_data(
                 glyphs,
-                num_top=num_top,
+                top_k=top_k,
                 case=case,
                 min_wl=min_wl,
                 max_wl=max_wl,

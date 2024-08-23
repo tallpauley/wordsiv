@@ -82,7 +82,7 @@ class WordCountSource:
     def filter_data(
         self,
         glyphs,
-        num_top=BIG_NUM,
+        top_k=BIG_NUM,
         case="any",
         min_wl=0,
         max_wl=BIG_NUM,
@@ -134,18 +134,19 @@ class WordCountSource:
         # filter with regex
         if regexp:
             wc_list = regex_filter(wc_list, regexp)
-            check_wc_empty(wc_list, "regexp")
+            check_wc_empty(wc_list, "regexp", f" '{regexp}")
 
-        # limit number of words if num_top is set
-        if num_top:
-            wc_list = wc_list[:num_top]
+        # limit number of words if top_k is set
+        if top_k:
+            wc_list = wc_list[:top_k]
 
         return tuple(wc_list)
 
 
-def check_wc_empty(wc_list, filter_name):
+def check_wc_empty(wc_list, filter_name, details=""):
     if not wc_list:
-        raise FilterError(f"No words available after {filter_name} filter")
+        msg = f"No words available after {filter_name} filter{details}"
+        raise FilterError(msg)
 
 
 def case_filter(wc_str, case, glyphs, bicameral):
