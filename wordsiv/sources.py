@@ -88,6 +88,7 @@ class WordCountSource:
         max_wl=BIG_NUM,
         wl=None,
         contains=None,
+        inner=None,
         startswith=None,
         endswith=None,
         regexp=None,
@@ -106,30 +107,40 @@ class WordCountSource:
         # filter by word length
         if wl:
             wc_list = [(w, c) for w, c in wc_list if len(w) == wl]
-            check_wc_empty(wc_list, "min_wl, max_wl, wl")
+            check_wc_empty(wc_list, "wl", f" '{wl}")
         elif min_wl or max_wl:
             if not max_wl:
                 max_wl = BIG_NUM
 
             wc_list = [(w, c) for w, c in wc_list if min_wl <= len(w) <= max_wl]
-            check_wc_empty(wc_list, "min_wl, max_wl, wl")
+            check_wc_empty(wc_list, "min_wl, max_wl", f" '{min_wl}, {max_wl}'")
 
-        # filter with contains, startswith, endswith
+        # filter with contains, inner, startswith, endswith
+        if inner:
+            contains = inner
+
         if contains:
+            if inner:
+                word_slice = slice(1, -1)
+            else:
+                word_slice = slice(0, None)
+
             if type(contains) is str:
                 contains = [contains]
 
             for contains_search in contains:
-                wc_list = [(w, c) for w, c in wc_list if contains_search in w]
-                check_wc_empty(wc_list, "contains")
+                wc_list = [
+                    (w, c) for w, c in wc_list if contains_search in w[word_slice]
+                ]
+            check_wc_empty(wc_list, "contains", f" '{contains}'")
 
         if startswith:
             wc_list = [(w, c) for w, c in wc_list if w.startswith(startswith)]
-            check_wc_empty(wc_list, "startswith")
+            check_wc_empty(wc_list, "startswith", f" '{startswith}'")
 
         if endswith:
             wc_list = [(w, c) for w, c in wc_list if w.endswith(endswith)]
-            check_wc_empty(wc_list, "endswith")
+            check_wc_empty(wc_list, "endswith", f" '{endswith}'")
 
         # filter with regex
         if regexp:

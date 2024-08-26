@@ -101,7 +101,7 @@ class WordSiv:
             if me.full_name == query or me.model_name == query
         ]
         if not results:
-            raise ModelNotFoundError(f"no model named'{query}'")
+            raise ModelNotFoundError(f"no model named '{query}'")
         if len(results) > 1:
             full_names = " or ".join([f"'{me.full_name}'" for me in results])
             raise MultipleModelsFoundError(

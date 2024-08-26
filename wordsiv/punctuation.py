@@ -1,7 +1,7 @@
 from random import Random
 
 
-def random_available(option_weight, glyphs: str, rand, punc_temp: float | int):
+def random_available(option_weight, glyphs: str, rand, punc_temp: float):
     options, weights = zip(
         *{
             cs: prob ** (1 / punc_temp)
@@ -17,7 +17,7 @@ def punctuate(
     rand: Random,
     words: list[str],
     glyphs: str,
-    punc_temp: float | int,
+    punc_temp: float,
 ):
     """Punctuate a list of words and join into a sentence using punc_func"""
 
