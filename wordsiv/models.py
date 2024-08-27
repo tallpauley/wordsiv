@@ -61,7 +61,7 @@ class WordProbModel:
         glyphs=None,
         temp=1.0,
         word_temp=None,
-        n=None,
+        idx=None,
         numerals=0,
         seed=None,
         top_k=BIG_NUM,
@@ -105,7 +105,7 @@ class WordProbModel:
         if not (0 <= numerals <= 1):
             raise ValueError("'numerals' must be between 0 and 1")
 
-        if n is None:
+        if idx is None:
             word_type = self.rand.choices(
                 ["sample_weighted", "numeral"],
                 weights=[1 - numerals, numerals],
@@ -121,7 +121,14 @@ class WordProbModel:
                     raise_errors=raise_errors,
                 )
         else:
-            return filtered_data[n][0]
+            try:
+                return filtered_data[idx][0]
+            except IndexError:
+                if raise_errors:
+                    raise FilterError(f"No word at index idx='{idx}'")
+                else:
+                    print(f"Error: No word at index idx='{idx}'", file=sys.stderr)
+                    return ""
 
     def words(
         self,
@@ -157,7 +164,7 @@ class WordProbModel:
 
         if seq:
             word_list = [
-                self.word(glyphs=glyphs, case=case_per_word(i), n=i, **kwargs)
+                self.word(glyphs=glyphs, case=case_per_word(i), idx=i, **kwargs)
                 for i in range(num_words)
             ]
         else:
