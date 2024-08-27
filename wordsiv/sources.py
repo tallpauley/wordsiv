@@ -89,6 +89,8 @@ class WordCountSource:
         wl=None,
         contains=None,
         inner=None,
+        startswith=None,
+        endswith=None,
         startglyph=None,
         endglyph=None,
         regexp=None,
@@ -107,10 +109,16 @@ class WordCountSource:
         if startglyph:
             wc_list = [(w, c) for w, c in wc_list if w[0] == startglyph]
             check_wc_empty(wc_list, "startglyph", f" '{startglyph}'")
+        elif startswith:
+            wc_list = [(w, c) for w, c in wc_list if w.startswith(startswith)]
+            check_wc_empty(wc_list, "startswith", f" '{startswith}'")
 
         if endglyph:
             wc_list = [(w, c) for w, c in wc_list if w[-1] == endglyph]
             check_wc_empty(wc_list, "endglyph", f" '{endglyph}'")
+        elif endswith:
+            wc_list = [(w, c) for w, c in wc_list if w.endswith(endswith)]
+            check_wc_empty(wc_list, "endswith", f" '{endswith}'")
 
         # filter with contains, inner, startglyph, endglyph
         if inner:
