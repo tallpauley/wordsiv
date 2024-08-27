@@ -180,6 +180,7 @@ class WordProbModel:
         glyphs=None,
         seed=None,
         punc_temp=None,
+        punc=True,
         temp=1,
         **kwargs,
     ):
@@ -192,7 +193,10 @@ class WordProbModel:
             glyphs=glyphs,
             **kwargs,
         )
-        return punctuate(self.punctuation, self.rand, words, glyphs, punc_temp)
+        if punc:
+            return punctuate(self.punctuation, self.rand, words, glyphs, punc_temp)
+        else:
+            return " ".join(words)
 
     def sents(
         self,

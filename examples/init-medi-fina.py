@@ -1,13 +1,12 @@
 from wordsiv import sent
 import time
 
-# Arabic and Farsi character templates
+# Arabic and Farsi glyphs
 ar_glyphs = "ابجدهوزحطيكلمنسعفصقرشتثخذضظغء"
 fa_glyphs = "یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء"
 
 
 def init_medi_fina(glyphs, lang):
-    textProofString = ""
 
     lines = []
     for g in glyphs:
@@ -15,11 +14,11 @@ def init_medi_fina(glyphs, lang):
         line += " ".join(
             [
                 sent(
-                    model=lang, seq=True, num_words=5, min_wl=5, max_wl=14, startswith=g
+                    model=lang, num_words=5, min_wl=5, max_wl=14, startswith=g, punc=False
                 ),
-                sent(model=lang, seq=True, num_words=5, min_wl=5, max_wl=14, inner=g),
+                sent(model=lang, num_words=5, min_wl=5, max_wl=14, inner=g, punc=False),
                 sent(
-                    model=lang, seq=True, num_words=5, min_wl=5, max_wl=14, endswith=g
+                    model=lang, num_words=5, min_wl=5, max_wl=14, endswith=g, punc=False
                 ),
             ]
         )
