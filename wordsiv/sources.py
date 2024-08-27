@@ -89,8 +89,8 @@ class WordCountSource:
         wl=None,
         contains=None,
         inner=None,
-        startswith=None,
-        endswith=None,
+        startglyph=None,
+        endglyph=None,
         regexp=None,
     ):
         # start with data from the source
@@ -104,6 +104,29 @@ class WordCountSource:
                 f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
             )
 
+        if startglyph:
+            wc_list = [(w, c) for w, c in wc_list if w[0] == startglyph]
+            check_wc_empty(wc_list, "startglyph", f" '{startglyph}'")
+
+        if endglyph:
+            wc_list = [(w, c) for w, c in wc_list if w[-1] == endglyph]
+            check_wc_empty(wc_list, "endglyph", f" '{endglyph}'")
+
+        # filter with contains, inner, startglyph, endglyph
+        if inner:
+            contains = inner
+
+        if contains:
+            if type(contains) is str:
+                contains = [contains]
+
+            for contains_search in contains:
+                if inner:
+                    wc_list = [(w, c) for w, c in wc_list if contains_search in w[1:-1]]
+                else:
+                    wc_list = [(w, c) for w, c in wc_list if contains_search in w]
+            check_wc_empty(wc_list, "contains", f" '{contains}'")
+
         # filter by word length
         if wl:
             wc_list = [(w, c) for w, c in wc_list if len(w) == wl]
@@ -114,33 +137,6 @@ class WordCountSource:
 
             wc_list = [(w, c) for w, c in wc_list if min_wl <= len(w) <= max_wl]
             check_wc_empty(wc_list, "min_wl, max_wl", f" '{min_wl}, {max_wl}'")
-
-        # filter with contains, inner, startswith, endswith
-        if inner:
-            contains = inner
-
-        if contains:
-            if inner:
-                word_slice = slice(1, -1)
-            else:
-                word_slice = slice(0, None)
-
-            if type(contains) is str:
-                contains = [contains]
-
-            for contains_search in contains:
-                wc_list = [
-                    (w, c) for w, c in wc_list if contains_search in w[word_slice]
-                ]
-            check_wc_empty(wc_list, "contains", f" '{contains}'")
-
-        if startswith:
-            wc_list = [(w, c) for w, c in wc_list if w.startswith(startswith)]
-            check_wc_empty(wc_list, "startswith", f" '{startswith}'")
-
-        if endswith:
-            wc_list = [(w, c) for w, c in wc_list if w.endswith(endswith)]
-            check_wc_empty(wc_list, "endswith", f" '{endswith}'")
 
         # filter with regex
         if regexp:

@@ -71,8 +71,8 @@ class WordProbModel:
         wl=None,
         contains=None,
         inner=None,
-        startswith=None,
-        endswith=None,
+        startglyph=None,
+        endglyph=None,
         regexp=None,
         raise_errors=False,
     ):
@@ -89,8 +89,8 @@ class WordProbModel:
                 wl=wl,
                 contains=contains,
                 inner=inner,
-                startswith=startswith,
-                endswith=endswith,
+                startglyph=startglyph,
+                endglyph=endglyph,
                 regexp=regexp,
             )
         except FilterError as e:
