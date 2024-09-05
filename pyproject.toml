@@ -7,18 +7,15 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-typer = "^0.3.2"
-build = "^0.3.1"
 regex = "^2023.12.25"
-requests = "^2.32.3"
 importlib-metadata = "^8.2.0"
+black = "^24.8.0"
 
 [tool.poetry.scripts]
 wordsiv = 'wordsiv.cli:app'
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.1"
-black = "^21.5b0"
 coveralls = "^3.0.1"
 pytest = "^6.2.4"
 ipython = "^7.23.1"

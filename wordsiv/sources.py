@@ -4,7 +4,7 @@ import regex
 import sys
 from io import StringIO
 
-BIG_NUM = 2 ** 10
+BIG_NUM = 2**10
 
 
 class FilterError(Exception):
@@ -308,7 +308,7 @@ def case_regex(
     if pattern == "all":
         lines = wc_str.splitlines()
     else:
-        p = regex.compile(fr"^{pattern}\t\d+$", regex.MULTILINE)
+        p = regex.compile(rf"^{pattern}\t\d+$", regex.MULTILINE)
         lines = regex.findall(p, wc_str)
 
     if change_case == "uc":
