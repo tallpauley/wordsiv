@@ -167,7 +167,7 @@ def check_wc_empty(wc_list, filter_name, details=""):
 def case_filter(wc_str, case, glyphs, bicameral):
     if not bicameral:
         if glyphs:
-            return case_regex(wc_str, f"[{glyphs}]")
+            return case_regex(wc_str, f"[{glyphs}]+")
         else:
             return case_regex(wc_str, "all")
     else:

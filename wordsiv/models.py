@@ -1,10 +1,12 @@
 from functools import lru_cache
 from itertools import accumulate
 from .punctuation import punctuate
+import logging
 from .sources import BIG_NUM, FilterError
 import sys
 import random
 
+log = logging.getLogger(__name__)
 
 DEFAULT_MIN_NUM_WORDS = 5
 DEFAULT_MAX_NUM_WORDS = 20
@@ -43,7 +45,7 @@ def gen_numeral(rand, glyphs=None, wl=None, min_wl=1, max_wl=None, raise_errors=
             if raise_errors:
                 raise FilterError("No numerals available in glyphs")
             else:
-                print("Error:", "No numerals available in glyphs", file=sys.stderr)
+                log.warning("No numerals available in glyphs")
                 return ""
 
     length = random.randint(min_wl, max_wl)
@@ -101,7 +103,7 @@ class WordProbModel:
             if raise_errors:
                 raise e
             else:
-                print("Error:", e.args[0], file=sys.stderr)
+                log.warning("%s", e.args[0])
                 return ""
 
         word_temp = temp if word_temp is None else word_temp
@@ -131,7 +133,7 @@ class WordProbModel:
                 if raise_errors:
                     raise FilterError(f"No word at index idx='{idx}'")
                 else:
-                    print(f"Error: No word at index idx='{idx}'", file=sys.stderr)
+                    log.warning("No word at index idx='%s'", idx)
                     return ""
 
     def words(
