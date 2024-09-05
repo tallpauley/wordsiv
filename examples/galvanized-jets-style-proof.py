@@ -3,8 +3,9 @@ from collections import defaultdict
 from itertools import product
 import logging
 
-wsv_log = logging.getLogger('wordsiv')
+wsv_log = logging.getLogger("wordsiv")
 wsv_log.setLevel(logging.ERROR)
+
 
 def gj_proof_en(glyphs, case="cap"):
 
@@ -56,24 +57,24 @@ def gj_proof_ar(glyphs, mode):
 
 if __name__ == "__main__":
     glyphs = "HAMBUGERFONTSIVhambugerfontsiv.,"
-    proof = ''
-    proof = f'English: UC-lc letter permutations at word start for glyphs {glyphs}\n'
-    proof += gj_proof_en(glyphs, case="cap") + '\n\n'
+    proof = ""
+    proof = f"English: UC-lc letter permutations at word start for glyphs {glyphs}\n"
+    proof += gj_proof_en(glyphs, case="cap") + "\n\n"
 
-    proof += f'English: UC-UC letter permutations inside word for glyphs {glyphs}\n'
-    proof += gj_proof_en(glyphs, case="uc") + '\n\n'
+    proof += f"English: UC-UC letter permutations inside word for glyphs {glyphs}\n"
+    proof += gj_proof_en(glyphs, case="uc") + "\n\n"
 
-    proof += f'English: lc-lc letter permutations inside word for glyphs {glyphs}\n'
-    proof += gj_proof_en(glyphs, case="lc") + '\n\n'
+    proof += f"English: lc-lc letter permutations inside word for glyphs {glyphs}\n"
+    proof += gj_proof_en(glyphs, case="lc") + "\n\n"
 
     glyphs = "نيوفأعدقجزخضذئةىءآإ"
-    proof += f'Arabic: letter permutations at word start for glyphs {glyphs}\n'
-    proof += gj_proof_ar(glyphs, mode="init") + '\n\n'
+    proof += f"Arabic: letter permutations at word start for glyphs {glyphs}\n"
+    proof += gj_proof_ar(glyphs, mode="init") + "\n\n"
 
-    proof += f'Arabic: letter permutations inside word for glyphs {glyphs}\n'
-    proof += gj_proof_ar(glyphs, mode="medi") + '\n\n'
+    proof += f"Arabic: letter permutations inside word for glyphs {glyphs}\n"
+    proof += gj_proof_ar(glyphs, mode="medi") + "\n\n"
 
-    proof += f'Arabic: letter permutations at word end for glyphs {glyphs}\n'
+    proof += f"Arabic: letter permutations at word end for glyphs {glyphs}\n"
     proof += gj_proof_ar(glyphs, mode="fina")
 
     print(proof)

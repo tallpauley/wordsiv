@@ -18,12 +18,12 @@ def init_medi_fina(glyphs, lang):
                     num_words=5,
                     min_wl=5,
                     max_wl=14,
-                    startglyph=g,
+                    startswith=g,
                     punc=False,
                 ),
                 sent(model=lang, num_words=5, min_wl=5, max_wl=14, inner=g, punc=False),
                 sent(
-                    model=lang, num_words=5, min_wl=5, max_wl=14, endglyph=g, punc=False
+                    model=lang, num_words=5, min_wl=5, max_wl=14, endswith=g, punc=False
                 ),
             ]
         )

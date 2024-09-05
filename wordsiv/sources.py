@@ -91,8 +91,6 @@ class WordCountSource:
         inner=None,
         startswith=None,
         endswith=None,
-        startglyph=None,
-        endglyph=None,
         regexp=None,
     ):
         # start with data from the source
@@ -106,21 +104,17 @@ class WordCountSource:
                 f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
             )
 
-        if startglyph:
-            wc_list = [(w, c) for w, c in wc_list if w[0] == startglyph]
-            check_wc_empty(wc_list, "startglyph", f" '{startglyph}'")
-        elif startswith:
-            wc_list = [(w, c) for w, c in wc_list if w.startswith(startswith)]
+        if startswith:
+            sw_len = len(startswith)
+            wc_list = [(w, c) for w, c in wc_list if w[:sw_len] == startswith]
             check_wc_empty(wc_list, "startswith", f" '{startswith}'")
 
-        if endglyph:
-            wc_list = [(w, c) for w, c in wc_list if w[-1] == endglyph]
-            check_wc_empty(wc_list, "endglyph", f" '{endglyph}'")
-        elif endswith:
-            wc_list = [(w, c) for w, c in wc_list if w.endswith(endswith)]
+        if endswith:
+            ew_len = len(endswith)
+            wc_list = [(w, c) for w, c in wc_list if w[-ew_len:] == endswith]
             check_wc_empty(wc_list, "endswith", f" '{endswith}'")
 
-        # filter with contains, inner, startglyph, endglyph
+        # filter with contains, inner
         if inner:
             contains = inner
 

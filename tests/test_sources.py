@@ -52,20 +52,20 @@ def test_filter_data_empty_contains():
         wc.filter_data(None, contains="xyz")
 
 
-def test_filter_data_empty_startglyph():
+def test_filter_data_empty_startswith():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
     with pytest.raises(FilterError):
-        wc.filter_data(None, startglyph="x")
+        wc.filter_data(None, startswith="x")
 
 
-def test_filter_data_empty_endglyph():
+def test_filter_data_empty_endswith():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
     with pytest.raises(FilterError):
-        wc.filter_data(None, endglyph="x")
+        wc.filter_data(None, endswith="x")
 
 
 def test_filter_data_empty_regexp():
@@ -184,20 +184,20 @@ def test_filter_data_wl():
     assert wc.filter_data(None, max_wl=3) == (("joe", 2),)
 
 
-def test_filter_data_startglyph_endglyph_contains():
+def test_filter_data_startswith_endswith_contains():
     test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
     wc = WordCountSource("fake/path", meta={"bicameral": "True"}, test_data=test_data)
 
-    assert wc.filter_data(None, startglyph="a") == (("apple", 5),)
+    assert wc.filter_data(None, startswith="a") == (("apple", 5),)
     assert wc.filter_data(None, contains="a") == (
         ("apple", 5),
         ("banana", 3),
         ("date", 1),
     )
-    assert wc.filter_data(None, endglyph="y") == (("cherry", 2), ("elderberry", 4))
+    assert wc.filter_data(None, endswith="y") == (("cherry", 2), ("elderberry", 4))
 
     with pytest.raises(FilterError):
-        wc.filter_data(None, endglyph="r")
+        wc.filter_data(None, endswith="r")
 
 
 def test_filter_data_regex():

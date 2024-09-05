@@ -75,8 +75,6 @@ class WordProbModel:
         inner=None,
         startswith=None,
         endswith=None,
-        startglyph=None,
-        endglyph=None,
         regexp=None,
         raise_errors=False,
     ):
@@ -93,8 +91,6 @@ class WordProbModel:
                 wl=wl,
                 contains=contains,
                 inner=inner,
-                startglyph=startglyph,
-                endglyph=endglyph,
                 startswith=startswith,
                 endswith=endswith,
                 regexp=regexp,
