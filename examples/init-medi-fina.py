@@ -1,5 +1,6 @@
-from wordsiv import sent
-import time
+"""WordSiv proof that is an adaption of a proof from @jmsole"""
+
+from wordsiv import top_words, set_vocab
 
 # Arabic and Farsi glyphs
 ar_glyphs = "ابجدهوزحطيكلمنسعفصقرشتثخذضظغء"
@@ -8,26 +9,13 @@ fa_glyphs = "یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء"
 
 def init_medi_fina(glyphs, lang):
 
+    set_vocab(lang)
     lines = []
     for g in glyphs:
-        line = g + ". "
-        line += " ".join(
-            [
-                sent(
-                    model=lang,
-                    num_words=5,
-                    min_wl=5,
-                    max_wl=14,
-                    startswith=g,
-                    punc=False,
-                ),
-                sent(model=lang, num_words=5, min_wl=5, max_wl=14, inner=g, punc=False),
-                sent(
-                    model=lang, num_words=5, min_wl=5, max_wl=14, endswith=g, punc=False
-                ),
-            ]
-        )
-        lines.append(line)
+        init = " ".join(top_words(n_words=5, min_wl=5, max_wl=14, startswith=g))
+        medi = " ".join(top_words(n_words=5, min_wl=5, max_wl=14, inner=g))
+        fina = " ".join(top_words(n_words=5, min_wl=5, max_wl=14, endswith=g))
+        lines.append(g + " " + " ".join([init, medi, fina]))
 
     return "\n".join(lines)
 

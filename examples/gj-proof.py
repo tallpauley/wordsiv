@@ -1,4 +1,6 @@
-from wordsiv import set_model, word
+"""WordSiv Proof inspired by http://www.galvanizedjets.com/"""
+
+from wordsiv import set_vocab, word
 from collections import defaultdict
 from itertools import product
 import logging
@@ -9,7 +11,7 @@ wsv_log.setLevel(logging.ERROR)
 
 def gj_proof_en(glyphs, case="cap"):
 
-    set_model("en_prob_books")
+    set_vocab("en_books")
     uc_glyphs = "".join(sorted(c for c in glyphs if c.isupper()))
     lc_glyphs = "".join(sorted(c for c in glyphs if c.islower()))
 
@@ -37,7 +39,7 @@ def gj_proof_en(glyphs, case="cap"):
 
 
 def gj_proof_ar(glyphs, mode):
-    set_model("ar_prob_subs")
+    set_vocab("ar_subs")
     pairs = ["".join(pair) for pair in product(glyphs, repeat=2)]
 
     word_list = []

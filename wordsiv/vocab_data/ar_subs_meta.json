@@ -1,0 +1,10 @@
+{
+    "name": "ar_subs",
+    "lang": "ar",
+    "bicameral": "False",
+    "description": "50k Arabic words from Hermit Dave's Word Frequency repo",
+    "author": "Jose Sole",
+    "author_email": "type@jmsole.cl",
+    "author_url": "https://github.com/jmsole",
+    "license": "CC-by-sa-4.0"
+}

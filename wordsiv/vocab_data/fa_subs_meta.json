@@ -1,0 +1,10 @@
+{
+    "name": "fa_subs",
+    "lang": "fa",
+    "bicameral": "False",
+    "description": "50k Farsi words from Hermit Dave's Word Frequency repo",
+    "author": "Jose Sole",
+    "email": "type@jmsole.cl",
+    "url": "https://github.com/jmsole",
+    "license": "CC-by-sa-4.0"
+}
