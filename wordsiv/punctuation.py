@@ -1,4 +1,5 @@
 import random
+from typing import Union
 
 DEFAULT_PUNCTUATION = {
     "en": {
@@ -62,7 +63,7 @@ DEFAULT_PUNCTUATION = {
 }
 
 
-def _random_available(option_weight, glyphs: str, rand, rnd_punc: float):
+def _random_available(option_weight, glyphs: Union[str, None], rand, rnd_punc: float):
     punc_prob = {
         (punc, (1 - rnd_punc) * prob + rnd_punc * 1)
         for punc, prob in option_weight.items()
@@ -82,7 +83,7 @@ def punctuate(
     punctuation: dict,
     rand: random.Random,
     words: list[str],
-    glyphs: str,
+    glyphs: Union[str, None],
     rnd_punc: float,
 ):
     """Punctuate a list of words and join into a sentence using a punctuation dict"""
@@ -97,8 +98,6 @@ def punctuate(
     ) or ("", "")
 
     if len(words) > 2:
-        tokens = []
-
         # place inner wrap punctuation on words (parentheses, quotes, etc)
         wrap_left_index = rand.randrange(0, len(words) - 1)
         wrap_right_index = rand.randrange(wrap_left_index, len(words) - 1)

@@ -2,10 +2,8 @@
 Filter words in a wordcount string.
 """
 
-import io
 from functools import lru_cache
 import regex
-from io import StringIO
 
 BIG_NUM = 2**10
 
@@ -29,7 +27,6 @@ def filter_wordcount(
     endswith=None,
     regexp=None,
 ):
-
     # filter by case
     wc_list = _filter_case(wordcount_str, case, glyphs, bicameral)
 
@@ -227,7 +224,7 @@ def _filter_regex(wc_list: list[tuple[str, int]], regexp: str) -> list[tuple[str
     wc_str = "\n".join(f"{w}\t{c}" for w, c in wc_list)
     lines = regex.findall(pattern, wc_str)
 
-    return [(l.split()[0], int(l.split()[1])) for l in lines]
+    return [(line.split()[0], int(line.split()[1])) for line in lines]
 
 
 @lru_cache(maxsize=None)
@@ -245,10 +242,10 @@ def _findall_recase(
         lines = regex.findall(p, wc_str)
 
     if change_case == "uc":
-        return [(l.split()[0].upper(), int(l.split()[1])) for l in lines]
+        return [(line.split()[0].upper(), int(line.split()[1])) for line in lines]
     elif change_case == "lc":
-        return [(l.split()[0].lower(), int(l.split()[1])) for l in lines]
+        return [(line.split()[0].lower(), int(line.split()[1])) for line in lines]
     elif change_case == "cap":
-        return [(l.split()[0].capitalize(), int(l.split()[1])) for l in lines]
+        return [(line.split()[0].capitalize(), int(line.split()[1])) for line in lines]
     else:
-        return [(l.split()[0], int(l.split()[1])) for l in lines]
+        return [(line.split()[0], int(line.split()[1])) for line in lines]

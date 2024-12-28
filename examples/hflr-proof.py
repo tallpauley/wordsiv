@@ -1,7 +1,6 @@
 """WordSiv proof in the style of Jonathan Hoefler."""
 
 from wordsiv import set_vocab, word, top_word
-from collections import defaultdict
 
 ROUND_L_LC = "cdeoq"
 ROUND_R_LC = "bop"
@@ -15,7 +14,6 @@ ROUND_R_UC = "DO"
 
 
 def hflr_para_lc(glyphs):
-
     uc_glyphs = "".join(sorted(c for c in glyphs if c.isupper()))
 
     set_vocab("en")
@@ -65,7 +63,6 @@ def hflr_para_lc(glyphs):
 
 
 def hflr_para_uc(glyphs):
-
     uc_glyphs = "".join(sorted(c for c in glyphs if c.isupper()))
     set_vocab("en")
 
@@ -94,7 +91,6 @@ def hflr_para_uc(glyphs):
 
 
 if __name__ == "__main__":
-
     glyphs = "HAMBUGERFONTSIVhambugerfontsiv.,"
 
     print(hflr_para_lc(glyphs))

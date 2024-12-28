@@ -1,6 +1,8 @@
 from functools import cached_property, lru_cache
 from .filter import filter_wordcount
 import regex
+from typing import Union
+from pathlib import Path
 
 
 class VocabEmptyError(Exception):
@@ -25,10 +27,10 @@ class Vocab:
         self,
         lang: str,
         bicameral: bool,
-        punctuation: dict = None,
-        data: str = None,
-        data_file: str = None,
-        meta: dict = None,
+        punctuation: Union[dict, None] = None,
+        data: Union[str, None] = None,
+        data_file: Union[str, Path, None] = None,
+        meta: Union[dict, None] = None,
     ):
         """Initializes the Vocab instance."""
 
@@ -81,7 +83,8 @@ class Vocab:
         """Returns a list of tuples with words and counts."""
 
         return [
-            (l.split()[0], int(l.split()[1])) for l in self.wordcount_str.splitlines()
+            (line.split()[0], int(line.split()[1]))
+            for line in self.wordcount_str.splitlines()
         ]
 
     @lru_cache(maxsize=None)

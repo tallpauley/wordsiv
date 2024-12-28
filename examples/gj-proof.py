@@ -1,7 +1,6 @@
 """WordSiv Proof inspired by http://www.galvanizedjets.com/"""
 
 from wordsiv import set_vocab, word
-from collections import defaultdict
 from itertools import product
 import logging
 
@@ -10,7 +9,6 @@ wsv_log.setLevel(logging.ERROR)
 
 
 def gj_proof_en(glyphs, case="cap"):
-
     set_vocab("en_books")
     uc_glyphs = "".join(sorted(c for c in glyphs if c.isupper()))
     lc_glyphs = "".join(sorted(c for c in glyphs if c.islower()))

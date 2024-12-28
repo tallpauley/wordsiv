@@ -8,7 +8,6 @@ fa_glyphs = "یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء"
 
 
 def init_medi_fina(glyphs, lang):
-
     set_vocab(lang)
     lines = []
     for g in glyphs:
