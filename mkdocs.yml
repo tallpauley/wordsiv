@@ -20,7 +20,7 @@ nav:
   - Home: "index.md"
   - Getting Started: "getting-started.md"
   - Usage:
-    - Basics: "usage/basics.md"
+    - Importing WordSiv: "usage/importing.md"
     - Letter Case: "usage/letter-case.md"
     - Repeatable Text Generation: "usage/repeatable-generation.md"
     - Tuning Word Selection: "usage/tuning-word-selection.md"
