@@ -1,4 +1,3 @@
-import wordsiv
 import pytest
 from wordsiv import WordSiv, FilterError, Vocab
 import string
@@ -39,8 +38,8 @@ def test_words_n_words(wsv, n_words):
 
 
 @pytest.mark.parametrize("n_words", [1, 2, 10, 20])
-def test_num_words(wsv, n_words):
-    assert len(wsv.sent(n_words=n_words).split(" ")) == n_words
+def test_sent_n_words_no_punc(wsv, n_words):
+    assert len(wsv.sent(n_words=n_words, rnd_punc=0).split(" ")) == n_words
 
 
 @pytest.mark.parametrize("min_n_words, max_n_words", [(1, 1), (1, 2), (1, 10), (1, 20)])

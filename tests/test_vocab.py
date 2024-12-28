@@ -1,4 +1,5 @@
-from wordsiv import Vocab, VocabEmptyError, VocabFormatError, FilterError
+from wordsiv import Vocab, FilterError
+from wordsiv.vocab import VocabFormatError, VocabEmptyError
 import pytest
 
 
