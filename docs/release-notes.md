@@ -1,12 +1,10 @@
-# Changelog
-
-All notable changes to this project will be documented in this file.
+# Release Notes
 
 ## 0.2.0 - 2024-12-05
 
 ### Added
 
-- WordSiv object methods (like `wsv.word()` and `wsv.sent()`) are now available to directly call (e.g. `word()`) without having to instantiate a WordSiv object. A singleton object is created under the hood.
+- WordSiv object methods like `wsv.word()` and `wsv.sent()` are now available to directly call (e.g. `word()`) without having to instantiate a WordSiv object. A singleton object is created under the hood.
 - Support for Arabic and Farsi (thanks to @jmsole)
 - Numbers (which only use digits which are in the glyph set) can be randomly generated with `number()` and interpersed with words via `numbers` parameter for `sent()`, `text()`, etc.
 - Probability from word counts can be interpolated with a completely random distribution via the `rnd` parameter.

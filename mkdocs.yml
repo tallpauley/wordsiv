@@ -1,0 +1,35 @@
+site_name: WordSiv
+site_url: https://mydomain.org/mysite
+theme:
+  palette:
+    primary: amber
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+nav:
+  - Home: "index.md"
+  - Getting Started: "getting-started.md"
+  - Usage:
+    - Basics: "usage/basics.md"
+    - Letter Case: "usage/letter-case.md"
+    - Repeatable Text Generation: "usage/repeatable-generation.md"
+    - Tuning Word Selection: "usage/tuning-word-selection.md"
+    - Punctuation: "usage/punctuation.md"
+  - API Reference: "api-reference.md"
+  - Contributing: "contributing.md"
+  - Release Notes: "release-notes.md"
+
+repo_url: https://github.com/tallpauley/wordsiv
+
+plugins:
+- mkdocstrings
