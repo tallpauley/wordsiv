@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from functools import cached_property, lru_cache
 from .filter import filter_wordcount
 import regex
-from typing import Union
 from pathlib import Path
 
 
@@ -17,20 +18,22 @@ class Vocab:
     """A vocabulary of words and occurrence counts with metadata for filtering and punctuating.
 
     Attributes:
+        lang (str): The language of the vocabulary.
         bicameral (bool): Specifies whether the vocabulary has uppercase and lowercase letters.
-        data (str): A TSV-formatted string with word, count pairs or a newline-delimited list of words.
-        data_file (str): A path to a file to supply the data instead of the data attribute
-        punctuation (Punctuation): A Punctuation object for handling punctuation in generated text.
+        punctuation (dict | None): A dictionary or None for handling punctuation in generated text.
+        data (str | None): A TSV-formatted string with word-count pairs or a newline-delimited list of words.
+        data_file (str | Path | None): A path to a file to supply the data instead of the data attribute.
+        meta (dict | None): Additional metadata for the vocabulary.
     """
 
     def __init__(
         self,
         lang: str,
         bicameral: bool,
-        punctuation: Union[dict, None] = None,
-        data: Union[str, None] = None,
-        data_file: Union[str, Path, None] = None,
-        meta: Union[dict, None] = None,
+        punctuation: dict | None = None,
+        data: str | None = None,
+        data_file: str | Path | None = None,
+        meta: dict | None = None,
     ):
         """Initializes the Vocab instance."""
 

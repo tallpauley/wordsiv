@@ -1,11 +1,12 @@
 """WordSiv is a Python library for generating proofing text with a limited character set."""
 
+from __future__ import annotations
+
 from functools import lru_cache
 from itertools import accumulate
 import logging
 import random
 import json
-from typing import Union
 from importlib import resources
 
 from .vocab import Vocab
@@ -67,24 +68,31 @@ def _sample_word(
 
 
 class WordSiv:
-    """A class that consumes Vocabs to generate text.
+    """The main WordSiv object which uses Vocabs to generates text.
 
-    Class Variables:
-        default_glyphs (str): The set of glyphs that constrains the words generated.
-        default_vocab (str): The name of the default Vocab.
-        vocabs (dict): A dictionary of Vocab names and objects.
-        rand (Random): An instance of random.Random for generating random numbers.
+    This object is the single API for generating text, in which the top-level
+    functions call via the singleton `_wordsiv_instance`. An object is used to store
+    vocab objects (by default those defined in `DEFAULT_VOCABS`) and to store default
+    settings (like `glyphs` and `vocab`).
 
     Args:
-        glyphs (str): The set of glyphs that constrains the words generated.
-        vocab (str): The name of the default vocab.
-        add_default_vocabs (bool): Whether to add the default vocabs.
+        glyphs (str | None): The set of glyphs that constrains the words generated.
+        vocab (str | None): The name of the default Vocab.
+        add_default_vocabs (bool): Whether to add the default Vocabs.
+        raise_errors (bool): Whether to raise errors or fail gently.
+
+    Attributes:
+        default_glyphs (str | None): The set of glyphs that constrains the words generated.
+        default_vocab (str | None): The name of the default Vocab.
+        raise_errors (bool): Whether to raise errors or fail gently.
+        vocabs (dict): A dictionary of Vocab names and objects.
+        rand (random.Random): An instance of random.Random for generating random numbers.
     """
 
     def __init__(
         self,
-        glyphs: Union[str, None] = None,
-        vocab: Union[str, None] = None,
+        glyphs: str | None = None,
+        vocab: str | None = None,
         add_default_vocabs: bool = True,
         raise_errors: bool = False,
     ):
@@ -98,7 +106,7 @@ class WordSiv:
 
         self.rand = random.Random()
 
-    def set_glyphs(self, default_glyphs: Union[str, None]) -> None:
+    def set_glyphs(self, default_glyphs: str | None) -> None:
         """Set the default glyph set for the WordSiv instance.
 
         Args:
@@ -149,7 +157,7 @@ class WordSiv:
     def number(
         self,
         seed=None,
-        glyphs: Union[str, None] = None,
+        glyphs: str | None = None,
         wl=None,
         min_wl=1,
         max_wl=None,
@@ -187,20 +195,20 @@ class WordSiv:
 
     def word(
         self,
-        vocab: Union[str, None] = None,
-        glyphs: Union[str, None] = None,
+        vocab: str | None = None,
+        glyphs: str | None = None,
         rnd: float = 0,
-        seed: Union[None, int, float, str] = None,
+        seed: None | int | float | str = None,
         case: str = "any",
         top_k: int = BIG_NUM,
         min_wl: int = 1,
-        max_wl: Union[int, None] = None,
-        wl: Union[int, None] = None,
-        contains: Union[str, None] = None,
-        inner: Union[str, None] = None,
-        startswith: Union[str, None] = None,
-        endswith: Union[str, None] = None,
-        regexp: Union[str, None] = None,
+        max_wl: int | None = None,
+        wl: int | None = None,
+        contains: str | None = None,
+        inner: str | None = None,
+        startswith: str | None = None,
+        endswith: str | None = None,
+        regexp: str | None = None,
         raise_errors: bool = False,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
@@ -243,17 +251,17 @@ class WordSiv:
     def top_word(
         self,
         idx: int = 0,
-        vocab: Union[str, None] = None,
-        glyphs: Union[str, None] = None,
+        vocab: str | None = None,
+        glyphs: str | None = None,
         case: str = "any",
         min_wl: int = 2,
-        max_wl: Union[int, None] = None,
-        wl: Union[int, None] = None,
-        contains: Union[str, None] = None,
-        inner: Union[str, None] = None,
-        startswith: Union[str, None] = None,
-        endswith: Union[str, None] = None,
-        regexp: Union[str, None] = None,
+        max_wl: int | None = None,
+        wl: int | None = None,
+        contains: str | None = None,
+        inner: str | None = None,
+        startswith: str | None = None,
+        endswith: str | None = None,
+        regexp: str | None = None,
         raise_errors: bool = False,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
@@ -293,13 +301,13 @@ class WordSiv:
 
     def words(
         self,
-        glyphs: Union[str, None] = None,
-        seed: Union[None, int, float, str] = None,
-        n_words: Union[None, int] = None,
+        glyphs: str | None = None,
+        seed: None | int | float | str = None,
+        n_words: int | None = None,
         min_n_words: int = DEFAULT_MIN_NUM_WORDS,
         max_n_words: int = DEFAULT_MAX_NUM_WORDS,
         numbers: float = 0,
-        cap_first: Union[None, bool] = None,
+        cap_first: bool | None = None,
         case: str = "any",
         rnd: float = 0,
         **kwargs,
@@ -362,7 +370,7 @@ class WordSiv:
         self,
         n_words: int = DEFAULT_TOP_NUM_WORDS,
         idx: int = 0,
-        glyphs: Union[str, None] = None,
+        glyphs: str | None = None,
         **kwargs,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
@@ -377,9 +385,9 @@ class WordSiv:
 
     def sent(
         self,
-        vocab: Union[str, None] = None,
-        glyphs: Union[str, None] = None,
-        seed: Union[None, int, float, str] = None,
+        vocab: str | None = None,
+        glyphs: str | None = None,
+        seed: None | int | float | str = None,
         punc: bool = True,
         rnd_punc: float = 0,
         **kwargs,
@@ -423,10 +431,10 @@ class WordSiv:
 
     def sents(
         self,
-        seed: Union[None, int, float, str] = None,
+        seed: None | int | float | str = None,
         min_n_sents: int = DEFAULT_MIN_PARA_LEN,
         max_n_sents: int = DEFAULT_MAX_PARA_LEN,
-        n_sents: Union[None, int] = None,
+        n_sents: int | None = None,
         **kwargs,
     ):
         if seed is not None:
@@ -453,9 +461,7 @@ class WordSiv:
             self.rand.seed(seed)
         return [self.para(**kwargs) for _ in range(n_paras)]
 
-    def text(
-        self, seed=None, para_sep="\n\n", glyphs: Union[str, None] = None, **kwargs
-    ):
+    def text(self, seed=None, para_sep="\n\n", glyphs: str | None = None, **kwargs):
         if seed is not None:
             self.rand.seed(seed)
 

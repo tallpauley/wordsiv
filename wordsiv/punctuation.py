@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import random
-from typing import Union
 
 DEFAULT_PUNCTUATION = {
     "en": {
@@ -63,7 +64,7 @@ DEFAULT_PUNCTUATION = {
 }
 
 
-def _random_available(option_weight, glyphs: Union[str, None], rand, rnd_punc: float):
+def _random_available(option_weight, glyphs: str | None, rand, rnd_punc: float):
     punc_prob = {
         (punc, (1 - rnd_punc) * prob + rnd_punc * 1)
         for punc, prob in option_weight.items()
@@ -83,7 +84,7 @@ def punctuate(
     punctuation: dict,
     rand: random.Random,
     words: list[str],
-    glyphs: Union[str, None],
+    glyphs: str | None,
     rnd_punc: float,
 ):
     """Punctuate a list of words and join into a sentence using a punctuation dict"""
