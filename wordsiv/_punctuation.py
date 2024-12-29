@@ -80,7 +80,7 @@ def _random_available(option_weight, glyphs: str | None, rand, rnd_punc: float):
         return None
 
 
-def punctuate(
+def _punctuate(
     punctuation: dict,
     rand: random.Random,
     words: list[str],

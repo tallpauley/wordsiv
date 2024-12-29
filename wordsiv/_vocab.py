@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property, lru_cache
-from .filter import filter_wordcount
+from ._filter import _filter_wordcount
 import regex
 from pathlib import Path
 
@@ -92,4 +92,4 @@ class Vocab:
 
     @lru_cache(maxsize=None)
     def filter(self, *args, **kwargs):
-        return filter_wordcount(self.wordcount_str, self.bicameral, *args, **kwargs)
+        return _filter_wordcount(self.wordcount_str, self.bicameral, *args, **kwargs)

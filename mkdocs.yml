@@ -7,7 +7,6 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
-
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -20,16 +19,44 @@ nav:
   - Home: "index.md"
   - Getting Started: "getting-started.md"
   - Usage:
-    - Importing WordSiv: "usage/importing.md"
-    - Letter Case: "usage/letter-case.md"
-    - Repeatable Text Generation: "usage/repeatable-generation.md"
-    - Tuning Word Selection: "usage/tuning-word-selection.md"
-    - Punctuation: "usage/punctuation.md"
-  - API Reference: "api-reference.md"
+      - Importing WordSiv: "usage/importing.md"
+      - Language Support: "usage/language-support.md"
+      - Letter Case: "usage/letter-case.md"
+      - Repeatable Text Generation: "usage/repeatable-generation.md"
+      - Tuning Word Selection: "usage/tuning-word-selection.md"
+      - Punctuation: "usage/punctuation.md"
+  - API Reference:
+      wordsiv:
+        wordsiv: "api-reference.md"
   - Contributing: "contributing.md"
   - Release Notes: "release-notes.md"
-
 repo_url: https://github.com/tallpauley/wordsiv
-
+watch:
+  - wordsiv
 plugins:
-- mkdocstrings
+  - autorefs
+  - search
+  - mkdocstrings:
+      enable_inventory: true
+      handlers:
+        python:
+          paths: [wordsiv]
+          import:
+            - https://docs.python.org/3/objects.inv
+          options:
+            inherited_members:
+              - Vocab
+            docstring_options:
+              ignore_init_summary: true
+            show_labels: true
+            separate_signature: true
+            preload_modules:
+              - wordsiv
+            signature_crossrefs: true
+            summary:
+              attributes: true
+              modules: false
+              functions: true
+              classes: true
+            docstring_style: google
+            cross_references: true

@@ -8,11 +8,33 @@ import logging
 import random
 import json
 from importlib import resources
+from typing import Literal
 
-from .vocab import Vocab
-from .filter import FilterError, BIG_NUM
-from .punctuation import DEFAULT_PUNCTUATION, punctuate
+from ._vocab import Vocab, VocabFormatError, VocabEmptyError
+from ._filter import FilterError
+from ._punctuation import DEFAULT_PUNCTUATION, _punctuate
 from . import vocab_data
+
+__all__ = [
+    "WordSiv",
+    "Vocab",
+    "FilterError",
+    "VocabFormatError",
+    "VocabEmptyError",
+    "word",
+    "number",
+    "top_word",
+    "words",
+    "top_words",
+    "sent",
+    "sents",
+    "para",
+    "paras",
+    "txt" "set_glyphs",
+    "set_vocab",
+    "get_vocab",
+    "add_vocab",
+]
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +93,7 @@ class WordSiv:
     """The main WordSiv object which uses Vocabs to generates text.
 
     This object is the single API for generating text, in which the top-level
-    functions call via the singleton `_wordsiv_instance`. An object is used to store
+    functions call via the singleton `_default_wordsiv_instance`. An object is used to store
     vocab objects (by default those defined in `DEFAULT_VOCABS`) and to store default
     settings (like `glyphs` and `vocab`).
 
@@ -199,8 +221,18 @@ class WordSiv:
         glyphs: str | None = None,
         rnd: float = 0,
         seed: None | int | float | str = None,
-        case: str = "any",
-        top_k: int = BIG_NUM,
+        case: Literal[
+            "any",
+            "any_og",
+            "lc",
+            "lc_force",
+            "cap",
+            "cap_og",
+            "cap_force",
+            "uc",
+            "uc_og",
+        ] = "any",
+        top_k: int = 0,
         min_wl: int = 1,
         max_wl: int | None = None,
         wl: int | None = None,
@@ -250,10 +282,20 @@ class WordSiv:
 
     def top_word(
         self,
-        idx: int = 0,
         vocab: str | None = None,
         glyphs: str | None = None,
-        case: str = "any",
+        idx: int = 0,
+        case: Literal[
+            "any",
+            "any_og",
+            "lc",
+            "lc_force",
+            "cap",
+            "cap_og",
+            "cap_force",
+            "uc",
+            "uc_og",
+        ] = "any",
         min_wl: int = 2,
         max_wl: int | None = None,
         wl: int | None = None,
@@ -264,6 +306,15 @@ class WordSiv:
         regexp: str | None = None,
         raise_errors: bool = False,
     ):
+        """Return the most common word, or nth most common word (`idx`).
+
+        Args:
+            vocab (str | None): The name of the Vocab. If `None`, use the default Vocab.
+            glyphs (str | None): A whitelist of glyphs to use in the form of a string. If `None`, use the default glyphs.
+            idx (int): Select the nth most common word, starting with `0`.
+            case (CaseType): The case of the word.
+        """
+
         glyphs = self.default_glyphs if not glyphs else glyphs
         raise_errors = self.raise_errors if not raise_errors else raise_errors
         vocab_obj = (
@@ -308,9 +359,19 @@ class WordSiv:
         max_n_words: int = DEFAULT_MAX_NUM_WORDS,
         numbers: float = 0,
         cap_first: bool | None = None,
-        case: str = "any",
+        case: Literal[
+            "any",
+            "any_og",
+            "lc",
+            "lc_force",
+            "cap",
+            "cap_og",
+            "cap_force",
+            "uc",
+            "uc_og",
+        ] = "any",
         rnd: float = 0,
-        **kwargs,
+        **word_num_kwargs,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
 
@@ -346,18 +407,20 @@ class WordSiv:
             )[0]
 
             if token_type == "word":
-                w = self.word(glyphs=glyphs, case=word_case, rnd=rnd, **kwargs)
+                w = self.word(glyphs=glyphs, case=word_case, rnd=rnd, **word_num_kwargs)
 
                 # try once to avoid repeat words
                 if w == last_w:
-                    w = self.word(glyphs=glyphs, case=word_case, rnd=rnd, **kwargs)
+                    w = self.word(
+                        glyphs=glyphs, case=word_case, rnd=rnd, **word_num_kwargs
+                    )
 
                 # w can be empty string if no matching word is found and we fail gently
                 if w:
                     word_list.append(w)
                     last_w = w
             elif token_type == "number":
-                w = self.number(glyphs=glyphs, **kwargs)
+                w = self.number(glyphs=glyphs, **word_num_kwargs)
 
                 # w can be empty string if no numeral is available with the glyphs we have
                 if w:
@@ -371,12 +434,12 @@ class WordSiv:
         n_words: int = DEFAULT_TOP_NUM_WORDS,
         idx: int = 0,
         glyphs: str | None = None,
-        **kwargs,
+        **top_word_kwargs,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
 
         word_list = [
-            self.top_word(glyphs=glyphs, idx=i, **kwargs)
+            self.top_word(glyphs=glyphs, idx=i, **top_word_kwargs)
             for i in range(idx, idx + n_words)
         ]
 
@@ -390,7 +453,7 @@ class WordSiv:
         seed: None | int | float | str = None,
         punc: bool = True,
         rnd_punc: float = 0,
-        **kwargs,
+        **words_kwargs,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
 
@@ -399,7 +462,7 @@ class WordSiv:
 
         word_list = self.words(
             glyphs=glyphs,
-            **kwargs,
+            **words_kwargs,
         )
 
         if punc:
@@ -418,7 +481,7 @@ class WordSiv:
                 except KeyError:
                     return " ".join(words)
 
-            return punctuate(
+            return _punctuate(
                 punctuation,
                 self.rand,
                 word_list,
@@ -435,7 +498,7 @@ class WordSiv:
         min_n_sents: int = DEFAULT_MIN_PARA_LEN,
         max_n_sents: int = DEFAULT_MAX_PARA_LEN,
         n_sents: int | None = None,
-        **kwargs,
+        **sent_kwargs,
     ):
         if seed is not None:
             self.rand.seed(seed)
@@ -443,85 +506,126 @@ class WordSiv:
         if not n_sents:
             n_sents = random.randint(min_n_sents, max_n_sents)
 
-        return [self.sent(**kwargs) for _ in range(n_sents)]
+        return [self.sent(**sent_kwargs) for _ in range(n_sents)]
 
-    def para(self, seed=None, sent_sep: str = " ", **kwargs):
+    def para(self, seed=None, sent_sep: str = " ", **sents_kwargs):
         if seed is not None:
             self.rand.seed(seed)
 
-        return sent_sep.join(self.sents(**kwargs))
+        return sent_sep.join(self.sents(**sents_kwargs))
 
     def paras(
         self,
         seed=None,
         n_paras=3,
-        **kwargs,
+        **para_kwargs,
     ):
         if seed is not None:
             self.rand.seed(seed)
-        return [self.para(**kwargs) for _ in range(n_paras)]
 
-    def text(self, seed=None, para_sep="\n\n", glyphs: str | None = None, **kwargs):
+        return [self.para(**para_kwargs) for _ in range(n_paras)]
+
+    def txt(
+        self,
+        seed: None | int | float | str = None,
+        para_sep: str = "\n\n",
+        **paras_kwargs,
+    ):
+        """Generate multiple paragraphs joined by `para_sep`"""
+
         if seed is not None:
             self.rand.seed(seed)
 
-        return para_sep.join(self.paras(**kwargs))
+        return para_sep.join(self.paras(**paras_kwargs))
 
 
-_wordsiv_instance = WordSiv()
+# Top-level convenience functions and singleton WordSiv instance
+
+_default_wordsiv_instance = WordSiv()
 
 
 def set_glyphs(default_glyphs):
-    return _wordsiv_instance.set_glyphs(default_glyphs)
+    """Calls [`set_glyphs`][wordsiv.WordSiv.set_glyphs] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.set_glyphs(default_glyphs)
 
 
 def set_vocab(default_vocab: str) -> None:
-    return _wordsiv_instance.set_vocab(default_vocab)
+    """Calls [`set_vocab`][wordsiv.WordSiv.set_vocab] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.set_vocab(default_vocab)
 
 
 def get_vocab(vocab_name: str) -> Vocab:
-    return _wordsiv_instance.get_vocab(vocab_name)
+    """Calls [`get_vocab`][wordsiv.WordSiv.get_vocab] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.get_vocab(vocab_name)
 
 
 def add_vocab(vocab_name: str, vocab: Vocab) -> None:
-    return _wordsiv_instance.add_vocab(vocab_name, vocab)
+    """Calls [`add_vocab`][wordsiv.WordSiv.add_vocab] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.add_vocab(vocab_name, vocab)
 
 
 def number(**kwargs) -> str:
-    return _wordsiv_instance.number(**kwargs)
+    """Calls [`number`][wordsiv.WordSiv.number] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.number(**kwargs)
 
 
 def word(**kwargs) -> str:
-    return _wordsiv_instance.word(**kwargs)
+    """Calls [`word`][wordsiv.WordSiv.word] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.word(**kwargs)
 
 
 def top_word(*args, **kwargs) -> str:
-    return _wordsiv_instance.top_word(*args, **kwargs)
+    """Calls [`top_word`][wordsiv.WordSiv.top_word] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.top_word(*args, **kwargs)
 
 
 def words(**kwargs) -> list[str]:
-    return _wordsiv_instance.words(**kwargs)
+    """Calls [`words`][wordsiv.WordSiv.words] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.words(**kwargs)
 
 
 def top_words(**kwargs) -> list[str]:
-    return _wordsiv_instance.top_words(**kwargs)
+    """Calls [`top_words`][wordsiv.WordSiv.top_words] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.top_words(**kwargs)
 
 
 def sent(**kwargs) -> str:
-    return _wordsiv_instance.sent(**kwargs)
+    """Calls [`sent`][wordsiv.WordSiv.sent] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.sent(**kwargs)
 
 
 def sents(**kwargs) -> list[str]:
-    return _wordsiv_instance.sents(**kwargs)
+    """Calls [`sents`][wordsiv.WordSiv.sents] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.sents(**kwargs)
 
 
 def para(**kwargs) -> str:
-    return _wordsiv_instance.para(**kwargs)
+    """Calls [`para`][wordsiv.WordSiv.para] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.para(**kwargs)
 
 
 def paras(**kwargs) -> list[str]:
-    return _wordsiv_instance.paras(**kwargs)
+    """Calls [`paras`][wordsiv.WordSiv.paras] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.paras(**kwargs)
 
 
-def text(**kwargs) -> str:
-    return _wordsiv_instance.text(**kwargs)
+def txt(**kwargs) -> str:
+    """Calls [`text`][wordsiv.WordSiv.txt] on default WordSiv instance.
+
+    Warning:
+        Be careful to not overwrite DrawBot's `text()` function on import.
+    """
+    return _default_wordsiv_instance.txt(**kwargs)

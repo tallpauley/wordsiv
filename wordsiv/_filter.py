@@ -2,24 +2,39 @@
 Filter words in a wordcount string.
 """
 
+from typing import Literal
+
 from functools import lru_cache
 import regex
 
-BIG_NUM = 2**10
+_BIG_NUM = 2**10
 
 
 class FilterError(Exception):
     pass
 
 
+CaseType = Literal[
+    "any",
+    "any_og",
+    "lc",
+    "lc_force",
+    "cap",
+    "cap_og",
+    "cap_force",
+    "uc",
+    "uc_og",
+]
+
+
 @lru_cache(maxsize=None)
-def filter_wordcount(
+def _filter_wordcount(
     wordcount_str,
     bicameral,
     glyphs=None,
     case="any",
     min_wl=0,
-    max_wl=BIG_NUM,
+    max_wl=_BIG_NUM,
     wl=None,
     contains=None,
     inner=None,
@@ -66,7 +81,7 @@ def filter_wordcount(
         _check_wc_empty(wc_list, "wl", f" '{wl}")
     elif min_wl or max_wl:
         if not max_wl:
-            max_wl = BIG_NUM
+            max_wl = _BIG_NUM
 
         wc_list = [(w, c) for w, c in wc_list if min_wl <= len(w) <= max_wl]
         _check_wc_empty(wc_list, "min_wl, max_wl", f" '{min_wl}, {max_wl}'")
