@@ -183,6 +183,11 @@ class WordSiv:
             else:
                 raise ValueError("Error: no vocab specified")
 
+    def list_vocabs(self) -> list[str]:
+        """List all available vocabs."""
+
+        return list(self.vocabs.keys())
+
     def number(
         self,
         seed=None,
@@ -597,9 +602,12 @@ def paras(**kwargs) -> list[str]:
 
 
 def txt(**kwargs) -> str:
-    """Calls [`text`][wordsiv.WordSiv.txt] on default WordSiv instance.
+    """Calls [`text`][wordsiv.WordSiv.txt] on default WordSiv instance."""
 
-    Warning:
-        Be careful to not overwrite DrawBot's `text()` function on import.
-    """
     return _default_wordsiv_instance.txt(**kwargs)
+
+
+def list_vocabs() -> list[str]:
+    """Calls [`list_vocabs`][wordsiv.WordSiv.list_vocabs] on default WordSiv instance."""
+
+    return _default_wordsiv_instance.list_vocabs()
