@@ -8,10 +8,9 @@ import logging
 import random
 import json
 from importlib import resources
-from typing import Literal
 
 from ._vocab import Vocab, VocabFormatError, VocabEmptyError
-from ._filter import FilterError
+from ._filter import FilterError, CaseType
 from ._punctuation import DEFAULT_PUNCTUATION, _punctuate
 from . import vocab_data
 
@@ -19,6 +18,7 @@ __all__ = [
     "WordSiv",
     "Vocab",
     "FilterError",
+    "CaseType",
     "VocabFormatError",
     "VocabEmptyError",
     "word",
@@ -69,7 +69,7 @@ def _split_wordcount(
 
 
 @lru_cache(maxsize=None)
-def _interpolate_counts(counts: tuple[int, ...], rnd: float) -> tuple[int, ...]:
+def _interpolate_counts(counts: tuple[int, ...], rnd: float) -> tuple[int | float, ...]:
     """Interpolate counts with a random distribution."""
 
     max_count = max(counts)
@@ -121,7 +121,7 @@ class WordSiv:
         self.default_glyphs = glyphs
         self.default_vocab = vocab
         self.raise_errors = raise_errors
-        self.vocabs = {}
+        self.vocabs: dict[str, Vocab] = {}
 
         if add_default_vocabs:
             self._add_default_vocabs()
@@ -148,7 +148,7 @@ class WordSiv:
     def _add_default_vocabs(self) -> None:
         for vocab_name, (meta_file, data_file) in DEFAULT_VOCABS.items():
             meta_path = resources.files(vocab_data) / meta_file
-            with open(meta_path, "r", encoding="utf8") as f:
+            with meta_path.open("r", encoding="utf8") as f:
                 meta = json.load(f)
 
             data_path = resources.files(vocab_data) / data_file
@@ -165,16 +165,22 @@ class WordSiv:
         """
         self.default_vocab = default_vocab
 
-    def get_vocab(self, vocab_name: str) -> Vocab:
-        """Given the name of the vocab, return the Vocab object.
+    def get_vocab(self, vocab_name: str | None = None) -> Vocab:
+        """Return the Vocab object with the given name, or the default vocab if `None`.
 
         Args:
-            vocab_name (str): The name of the vocab.
+            vocab_name (str | None): The name of the vocab. If `None`, use the default vocab.
 
         Returns:
             Vocab: The Vocab object.
         """
-        return self.vocabs[vocab_name]
+        if vocab_name:
+            return self.vocabs[vocab_name]
+        else:
+            if self.default_vocab:
+                return self.vocabs[self.default_vocab]
+            else:
+                raise ValueError("Error: no vocab specified")
 
     def number(
         self,
@@ -221,17 +227,7 @@ class WordSiv:
         glyphs: str | None = None,
         rnd: float = 0,
         seed: None | int | float | str = None,
-        case: Literal[
-            "any",
-            "any_og",
-            "lc",
-            "lc_force",
-            "cap",
-            "cap_og",
-            "cap_force",
-            "uc",
-            "uc_og",
-        ] = "any",
+        case: CaseType = "any",
         top_k: int = 0,
         min_wl: int = 1,
         max_wl: int | None = None,
@@ -245,9 +241,8 @@ class WordSiv:
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
         raise_errors = self.raise_errors if not raise_errors else raise_errors
-        vocab_obj = (
-            self.get_vocab(self.default_vocab) if not vocab else self.get_vocab(vocab)
-        )
+        vocab_obj = self.get_vocab(vocab)
+
         if rnd < 0 or rnd > 1:
             raise ValueError("'rnd' must be between 0 and 1")
 
@@ -285,17 +280,7 @@ class WordSiv:
         vocab: str | None = None,
         glyphs: str | None = None,
         idx: int = 0,
-        case: Literal[
-            "any",
-            "any_og",
-            "lc",
-            "lc_force",
-            "cap",
-            "cap_og",
-            "cap_force",
-            "uc",
-            "uc_og",
-        ] = "any",
+        case: CaseType = "any",
         min_wl: int = 2,
         max_wl: int | None = None,
         wl: int | None = None,
@@ -309,10 +294,10 @@ class WordSiv:
         """Return the most common word, or nth most common word (`idx`).
 
         Args:
-            vocab (str | None): The name of the Vocab. If `None`, use the default Vocab.
-            glyphs (str | None): A whitelist of glyphs to use in the form of a string. If `None`, use the default glyphs.
-            idx (int): Select the nth most common word, starting with `0`.
-            case (CaseType): The case of the word.
+            vocab (str | None): The name of the Vocab to use. If `None`, use the default Vocab.
+            glyphs (str | None): A whitelist of glyphs to spell words from. If `None`, use the default glyphs.
+            idx (int): Select the nth most common word (where `0` is the most common).
+            case (CaseType): The desired case of the word. See [`CaseType`][wordsiv.CaseType] for more details.
         """
 
         glyphs = self.default_glyphs if not glyphs else glyphs
@@ -359,17 +344,7 @@ class WordSiv:
         max_n_words: int = DEFAULT_MAX_NUM_WORDS,
         numbers: float = 0,
         cap_first: bool | None = None,
-        case: Literal[
-            "any",
-            "any_og",
-            "lc",
-            "lc_force",
-            "cap",
-            "cap_og",
-            "cap_force",
-            "uc",
-            "uc_og",
-        ] = "any",
+        case: CaseType = "any",
         rnd: float = 0,
         **word_num_kwargs,
     ):
@@ -397,7 +372,7 @@ class WordSiv:
         last_w = None
         for i in range(n_words):
             if cap_first and case == "any" and i == 0:
-                word_case = "cap"
+                word_case = "cap"  # type: CaseType
             else:
                 word_case = case
 
@@ -469,9 +444,7 @@ class WordSiv:
             if rnd_punc < 0 or rnd_punc > 1:
                 raise ValueError("'rnd_punc' must be between 0 and 1")
 
-            vocab_obj = (
-                self.get_vocab(vocab) if vocab else self.get_vocab(self.default_vocab)
-            )
+            vocab_obj = self.get_vocab(vocab)
 
             if vocab_obj.punctuation:
                 punctuation = vocab_obj.punctuation
@@ -479,7 +452,7 @@ class WordSiv:
                 try:
                     punctuation = DEFAULT_PUNCTUATION[vocab_obj.lang]
                 except KeyError:
-                    return " ".join(words)
+                    return " ".join(word_list)
 
             return _punctuate(
                 punctuation,
@@ -516,8 +489,8 @@ class WordSiv:
 
     def paras(
         self,
-        seed=None,
-        n_paras=3,
+        seed: int | None = None,
+        n_paras: int = 3,
         **para_kwargs,
     ):
         if seed is not None:
@@ -556,7 +529,7 @@ def set_vocab(default_vocab: str) -> None:
     return _default_wordsiv_instance.set_vocab(default_vocab)
 
 
-def get_vocab(vocab_name: str) -> Vocab:
+def get_vocab(vocab_name: str | None) -> Vocab:
     """Calls [`get_vocab`][wordsiv.WordSiv.get_vocab] on default WordSiv instance."""
 
     return _default_wordsiv_instance.get_vocab(vocab_name)

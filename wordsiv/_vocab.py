@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from functools import cached_property, lru_cache
 from ._filter import _filter_wordcount
+from importlib.abc import Traversable
 import regex
-from pathlib import Path
 
 
 class VocabEmptyError(Exception):
@@ -22,7 +22,7 @@ class Vocab:
         bicameral (bool): Specifies whether the vocabulary has uppercase and lowercase letters.
         punctuation (dict | None): A dictionary or None for handling punctuation in generated text.
         data (str | None): A TSV-formatted string with word-count pairs or a newline-delimited list of words.
-        data_file (str | Path | None): A path to a file to supply the data instead of the data attribute.
+        data_file (str | Traversable | None): A path to a file to supply the data instead of the data attribute.
         meta (dict | None): Additional metadata for the vocabulary.
     """
 
@@ -32,7 +32,7 @@ class Vocab:
         bicameral: bool,
         punctuation: dict | None = None,
         data: str | None = None,
-        data_file: str | Path | None = None,
+        data_file: str | Traversable | None = None,
         meta: dict | None = None,
     ):
         """Initializes the Vocab instance."""

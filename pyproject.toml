@@ -22,13 +22,14 @@ mkdocs = "^1.6.1"
 mkdocstrings = "^0.27.0"
 mkdocstrings-python = "^1.13.0"
 mkdocs-material = "^9.5.49"
+mypy = "^1.14.1"
 
 [tool.poe.tasks]
 test = "poetry run python -m pytest"
 
 [tool.pytest.ini_options]
 addopts = ["--maxfail=5"]
-typeguard-packages = ["wordsiv"]
+# typeguard-packages = ["wordsiv"]
 testpaths = ["tests"]
 
 [build-system]
