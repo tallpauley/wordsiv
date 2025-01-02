@@ -17,13 +17,35 @@ This returns:
 
 ## Key Features
 
-- **Generate text from word probabilities**: Using word occurence counts, WordSiv generates text that is roughly the *shape* of the desired language, just nonsensical!
-- **Filter words based on available glyphs**: WordSiv selects words that can be spelled with the glyphs you're ready to display. Add additional word requirements, such as word length, substrings, and regular expressions without worrying about getting 
-- **Respects case**: WordSiv respects the case of source words, and filters these via your glyph set. There are sensible defaults so that capitalized words like "Paris" and uppercased words like "IMDB" don't get lowercased unless you explicitly ask for them to be. It also has support for unicameral (single case) languages such as Arabic.
-- **Punctuates with probability**: WordSiv uses punctuation probabilities (specific to the language) to insert punctuation throughout generated text.
-- **Deterministic**: Using the `seed` parameter, you can ensure you get the same output while your DrawBot script remains the same.
-- **Customizable**: You can blend in more randomness to the probability, specificy minimum and maximum word/sentence/paragraph lengths, and much much more.
-- **Designed for DrawBot**: WordSiv is has been (re)designed to be used in DrawBot and now features easy module-level APIs like `word()`, `sentence()`, `paragraph()`. If you favor a more object-oriented approach you can still work with `WordSiv` objects directly.
+- **Shaped text**: WordSiv generates text that is roughly the *shape* of the desired language using word/punctuation probabilities and capitalization.
+- **Word filtering**: WordSiv selects from words that can be spelled with your current glyph set. Many additional filters to select for letter combinations you want without worrying about `.notdef`.
+- **Letter case support**: WordSiv supports cased source words, and has many ways of filtering and transforming case via the `case` parameter.
+- **Easy API**: WordSiv is has been (re)designed to be used in DrawBot and now features easy module-level APIs like `word()`, `sent()`, `para()`.
+
+# Installation
+
+### Installing in DrawBot
+
+1. In the DrawBot menu, click **Python->Install Python Packages**:
+
+2. Enter ```git+https://github.com/tallpauley/wordsiv``` and click **Go!**
+
+!!! note
+
+    You'll see some red text but it's nothing to worry about!
+
+![Screenshot of DrawBot "Install Python
+Packages" Window](../images/drawbot-install.jpg)
+
+### Installing Outside of DrawBot (advanced)
+
+You can also install WordSiv on your system and use it in any Python script. You'll probably want to use a [virtual environment](https://docs.python.org/3/library/venv.html) or a [tool](https://www.reddit.com/r/Python/comments/16qz8mx/pipenv_piptools_pdm_or_poetry/) that manages these for you, but I'll leave that up to you!
+
+First make sure you have Python 3.9+. Then:
+
+```bash
+pip install git+https://github.com/tallpauley/wordsiv
+```
 
 ## Why Simple Word Probability?
 

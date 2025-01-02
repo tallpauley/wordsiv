@@ -1,4 +1,4 @@
-# Repeatable Text Generation
+# Repeatable Proofs
 
 We don't want proofs to change every time we generate them. For this reason, we have the ability to "seed" the random generator at any point to make our output deterministic:
 
