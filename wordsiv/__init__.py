@@ -437,20 +437,20 @@ class WordSiv:
         **words_kwargs,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
+        vocab_obj = self.get_vocab(vocab)
 
         if seed is not None:
             self.rand.seed(seed)
 
         word_list = self.words(
             glyphs=glyphs,
+            vocab=vocab,
             **words_kwargs,
         )
 
         if punc:
             if rnd_punc < 0 or rnd_punc > 1:
                 raise ValueError("'rnd_punc' must be between 0 and 1")
-
-            vocab_obj = self.get_vocab(vocab)
 
             if vocab_obj.punctuation:
                 punctuation = vocab_obj.punctuation
