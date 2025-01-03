@@ -26,17 +26,9 @@ CaseType = Literal[
     "uc_og",
 ]
 """
-CaseType options for filtering words:
-
-- `any`: Default case, tries to be as flexible as needed. First tries to get unmodified words from vocab. If no matches, gets lowercase words from vocab that can be displayed capitalized with glyphs. If no matches still, gets all words from vocab that can be displayed uppercase with glyphs.
-- `any_og`: Any unmodified words from vocab. If glyphs are provided, returns all vocab words that can be displayed with glyphs as is. Otherwise, returns all vocab words.
-- `lc`: Returns words that are lowercase in the vocab. If glyphs are provided, returns words that are lowercase in the vocab and can be displayed with glyphs.
-- `lc_force`: Forces capitalization by tampering with Capital, UC, and CamelCase words in vocab. If glyphs are provided, returns all vocab words, lowercased, which can be displayed with glyphs. Otherwise, returns all vocab words, lowercased.
-- `cap`: Returns words that are lowercase or capitalized in vocab, made capitalized. If glyphs are provided, returns words that are lowercase or capitalized in vocab, made capitalized, which can be displayed with glyphs.
-- `cap_og`: Returns words that are capitalized in the vocab. If glyphs are provided, returns words that are capitalized in the vocab and can be displayed with glyphs.
-- `cap_force`: Forces capitalization by tampering with UC and CamelCase words in vocab. If glyphs are provided, returns all vocab words, made capitalized, which can be displayed with glyphs. Otherwise, returns all vocab words, made capitalized.
-- `uc`: Returns all vocab words, made uppercase. If glyphs are provided, returns all vocab words, made uppercase, which can be displayed with glyphs.
-- `uc_og`: Returns words that are uppercase in the vocab. If glyphs are provided, returns words that are uppercase in the vocab and can be displayed with glyphs.
+Options for setting case via the `case` argument.
+See [Letter Case](../guide/filtering-words/#letter-case) in the Guide for detailed descriptions and examples of each
+option
 """
 
 

@@ -5,5 +5,5 @@
 Simply copy and paste it into DrawBot:
 
 ```python
---8<-- "quickstart.py"
+--8<-- "quick-reference.py"
 ```
