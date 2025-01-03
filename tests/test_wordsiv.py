@@ -13,6 +13,21 @@ def wsv():
     return w
 
 
+def test_sent_missing_vocab_raises_keyerror(wsv):
+    with pytest.raises(KeyError):
+        wsv.sent(vocab="fake")
+
+
+def test_sent_undefined_vocab_raises_valueerror():
+    test_data = "apple\t3\nbanana\t2\ncat\t1"
+    w = WordSiv(add_default_vocabs=False)
+    vocab = Vocab(bicameral=True, lang="en", data=test_data)
+    w.add_vocab("test", vocab)
+
+    with pytest.raises(ValueError):
+        w.sent()
+
+
 def test_paragraph_no_punctuation(wsv):
     assert not any(punct in wsv.para(glyphs="Ccat") for punct in string.punctuation)
 

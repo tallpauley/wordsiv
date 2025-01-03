@@ -3,7 +3,7 @@ from wordsiv._vocab import VocabFormatError, VocabEmptyError
 import pytest
 
 
-def test_vc_no_data():
+def test_vocab_no_data():
     test_data = ""
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -11,7 +11,7 @@ def test_vc_no_data():
         vc.wordcount
 
 
-def test_vc_bad_format():
+def test_vocab_bad_format():
     test_data = "123\t123"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -19,14 +19,14 @@ def test_vc_bad_format():
         vc.wordcount
 
 
-def test_vc_no_counts():
+def test_vocab_no_counts():
     test_data = "apple\nbanana\ncherry"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     assert vc.wordcount == (("apple", 1), ("banana", 1), ("cherry", 1))
 
 
-def test_filter_wrong_glyphs():
+def test_vocab_filter_glyphs_raises_filtererror():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -34,7 +34,7 @@ def test_filter_wrong_glyphs():
         vc.filter(glyphs="xyz")
 
 
-def test_filter_empty_word_length():
+def test_vocab_filter_wl_raises_filtererror():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -42,7 +42,7 @@ def test_filter_empty_word_length():
         vc.filter(None, min_wl=10)
 
 
-def test_filter_empty_contains():
+def test_vocab_filter_contains_raises_filtererror():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -50,7 +50,7 @@ def test_filter_empty_contains():
         vc.filter(None, contains="xyz")
 
 
-def test_filter_empty_startswith():
+def test_vocab_filter_startswith_raises_filtererror():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -58,7 +58,7 @@ def test_filter_empty_startswith():
         vc.filter(None, startswith="x")
 
 
-def test_filter_empty_endswith():
+def test_vocab_filter_endswith_raises_filtererror():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -66,7 +66,7 @@ def test_filter_empty_endswith():
         vc.filter(None, endswith="x")
 
 
-def test_filter_empty_regexp():
+def test_vocab_filter_regexp_raises_filtererror():
     test_data = "apple\t5\nbanana\t3\ncherry\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -74,7 +74,7 @@ def test_filter_empty_regexp():
         vc.filter(None, regexp="x+")
 
 
-def test_filter_glyphs_any_exact():
+def test_vocab_filter_glyphs_any_exact():
     test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -83,7 +83,7 @@ def test_filter_glyphs_any_exact():
     assert vc.filter("BARTDoS") == (("BART", 2), ("DDoS", 1))
 
 
-def test_filter_glyphs_any_cap_transform():
+def test_vocab_filter_glyphs_any_cap_transform():
     test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -92,7 +92,7 @@ def test_filter_glyphs_any_cap_transform():
     assert vc.filter("Grape") == (("Grape", 6),)
 
 
-def test_filter_glyphs_any_uc_transform():
+def test_vocab_filter_glyphs_any_uc_transform():
     test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -100,7 +100,7 @@ def test_filter_glyphs_any_uc_transform():
     assert vc.filter("APLE") == (("APPLE", 5), ("APPLE", 4))
 
 
-def test_filter_glyphs_any_uc_transform_wl():
+def test_vocab_filter_glyphs_any_uc_transform_wl():
     test_data = "Paris\t6\nPA\t5"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -115,17 +115,17 @@ def test_filter_glyphs_any_uc_transform_wl():
     assert vc.filter("PARIS", min_wl=5) == (("PARIS", 6),)
 
 
-def test_filter_glyphs_any_no_lc_transform_raises_filtererror():
+def test_vocab_filter_glyphs_any_no_lc_transform_raises_filtererror():
     test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     # Capitalized, UC, CamelCaps words will not be lowercased,
-    # since lowercasing an acronym or proper noun is often incorrect, however...
+    # since lowercasing an acronym or proper noun is often incorrect
     with pytest.raises(FilterError):
         vc.filter("bartdos")
 
 
-def test_filter_case_raises_value_error():
+def test_vocab_filter_case_raises_value_error():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -133,14 +133,14 @@ def test_filter_case_raises_value_error():
         vc.filter(None, case="fake")
 
 
-def test_filter_case_lc():
+def test_vocab_filter_case_lc():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     assert vc.filter(None, case="lc") == (("grape", 1), ("apple", 2))
 
 
-def test_filter_case_lc_force():
+def test_vocab_filter_case_lc_force():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -154,7 +154,7 @@ def test_filter_case_lc_force():
     )
 
 
-def test_filter_case_uc():
+def test_vocab_filter_case_uc():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -168,7 +168,7 @@ def test_filter_case_uc():
     )
 
 
-def test_filter_case_cap():
+def test_vocab_filter_case_cap():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -180,7 +180,7 @@ def test_filter_case_cap():
     )
 
 
-def test_filter_case_cap_force():
+def test_vocab_filter_case_cap_force():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -194,7 +194,7 @@ def test_filter_case_cap_force():
     )
 
 
-def test_filter_glyphs_case():
+def test_vocab_filter_glyphs_case():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -205,23 +205,36 @@ def test_filter_glyphs_case():
     assert vc.filter(glyphs="BART", case="uc") == (("BART", 4), ("BART", 5))
     assert vc.filter(glyphs="DDOS", case="uc") == (("DDOS", 6),)
 
-    # cases with no matches...
+
+def test_vocab_filter_glyphs_case_raises_filtererror():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     with pytest.raises(FilterError):
         vc.filter(glyphs="bart", case="lc")
 
     with pytest.raises(FilterError):
         vc.filter(glyphs="Ddos", case="cap")
 
-    # unless you want to force lc
+
+def test_vocab_filter_glyphs_case_lc_force():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(glyphs="bart", case="lc_force") == (
         ("bart", 4),
         ("bart", 5),
     )
-    # or force cap
+
+
+def test_vocab_filter_glyphs_case_cap_force():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(glyphs="Ddos", case="cap_force") == (("Ddos", 6),)
 
 
-def test_filter_wl():
+def test_vocab_filter_wl():
     test_data = "apple\t10\nbanana\t5\njoe\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -232,23 +245,32 @@ def test_filter_wl():
     assert vc.filter(None, max_wl=3) == (("joe", 2),)
 
 
-def test_filter_startswith_endswith_contains():
+def test_vocab_filter_startswith():
     test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     assert vc.filter(None, startswith="a") == (("apple", 5),)
+
+
+def test_vocab_filter_contains():
+    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, contains="a") == (
         ("apple", 5),
         ("banana", 3),
         ("date", 1),
     )
+
+
+def test_vocab_filter_endswith():
+    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, endswith="y") == (("cherry", 2), ("elderberry", 4))
 
-    with pytest.raises(FilterError):
-        vc.filter(None, endswith="r")
 
-
-def test_filter_regex():
+def test_vocab_filter_regex():
     test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
