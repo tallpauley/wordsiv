@@ -413,20 +413,56 @@ class WordSiv:
 
     def top_words(
         self,
+        glyphs: str | None = None,
+        vocab: str | None = None,
         n_words: int = DEFAULT_TOP_NUM_WORDS,
         idx: int = 0,
-        glyphs: str | None = None,
-        **top_word_kwargs,
+        case: CaseType = "any",
+        min_wl: int = 2,
+        max_wl: int | None = None,
+        wl: int | None = None,
+        contains: str | None = None,
+        inner: str | None = None,
+        startswith: str | None = None,
+        endswith: str | None = None,
+        regexp: str | None = None,
+        raise_errors: bool = False,
     ):
         glyphs = self.default_glyphs if not glyphs else glyphs
+        vocab_obj = (
+            self.get_vocab(self.default_vocab) if not vocab else self.get_vocab(vocab)
+        )
 
-        word_list = [
-            self.top_word(glyphs=glyphs, idx=i, **top_word_kwargs)
-            for i in range(idx, idx + n_words)
-        ]
+        # TODO: write test to check minimum_results
+        try:
+            wc_list = vocab_obj.filter(
+                glyphs,
+                case=case,
+                min_wl=min_wl,
+                max_wl=max_wl,
+                wl=wl,
+                contains=contains,
+                inner=inner,
+                startswith=startswith,
+                endswith=endswith,
+                regexp=regexp,
+                minimum_results=n_words,
+            )[idx : idx + n_words]
+        except FilterError as e:
+            if raise_errors:
+                raise e
+            else:
+                log.warning("%s", e.args[0])
+                return ""
 
-        # filter out empty words (since by default we fail gently, this is a proof)
-        return [w for w in word_list if w]
+        if not wc_list:
+            if raise_errors:
+                raise FilterError(f"No words found at idx '{idx}'")
+            else:
+                log.warning(f"No words found at idx '{idx}'")
+                return ""
+
+        return [w for w, _ in wc_list]
 
     def sent(
         self,
