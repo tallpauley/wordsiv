@@ -23,7 +23,7 @@ def test_vc_no_counts():
     test_data = "apple\nbanana\ncherry"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
-    assert vc.wordcount == [("apple", 1), ("banana", 1), ("cherry", 1)]
+    assert vc.wordcount == (("apple", 1), ("banana", 1), ("cherry", 1))
 
 
 def test_filter_wrong_glyphs():
@@ -75,18 +75,18 @@ def test_filter_empty_regexp():
 
 
 def test_filter_glyphs():
-    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     # if we have the letters to spell the word exactly as it is in the vc, we'll match it
-    assert vc.filter("aple") == (("apple", 2),)
-    assert vc.filter("BARTDoS") == (("BART", 5), ("DDoS", 6))
+    assert vc.filter("aple") == (("apple", 5),)
+    assert vc.filter("BARTDoS") == (("BART", 2), ("DDoS", 1))
 
     # if no exact matches for the glyph set, we'll match Cap and UC of lc vc words
-    assert vc.filter("GRAPEgrape") == (("grape", 1),)
-    assert vc.filter("Grape") == (("Grape", 1),)
-    assert vc.filter("GRAPE") == (("GRAPE", 1),)
-    assert vc.filter("APLE") == (("APPLE", 2), ("APPLE", 3))
+    assert vc.filter("GRAPEgrape") == (("grape", 6),)
+    assert vc.filter("Grape") == (("Grape", 6),)
+    assert vc.filter("GRAPE") == (("GRAPE", 6),)
+    assert vc.filter("APLE") == (("APPLE", 5), ("APPLE", 4))
 
     # Capitalized, UC, CamelCaps words will not be lowercased,
     # since lowercasing an acronym or proper noun is often incorrect, however...
@@ -94,18 +94,25 @@ def test_filter_glyphs():
         vc.filter("bartdos")
 
 
-def test_filter_case():
+def test_filter_case_raises_value_error():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
-    # if you do a fake case it'll throw a ValueError
     with pytest.raises(ValueError):
         vc.filter(None, case="fake")
 
-    # with case='lc' and glyph = None, we'll just match words that are already lowercase
+
+def test_filter_case_lc():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, case="lc") == (("grape", 1), ("apple", 2))
 
-    # unless, you want to force them lowercase
+
+def test_filter_case_lc_force():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, case="lc_force") == (
         ("grape", 1),
         ("apple", 2),
@@ -115,7 +122,11 @@ def test_filter_case():
         ("ddos", 6),
     )
 
-    # with case='uc', it assumes any word can be uppercased
+
+def test_filter_case_uc():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, case="uc") == (
         ("GRAPE", 1),
         ("APPLE", 2),
@@ -125,7 +136,11 @@ def test_filter_case():
         ("DDOS", 6),
     )
 
-    # with case='cap', by default it only matches lowercase and capitalized words in the vc
+
+def test_filter_case_cap():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, case="cap") == (
         ("Grape", 1),
         ("Apple", 2),
@@ -133,7 +148,11 @@ def test_filter_case():
         ("Bart", 4),
     )
 
-    # unless you want to force it with 'cap_force
+
+def test_filter_case_cap_force():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(None, case="cap_force") == (
         ("Grape", 1),
         ("Apple", 2),

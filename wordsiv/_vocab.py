@@ -82,14 +82,14 @@ class Vocab:
             )
 
     @cached_property
-    def wordcount(self) -> list[tuple[str, int]]:
-        """Returns a list of tuples with words and counts."""
+    def wordcount(self) -> tuple[tuple[str, int], ...]:
+        """Returns a tuple of tuples with words and counts."""
 
-        return [
+        return tuple(
             (line.split()[0], int(line.split()[1]))
             for line in self.wordcount_str.splitlines()
-        ]
+        )
 
     @lru_cache(maxsize=None)
     def filter(self, *args, **kwargs):
-        return _filter_wordcount(self.wordcount_str, self.bicameral, *args, **kwargs)
+        return _filter_wordcount(self.wordcount, self.bicameral, *args, **kwargs)

@@ -54,7 +54,7 @@ DEFAULT_VOCABS = {
 
 
 @lru_cache(maxsize=None)
-def _accumulate_weights(counts: tuple[int, ...]) -> tuple[int, ...]:
+def _accumulate_weights(counts: tuple[float, ...]) -> tuple[float, ...]:
     """Accumulate weights and cache results"""
 
     return tuple(accumulate(counts))
@@ -70,7 +70,7 @@ def _split_wordcount(
 
 
 @lru_cache(maxsize=None)
-def _interpolate_counts(counts: tuple[int, ...], rnd: float) -> tuple[int | float, ...]:
+def _interpolate_counts(counts: tuple[float, ...], rnd: float) -> tuple[float, ...]:
     """Interpolate counts with a random distribution."""
 
     max_count = max(counts)
@@ -79,7 +79,7 @@ def _interpolate_counts(counts: tuple[int, ...], rnd: float) -> tuple[int | floa
 
 
 def _sample_word(
-    word_count: tuple[tuple[str, int], ...], rand: random.Random, rnd: float
+    word_count: tuple[tuple[str, float], ...], rand: random.Random, rnd: float
 ) -> str:
     """Sample a word from a wordcount list."""
 
@@ -204,6 +204,7 @@ class WordSiv:
             self.rand.seed(seed)
 
         if max_wl is None:
+            # TODO put this magic number in a constant
             max_wl = 4
 
         if wl:
@@ -232,7 +233,7 @@ class WordSiv:
         vocab: str | None = None,
         glyphs: str | None = None,
         rnd: float = 0,
-        seed: None | int | float | str = None,
+        seed: None | float | str = None,
         case: CaseType = "any",
         top_k: int = 0,
         min_wl: int = 1,
@@ -344,7 +345,7 @@ class WordSiv:
     def words(
         self,
         glyphs: str | None = None,
-        seed: None | int | float | str = None,
+        seed: None | float | str = None,
         n_words: int | None = None,
         min_n_words: int = DEFAULT_MIN_NUM_WORDS,
         max_n_words: int = DEFAULT_MAX_NUM_WORDS,
@@ -431,7 +432,7 @@ class WordSiv:
         self,
         vocab: str | None = None,
         glyphs: str | None = None,
-        seed: None | int | float | str = None,
+        seed: None | float | str = None,
         punc: bool = True,
         rnd_punc: float = 0,
         **words_kwargs,
@@ -473,7 +474,7 @@ class WordSiv:
 
     def sents(
         self,
-        seed: None | int | float | str = None,
+        seed: None | float | str = None,
         min_n_sents: int = DEFAULT_MIN_PARA_LEN,
         max_n_sents: int = DEFAULT_MAX_PARA_LEN,
         n_sents: int | None = None,
@@ -495,7 +496,7 @@ class WordSiv:
 
     def paras(
         self,
-        seed: int | None = None,
+        seed: None | float | str = None,
         n_paras: int = 3,
         **para_kwargs,
     ):
@@ -506,7 +507,7 @@ class WordSiv:
 
     def txt(
         self,
-        seed: None | int | float | str = None,
+        seed: None | float | str = None,
         para_sep: str = "\n\n",
         **paras_kwargs,
     ):

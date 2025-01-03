@@ -42,7 +42,7 @@ CaseType options for filtering words:
 
 @lru_cache(maxsize=None)
 def _filter_wordcount(
-    wordcount_str,
+    wc_tuple,
     bicameral,
     glyphs=None,
     case="any",
@@ -54,14 +54,13 @@ def _filter_wordcount(
     startswith=None,
     endswith=None,
     regexp=None,
+    minimum_results=1,
 ):
-    # filter by case
-    wc_list = _filter_case(wordcount_str, case, glyphs, bicameral)
-
-    if not wc_list:
-        raise FilterError(
-            f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
-        )
+    # it's faster to filter case first, we just need to do it at the end for 'any'
+    if case != "any":
+        wc_list = _filter_case(wc_tuple, case, glyphs, bicameral, minimum_results)
+    else:
+        wc_list = list(wc_tuple)
 
     if startswith:
         sw_len = len(startswith)
@@ -74,6 +73,7 @@ def _filter_wordcount(
         _check_wc_empty(wc_list, "endswith", f" '{endswith}'")
 
     # filter with contains, inner
+    # TODO: rewrite this logic, it's confusing
     if inner:
         contains = inner
 
@@ -104,6 +104,15 @@ def _filter_wordcount(
         wc_list = _filter_regex(wc_list, regexp)
         _check_wc_empty(wc_list, "regexp", f" '{regexp}")
 
+    # it's faster to filter case first, we just need to do it at the end for 'any'
+    if case == "any":
+        wc_list = _filter_case(wc_list, case, glyphs, bicameral, minimum_results)
+
+    if not wc_list:
+        raise FilterError(
+            f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
+        )
+
     return tuple(wc_list)
 
 
@@ -113,7 +122,17 @@ def _check_wc_empty(wc_list, filter_name, details=""):
         raise FilterError(msg)
 
 
-def _filter_case(wc_str, case, glyphs, bicameral):
+def _scale_counts(wc_list, scale):
+    """Scale counts in a wordcount list"""
+    return [(word, count * scale) for word, count in wc_list]
+
+
+def _filter_case(wc, case, glyphs, bicameral, minimum_results=1):
+    if isinstance(wc, list) or isinstance(wc, tuple):
+        wc_str = "\n".join(f"{w}\t{c}" for w, c in wc)
+    else:
+        wc_str = wc
+
     if not bicameral:
         if glyphs:
             return _findall_recase(wc_str, f"[{glyphs}]+")
@@ -125,29 +144,40 @@ def _filter_case(wc_str, case, glyphs, bicameral):
             lc_glyphs = "".join([c for c in glyphs if c.islower()])
 
         if case == "any":
-            if glyphs:
-                # case "any" is the default case, and tries to be as flexible as needed
-                # we first try to get unmodified words from vocab (same as "any_og")
-                wc_list = _findall_recase(wc_str, f"[{glyphs}]+")
-
-                # if no matches, get lowercase words from vocab we can display capitalized with glyphs
-                if not wc_list and uc_glyphs and lc_glyphs:
-                    wc_list = _findall_recase(
-                        wc_str,
-                        f"[{uc_glyphs.lower()}][{lc_glyphs}]*",
-                        change_case="cap",
-                    )
-
-                # if no matches still, get all words from vocab we can display uppercase with glyphs (like case='uc')
-                if not wc_list and uc_glyphs:
-                    wc_list = _findall_recase(
-                        wc_str, f"[{uc_glyphs}{uc_glyphs.lower()}]+", change_case="uc"
-                    )
-                return wc_list
-            else:
-                # for case='any' and no glyphs, return all words
+            if not glyphs:
+                # return all vocab words
                 return _findall_recase(wc_str, "all")
-        elif case == "any_og":
+            else:
+                # see if we can get `minimum_results` words with unmodified words
+                wc = _findall_recase(wc_str, f"[{glyphs}]+")
+                if len(wc) >= minimum_results:
+                    return wc
+
+                # if we haven't met minimum_results, try to amend with capitalized words
+                if uc_glyphs and lc_glyphs:
+                    wc.extend(
+                        _findall_recase(
+                            wc_str,
+                            f"[{uc_glyphs}{uc_glyphs.lower()}][{lc_glyphs}]*",
+                            change_case="cap",
+                        )
+                    )
+
+                    if len(wc) >= minimum_results:
+                        return tuple(sorted(wc, key=lambda wc: wc[1], reverse=True))
+
+                if uc_glyphs:
+                    wc.extend(
+                        _findall_recase(
+                            wc_str,
+                            f"[{uc_glyphs}{uc_glyphs.lower()}]+",
+                            change_case="uc",
+                        )
+                    )
+
+                return tuple(sorted(wc, key=lambda wc: wc[1], reverse=True))
+
+        if case == "any_og":
             # case "any_og" means any unmodified words from vocab
             if glyphs:
                 # return all vocab words we can display with glyphs as is
