@@ -26,6 +26,8 @@ mypy = "^1.14.1"
 
 [tool.poe.tasks]
 test = "poetry run python -m pytest"
+coverage = "poetry run pytest --cov-report term-missing --cov=wordsiv tests/"
+docs = "poetry run mkdocs serve"
 
 [tool.pytest.ini_options]
 addopts = ["--maxfail=5"]
