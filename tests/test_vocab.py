@@ -74,7 +74,7 @@ def test_filter_empty_regexp():
         vc.filter(None, regexp="x+")
 
 
-def test_filter_glyphs():
+def test_filter_glyphs_any_exact():
     test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
@@ -82,11 +82,42 @@ def test_filter_glyphs():
     assert vc.filter("aple") == (("apple", 5),)
     assert vc.filter("BARTDoS") == (("BART", 2), ("DDoS", 1))
 
+
+def test_filter_glyphs_any_cap_transform():
+    test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     # if no exact matches for the glyph set, we'll match Cap and UC of lc vc words
     assert vc.filter("GRAPEgrape") == (("grape", 6),)
     assert vc.filter("Grape") == (("Grape", 6),)
+
+
+def test_filter_glyphs_any_uc_transform():
+    test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter("GRAPE") == (("GRAPE", 6),)
     assert vc.filter("APLE") == (("APPLE", 5), ("APPLE", 4))
+
+
+def test_filter_glyphs_any_uc_transform_wl():
+    test_data = "Paris\t6\nPA\t5"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
+    # This function tests a specific characteristic of case='any'
+    # - the case filter was previously at the beginning of the filter pipeline
+    # - the case filter would return just 'PA', so it wouldn't need to try to expand
+    # results by uppercasing `Paris`
+    # - the word length filter would then filter out 'PA'
+    # The solution has been to move the case filter to the end of the filter pipeline
+    # for the 'any' case, so that if any filter (like wl) is restrictive, we can still
+    # expand our case filter at the end
+    assert vc.filter("PARIS", min_wl=5) == (("PARIS", 6),)
+
+
+def test_filter_glyphs_any_no_lc_transform_raises_filtererror():
+    test_data = "grape\t6\napple\t5\nApple\t4\nBart\t3\nBART\t2\nDDoS\t1"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     # Capitalized, UC, CamelCaps words will not be lowercased,
     # since lowercasing an acronym or proper noun is often incorrect, however...
