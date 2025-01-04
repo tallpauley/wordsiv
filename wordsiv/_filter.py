@@ -83,7 +83,7 @@ def _filter_wordcount(
     # filter by word length
     if wl:
         wc_list = [(w, c) for w, c in wc_list if len(w) == wl]
-        _check_wc_empty(wc_list, "wl", f" '{wl}")
+        _check_wc_empty(wc_list, "wl", f" '{wl}'")
     elif min_wl or max_wl:
         if not max_wl:
             max_wl = _BIG_NUM
@@ -94,7 +94,7 @@ def _filter_wordcount(
     # filter with regex
     if regexp:
         wc_list = _filter_regex(wc_list, regexp)
-        _check_wc_empty(wc_list, "regexp", f" '{regexp}")
+        _check_wc_empty(wc_list, "regexp", f" '{regexp}'")
 
     # it's faster to filter case first, we just need to do it at the end for 'any'
     if case == "any":
