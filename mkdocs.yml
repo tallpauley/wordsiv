@@ -26,7 +26,6 @@ nav:
       - Basic Usage: guide/basic-usage.md
       - Filtering Words: guide/filtering-words.md
       - Generating Text: guide/generating-text.md
-      - Tuning Word Selection: guide/tuning-word-selection.md
       - Repeatable Proofs: guide/repeatable-proofs.md
       - Advanced Usage: guide/advanced-usage.md
   - API Reference:
