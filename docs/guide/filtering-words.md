@@ -1,24 +1,5 @@
 # Filtering Words
 
-## Most Probable Words
-
-Sometimes we want to see common words which we can spell with `glyphs`, without
-any probability or randomization—especially when we have restrictive filters.
-You can use `top_word` and `top_words` for this:
-
-```python
-from wordsiv import top_word, top_words
-
-top_word(vocab='en', glyphs="HAMBUGERFONTSIVhambugerfontsiv")
-# returns: 'the'
-
-top_words(vocab='en', glyphs="HAMBUGERFONTSIVhambugerfontsiv")
-# returns: ['the', 'of', 'to', 'in', 'for', 'is', 'on', 'that', 'this', 'it']
-```
-
-These functions are especially useful in seeing how WordSiv's filter arguments
-work.
-
 ## Letter Case
 
 The most important parameter in WordSiv (for bicameral languages) is `case`.
@@ -26,8 +7,8 @@ WordSiv allows for words in Vocabs to be:
 
 - **lowercase** (e.g. `"owl"`): **`lc`**
 - **capitalized** (e.g. `"Korea"`): **`cap`**
-- **all uppercase** (e.g. `"WWF"`): **`uc`**
-- **mixed-case** (e.g. `"DDoS"`): (no parameter, but respected)
+- **all caps** (e.g. `"WWF"`): **`uc`**
+- **camel-case** (e.g. `"DDoS"`): (no parameter, but respected)
 
 The `case` argument allows you to:
 
@@ -62,7 +43,7 @@ set_vocab('en')
 
 ```
 
-### All Uppercase (`case='uc'`)
+### All Caps (`case='uc'`)
 
 ```python
 sent(case="uc", n_words=5)

@@ -16,78 +16,145 @@ MY_GLYPHS = "HAMBUGERFONTSIVhambugerfontsiv.,"
 set_vocab("en")
 set_glyphs(MY_GLYPHS)
 
-print("######## WORD GENERATION FUNCTIONS #########\n")
-print("-> Word from probabilities (seed w/ MY_GLYPHS so proof stays the same):")
+###################################################################
+#################### WORD GENERATION FUNCTIONS ####################
+
+# Word from probabilities (seed w/ MY_GLYPHS so proof stays the same):
 print(word(seed=MY_GLYPHS))
 
-print("-> Totally random word:")
+# Totally random word:
 print(word(rnd=1))
 
-print("-> Most common word (that can be spelled w/ glyphs):")
+# Most common word (that can be spelled w/ glyphs):
 print(top_word())
 
-print("-> 5th most common word (that can be spelled w/ glyphs):")
+# 5th most common word (that can be spelled w/ glyphs):
 print(top_word(idx=4))  # works like list indeces, starts at 0
 
-print("-> A list of words from probabilities:")
+# A list of words from probabilities:
 print(words())
 
-print("-> A list of totally random words:")
+# A list of totally random words:
 print(words(rnd=1))
 
-print("-> Most common 5 words (that can be spelled w/ glyphs):")
+# Most common 5 words (that can be spelled w/ glyphs):
 print(top_words(n_words=5))
 
-print("-> A sentence:")
+# A sentence:
 print(sent())
 
-print("-> 3 sentences:")
+# 3 sentences:
 print(sents(n_sents=3))
 
-print("-> A paragraph:")
+# A paragraph:
 print(para())
 
-print("-> A list of 2 Paragraphs:")
+# A list of 2 Paragraphs:
 print(paras(n_paras=2))
 
-print("-> Block of text:")
+# Block of text:
 print(txt())
 
-print("\n######## LETTER CASE OPTIONS #########\n")
+###################################################################
+#################### LETTER CASE OPTIONS ##########################
 
-# TODO we need documentation and tests for this
-print(
-    "-> Default tries to be smart and uppercase/capitalize if it's reasonable to do so:"
-)
-print(top_word(glyphs="PARIS", min_wl=5))
+# The default is `case='any'`, which transforms the case if not getting results:
+# - try to get (unmodified) words from Vocab which can be spelled with "ZO" and have at
+#   least 5 characters: No results.
+# - try to capitalize Vocab words: "zoo" becomes "Zoo" but we can't spell it without
+#   'o'. No results.
+# - try to uppercase Vocab words: "zoo" becomes "ZOO", Bingo! Returns 'ZOO' as most
+#   common word!
+print(top_word(glyphs="ZO", min_wl=3))
 
-print('-> Do NOT transform case of words from Vocab ("Paris" is capitalized in Vocab):')
-print(top_word(glyphs="PARIS", min_wl=5, case="any_og"))
+# Same as above. `any` is the default if case isn't specified:
+print(top_word(glyphs="ZO", case="any", min_wl=3))
 
-print("-> Lowercased Words:")
+# `case='any_og'` doesn't try to apply case transformations. So we get no results.
+print(top_word(glyphs="ZO", min_wl=3, case="any_og"))
+
+# Lowercase words, includes only words that are lowercase in the Vocab:
+# - No case transforms happen by default, since we wouldn't want to transform words like
+#  'Paris', 'FAA', or 'DDoS' to lowercase
 print(top_words(case="lc", n_words=5))
 
-print("-> Capitalized Words:")
+# Capitalized words, includes:
+# - words that are capitalized in the Vocab
+# - words that are lowercase in the Vocab, transformed to capitalized
 print(top_words(case="cap", n_words=5))
 
-print("-> All Uppercase Words:")
+# All-caps words, includes:
+# - words that are all-caps in the Vocab
+# - words that are capitalized in the Vocab, transformed to all-caps
+# - words that are lowercase in the Vocab, transformed to all-caps
 print(top_words(case="uc", n_words=5))
 
-print("-> Words that are capitalized in the Vocab:")
+# Words that are capitalized in the Vocab:
 print(top_words(case="cap_og", n_words=5))
 
-print("-> Words that are all uppercase in the Vocab:")
+# Words that are all-caps in the Vocab:
 print(top_words(case="uc_og", n_words=5))
 
-print("-> Transform ANY word to lowercase (even capitalized and all uppercase words!):")
+# Transform ANY word to lowercase (even capitalized, all-caps, and camel-case words!):
 print(top_words(case="lc_force", n_words=5))
 
-print("-> Transform ANY word to capitalized (even those that should be all uppercase)")
+# Transform ANY word to capitalized (even all-caps and camel-case words!)")
 print(top_words(case="cap_force", n_words=5))
 
 
-print("-> Random words in Spanish containing 'ña':")
+###################################################################
+#################### WORD FILTER OPTIONS ##########################
+
+# These options can be used on ALL word generation functions, from `word()` all the way
+# up to `txt()`. Here they are demonstrated w/ top_word for simplicity:
+
+# Exact word length:
+print(top_word(wl=7))
+
+# Word length min, max
+print(top_word(min_wl=8, max_wl=12))
+
+# Word starts with a glyph
+print(top_word(startswith="v"))
+
+# Word starts with a string
+print(top_word(startswith="ev"))
+
+# Word ends with a glyph
+print(top_word(endswith="s"))
+
+# Word ends with a string
+print(top_word(endswith="ts"))
+
+# Contains a glyph
+print(top_word(contains="a"))
+
+# Contains a string
+print(top_word(contains="rr"))
+
+# Contains multiple strings, glyphs
+# (Note: list doesn't work, uses tuple for caching)
+print(top_word(contains=("b", "rr")))
+
+# Has character "inside" (in substring of word excluding first and last glyph)
+print(top_word(inner="b"))
+
+# Has string "inside" (in substring of word excluding first and last glyph)
+print(top_word(inner="br"))
+
+# Has multiple strings "inside" (in substring of word excluding first and last glyph)
+# (Note: list doesn't work, uses tuple for caching)
+print(top_word(inner=("br", "ck")))
+
+# Word matches Regular Expression
+print(top_word(regexp=r"h.+b.*ger"))
+
+# Regex uses regex (third-party) regex library from PyPi, so you can do stuff like this:
+# https://pypi.org/project/regex/
+print(top_word(regexp=r"h.+b.*ger"))
+
+# Random words in Spanish containing 'ña':
 print(words(vocab="es", glyphs="hambugerfontsivñ", n_words=5, rnd=1, contains="ña"))
 
-print("-> Most common words in Arabic with glyphs 'خشطغب':")
+# Most common words in Arabic with glyphs 'خشطغب':
 print(top_words(vocab="ar", n_words=5, min_wl=3, glyphs="خشطغب"))
