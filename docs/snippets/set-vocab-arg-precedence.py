@@ -1,8 +1,8 @@
-from wordsiv import set_vocab, para
+from wordsiv import WordSiv
 
-set_vocab("en")
+wsv = WordSiv(vocab="en")
 
 # paragraph in English
-print(para())
+print(wsv.para())
 # paragraph in Spanish
-print(para(vocab="es"))
+print(wsv.para(vocab="es"))

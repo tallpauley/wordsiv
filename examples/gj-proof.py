@@ -1,15 +1,18 @@
 """WordSiv Proof inspired by http://www.galvanizedjets.com/"""
 
-from wordsiv import set_vocab, word
+from wordsiv import WordSiv
 from itertools import product
 import logging
 
 wsv_log = logging.getLogger("wordsiv")
 wsv_log.setLevel(logging.ERROR)
 
+wsv = WordSiv(vocab="en_books")
+
 
 def gj_proof_en(glyphs, case="cap"):
-    set_vocab("en_books")
+    wsv = WordSiv(vocab="en", glyphs=glyphs)
+
     uc_glyphs = "".join(sorted(c for c in glyphs if c.isupper()))
     lc_glyphs = "".join(sorted(c for c in glyphs if c.islower()))
 
@@ -25,11 +28,11 @@ def gj_proof_en(glyphs, case="cap"):
     words = []
     for pair in pairs:
         if case == "cap":
-            w = word(glyphs=glyphs, startswith=pair, case="cap", min_wl=4, idx=0)
+            w = wsv.top_word(startswith=pair, case="cap", min_wl=4, idx=0)
         elif case == "lc":
-            w = word(glyphs=glyphs, inner=pair, case="lc", min_wl=4, idx=0)
+            w = wsv.top_word(inner=pair, case="lc", min_wl=4, idx=0)
         elif case == "uc":
-            w = word(glyphs=glyphs, inner=pair, case="uc", min_wl=4, idx=0)
+            w = wsv.top_word(inner=pair, case="uc", min_wl=4, idx=0)
         if w:
             words.append(w)
 
@@ -37,17 +40,18 @@ def gj_proof_en(glyphs, case="cap"):
 
 
 def gj_proof_ar(glyphs, mode):
-    set_vocab("ar_subs")
+    wsv = WordSiv(vocab="ar", glyphs=glyphs)
+
     pairs = ["".join(pair) for pair in product(glyphs, repeat=2)]
 
     word_list = []
     for pair in pairs:
         if mode == "init":
-            w = word(glyphs=glyphs, startswith=pair, min_wl=5, idx=0)
+            w = wsv.top_word(startswith=pair, min_wl=5, idx=0)
         if mode == "medi":
-            w = word(glyphs=glyphs, inner=pair, min_wl=5, idx=0)
+            w = wsv.top_word(inner=pair, min_wl=5, idx=0)
         if mode == "fina":
-            w = word(glyphs=glyphs, endswith=pair, min_wl=5, idx=0)
+            w = wsv.top_word(endswith=pair, min_wl=5, idx=0)
 
         if w:
             word_list.append(w)

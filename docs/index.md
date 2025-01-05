@@ -5,13 +5,10 @@ WordSiv is a Python library for generating proofing text for an incomplete typef
 Say you've drawn `HAMBUGERFONTSIVhambugerfontsiv.,` and want a sentence with *only* those glyphs:
 
 ```python
-from wordsiv import sent
-
-my_glyphs = 'HAMBUGERFONTSIVhambugerfontsiv.,'
-sent(vocab="en", glyphs=my_glyphs, rnd=.03) # rnd lets us turn up the randomness
+--8<-- "intro-example.py"
 ```
 
-This returns:
+This returns something like:
 
 >Bears run saint that fighting bargain remove, genre MA Barbara registration the bug it others entering Steven.
 
@@ -20,7 +17,6 @@ This returns:
 - **Shaped text**: WordSiv generates text that is roughly the *shape* of the desired language using word/punctuation probabilities and capitalization.
 - **Word filtering**: WordSiv selects from words that can be spelled with your current glyph set. Many additional filters to select for letter combinations you want without worrying about `.notdef`.
 - **Letter case support**: WordSiv supports cased source words, and has many ways of filtering and transforming case via the `case` parameter.
-- **Easy API**: WordSiv is has been (re)designed to be used in DrawBot and now features easy module-level APIs like `word()`, `sent()`, `para()`.
 
 # Installation
 

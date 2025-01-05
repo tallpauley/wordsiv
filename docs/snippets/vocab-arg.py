@@ -1,3 +1,4 @@
-from wordsiv import para
+from wordsiv import WordSiv
 
-print(para(vocab="en"))
+wsv = WordSiv()
+print(wsv.para(vocab="en"))

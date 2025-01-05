@@ -15,7 +15,7 @@ The `case` argument allows you to:
 - select words from a Vocab which **already have the desired case** and only
   contain `glyphs`:  **`lc`**, **`cap_og`**, **`uc_og`**
 - select words from a Vocab which **can be transfomed into the desired case**
-  and *still only contain* `glyphs`: **`uc`**, **`cap`**, **`cap_force`**,
+  and contain only `glyphs` (after transform): **`uc`**, **`cap`**, **`cap_force`**,
   **`lc_force`**
 - select any word from a Vocab **of any case** which only contain `glyphs`:
   **`any-og`**
@@ -29,18 +29,22 @@ option if you want to make a change to the case that is unusual, such as:
 - Changing `"WWF"` to `"Wwf"` (`cap-force`)
 - Changing `"DDoS"`to `"ddos"` (`lc-force`)
 
-### Default: Any Case w/ Expansion (`case='any'`)
+### Default: Any Case w/ Transforms (`case='any'`)
 
-The default option tries to match as many words as possible, trying transforming
-the case to `cap` and then `uc` if there aren't enough matches.
+The default option (`case='any'`) tries to match as many words as possible,
+transforming the case to `cap` and then `uc` if there aren't enough matches.
 
 ```python
-from wordsiv import set_vocab, sent, top_words
+--8<-- "case-any.py"
+```
 
-set_vocab('en')
+### Any Case w/out Transforms (`case='any-og'`)
 
-# By default case=`any`
+You can also specify you want any word *exactly* as it appears
+in the Vocab `case='any-og'`:
 
+```python
+--8<-- "case-any-og.py"
 ```
 
 ### All Caps (`case='uc'`)

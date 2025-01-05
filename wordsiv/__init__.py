@@ -21,20 +21,6 @@ __all__ = [
     "CaseType",
     "VocabFormatError",
     "VocabEmptyError",
-    "word",
-    "number",
-    "top_word",
-    "words",
-    "top_words",
-    "sent",
-    "sents",
-    "para",
-    "paras",
-    "txt",
-    "set_glyphs",
-    "set_vocab",
-    "get_vocab",
-    "add_vocab",
 ]
 
 log = logging.getLogger(__name__)
@@ -114,28 +100,25 @@ class WordSiv:
 
     def __init__(
         self,
-        glyphs: str | None = None,
         vocab: str | None = None,
+        glyphs: str | None = None,
         add_default_vocabs: bool = True,
         raise_errors: bool = False,
     ):
-        self.default_glyphs = glyphs
         self.default_vocab = vocab
+        self.default_glyphs = glyphs
         self.raise_errors = raise_errors
-        self.vocabs: dict[str, Vocab] = {}
+        self._vocabs: dict[str, Vocab] = {}
 
         if add_default_vocabs:
             self._add_default_vocabs()
 
         self.rand = random.Random()
 
-    def set_glyphs(self, default_glyphs: str | None) -> None:
-        """Set the default glyph set for the WordSiv instance.
+    def seed(self, seed: str | float) -> None:
+        """Seed for the random number generator."""
 
-        Args:
-            default_glyphs (str): A string of glyphs
-        """
-        self.default_glyphs = default_glyphs
+        self.rand.seed(seed)
 
     def add_vocab(self, vocab_name: str, vocab: Vocab) -> None:
         """Add a Vocab to the WordSiv instance.
@@ -144,7 +127,7 @@ class WordSiv:
             vocab_name (str): a name to access the Vocab with
             vocab (Vocab): The Vocab object.
         """
-        self.vocabs[vocab_name] = vocab
+        self._vocabs[vocab_name] = vocab
 
     def _add_default_vocabs(self) -> None:
         for vocab_name, (meta_file, data_file) in DEFAULT_VOCABS.items():
@@ -158,14 +141,6 @@ class WordSiv:
             )
             self.add_vocab(vocab_name, vocab)
 
-    def set_vocab(self, default_vocab: str) -> None:
-        """Set the default vocab for the WordSiv instance.
-
-        Args:
-            default_vocab (str): The name of the default vocab.
-        """
-        self.default_vocab = default_vocab
-
     def get_vocab(self, vocab_name: str | None = None) -> Vocab:
         """Return the Vocab object with the given name, or the default vocab if `None`.
 
@@ -176,17 +151,17 @@ class WordSiv:
             Vocab: The Vocab object.
         """
         if vocab_name:
-            return self.vocabs[vocab_name]
+            return self._vocabs[vocab_name]
         else:
             if self.default_vocab:
-                return self.vocabs[self.default_vocab]
+                return self._vocabs[self.default_vocab]
             else:
                 raise ValueError("Error: no vocab specified")
 
     def list_vocabs(self) -> list[str]:
         """List all available vocabs."""
 
-        return list(self.vocabs.keys())
+        return list(self._vocabs.keys())
 
     def number(
         self,
@@ -541,7 +516,7 @@ class WordSiv:
 
         return [self.para(**para_kwargs) for _ in range(n_paras)]
 
-    def txt(
+    def text(
         self,
         seed: None | float | str = None,
         para_sep: str = "\n\n",
@@ -553,98 +528,3 @@ class WordSiv:
             self.rand.seed(seed)
 
         return para_sep.join(self.paras(**paras_kwargs))
-
-
-# Top-level convenience functions and singleton WordSiv instance
-
-_default_wordsiv_instance = WordSiv()
-
-
-def set_glyphs(default_glyphs):
-    """Calls [`set_glyphs`][wordsiv.WordSiv.set_glyphs] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.set_glyphs(default_glyphs)
-
-
-def set_vocab(default_vocab: str) -> None:
-    """Calls [`set_vocab`][wordsiv.WordSiv.set_vocab] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.set_vocab(default_vocab)
-
-
-def get_vocab(vocab_name: str | None) -> Vocab:
-    """Calls [`get_vocab`][wordsiv.WordSiv.get_vocab] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.get_vocab(vocab_name)
-
-
-def add_vocab(vocab_name: str, vocab: Vocab) -> None:
-    """Calls [`add_vocab`][wordsiv.WordSiv.add_vocab] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.add_vocab(vocab_name, vocab)
-
-
-def number(**kwargs) -> str:
-    """Calls [`number`][wordsiv.WordSiv.number] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.number(**kwargs)
-
-
-def word(**kwargs) -> str:
-    """Calls [`word`][wordsiv.WordSiv.word] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.word(**kwargs)
-
-
-def top_word(*args, **kwargs) -> str:
-    """Calls [`top_word`][wordsiv.WordSiv.top_word] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.top_word(*args, **kwargs)
-
-
-def words(**kwargs) -> list[str]:
-    """Calls [`words`][wordsiv.WordSiv.words] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.words(**kwargs)
-
-
-def top_words(**kwargs) -> list[str]:
-    """Calls [`top_words`][wordsiv.WordSiv.top_words] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.top_words(**kwargs)
-
-
-def sent(**kwargs) -> str:
-    """Calls [`sent`][wordsiv.WordSiv.sent] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.sent(**kwargs)
-
-
-def sents(**kwargs) -> list[str]:
-    """Calls [`sents`][wordsiv.WordSiv.sents] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.sents(**kwargs)
-
-
-def para(**kwargs) -> str:
-    """Calls [`para`][wordsiv.WordSiv.para] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.para(**kwargs)
-
-
-def paras(**kwargs) -> list[str]:
-    """Calls [`paras`][wordsiv.WordSiv.paras] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.paras(**kwargs)
-
-
-def txt(**kwargs) -> str:
-    """Calls [`text`][wordsiv.WordSiv.txt] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.txt(**kwargs)
-
-
-def list_vocabs() -> list[str]:
-    """Calls [`list_vocabs`][wordsiv.WordSiv.list_vocabs] on default WordSiv instance."""
-
-    return _default_wordsiv_instance.list_vocabs()

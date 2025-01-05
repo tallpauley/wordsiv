@@ -9,7 +9,7 @@ def wsv():
     w = WordSiv(add_default_vocabs=False)
     vocab = Vocab(bicameral=True, lang="en", data=test_data)
     w.add_vocab("test", vocab)
-    w.set_vocab("test")
+    w.default_vocab = "test"
     return w
 
 
@@ -23,7 +23,6 @@ def test_sent_undefined_vocab_raises_valueerror():
     w = WordSiv(add_default_vocabs=False)
     vocab = Vocab(bicameral=True, lang="en", data=test_data)
     w.add_vocab("test", vocab)
-
     with pytest.raises(ValueError):
         w.sent()
 
@@ -63,7 +62,9 @@ def test_sentence_min_n_words_max_n_words(wsv, min_n_words, max_n_words):
         assert (
             min_n_words
             <= len(
-                wsv.sent(min_n_words=min_n_words, max_n_words=max_n_words).split(" ")
+                wsv.sent(
+                    min_n_words=min_n_words, max_n_words=max_n_words, punc=False
+                ).split(" ")
             )
             <= max_n_words
         )

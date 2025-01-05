@@ -27,7 +27,6 @@ nav:
       - Filtering Words: guide/filtering-words.md
       - Generating Text: guide/generating-text.md
       - Repeatable Proofs: guide/repeatable-proofs.md
-      - Advanced Usage: guide/advanced-usage.md
   - API Reference:
       wordsiv:
         wordsiv: api-reference.md

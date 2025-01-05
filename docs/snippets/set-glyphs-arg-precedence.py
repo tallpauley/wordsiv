@@ -1,9 +1,8 @@
-from wordsiv import set_vocab, set_glyphs, words
+from wordsiv import WordSiv
 
-set_vocab("en")
-set_glyphs("HAMBUGERFONTShambugerfonts.,")
+wsv = WordSiv(vocab="en", glyphs="HAMBUGERFONTShambugerfonts.,")
 
 # uses glyphs "HAMBUGERFONTShambugerfonts.,"
-print(words(glyphs="hambugerfonts.,"))
+print(wsv.words())
 # uses glyphs "hambugerfonts.,""
-print(words(glyphs="hambugerfonts.,"))
+print(wsv.words(glyphs="hambugerfonts.,"))

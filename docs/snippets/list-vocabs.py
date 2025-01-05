@@ -1,3 +1,4 @@
-from wordsiv import list_vocabs
+from wordsiv import WordSiv
 
-print(list_vocabs())
+wsv = WordSiv()
+print(wsv.list_vocabs())

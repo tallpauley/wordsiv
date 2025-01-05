@@ -1,6 +1,7 @@
-from wordsiv import set_vocab, sent
+from wordsiv import WordSiv
 
-set_vocab("en")
+# Make a WordSiv object, w/ default Vocab set to English
+wsv = WordSiv(vocab="en")
 
-# Any glyph will be used
-print(sent())
+# Generate a sentence w/out any word filtering
+print(wsv.sent())
