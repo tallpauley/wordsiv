@@ -199,7 +199,7 @@ class WordSiv:
                     log.warning("No numerals available in glyphs")
                     return ""
 
-        length = random.randint(min_wl, max_wl)
+        length = self.rand.randint(min_wl, max_wl)
         return "".join(self.rand.choice(available_numerals) for _ in range(length))
 
     def word(
@@ -505,7 +505,7 @@ class WordSiv:
             self.rand.seed(seed)
 
         if not n_sents:
-            n_sents = random.randint(min_n_sents, max_n_sents)
+            n_sents = self.rand.randint(min_n_sents, max_n_sents)
 
         return [self.sent(**sent_kwargs) for _ in range(n_sents)]
 
