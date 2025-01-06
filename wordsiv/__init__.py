@@ -8,7 +8,7 @@ import logging
 import random
 import json
 from importlib import resources
-
+from typing import Sequence
 from ._vocab import Vocab, VocabFormatError, VocabEmptyError
 from ._filter import FilterError, CaseType
 from ._punctuation import DEFAULT_PUNCTUATION, _punctuate
@@ -115,9 +115,8 @@ class WordSiv:
 
         self.rand = random.Random()
 
-    def seed(self, seed: str | float) -> None:
+    def seed(self, seed) -> None:
         """Seed for the random number generator."""
-
         self.rand.seed(seed)
 
     def add_vocab(self, vocab_name: str, vocab: Vocab) -> None:
@@ -208,14 +207,14 @@ class WordSiv:
         vocab: str | None = None,
         glyphs: str | None = None,
         rnd: float = 0,
-        seed: None | float | str = None,
+        seed=None,
         case: CaseType = "any",
         top_k: int = 0,
         min_wl: int = 1,
         max_wl: int | None = None,
         wl: int | None = None,
-        contains: str | None = None,
-        inner: str | None = None,
+        contains: str | Sequence[str] | None = None,
+        inner: str | Sequence[str] | None = None,
         startswith: str | None = None,
         endswith: str | None = None,
         regexp: str | None = None,
@@ -266,11 +265,11 @@ class WordSiv:
         min_wl: int = 2,
         max_wl: int | None = None,
         wl: int | None = None,
-        contains: str | None = None,
-        inner: str | None = None,
+        contains: str | Sequence[str] | None = None,
+        inner: str | Sequence[str] | None = None,
         startswith: str | None = None,
         endswith: str | None = None,
-        regexp: str | None = None,
+        regexp: str | Sequence[str] | None = None,
         raise_errors: bool = False,
     ):
         """Return the most common word, or nth most common word (`idx`).
@@ -320,7 +319,7 @@ class WordSiv:
     def words(
         self,
         glyphs: str | None = None,
-        seed: None | float | str = None,
+        seed=None,
         n_words: int | None = None,
         min_n_words: int = DEFAULT_MIN_NUM_WORDS,
         max_n_words: int = DEFAULT_MAX_NUM_WORDS,
@@ -396,8 +395,8 @@ class WordSiv:
         min_wl: int = 2,
         max_wl: int | None = None,
         wl: int | None = None,
-        contains: str | None = None,
-        inner: str | None = None,
+        contains: str | Sequence[str] | None = None,
+        inner: str | Sequence[str] | None = None,
         startswith: str | None = None,
         endswith: str | None = None,
         regexp: str | None = None,
@@ -443,7 +442,7 @@ class WordSiv:
         self,
         vocab: str | None = None,
         glyphs: str | None = None,
-        seed: None | float | str = None,
+        seed=None,
         punc: bool = True,
         rnd_punc: float = 0,
         **words_kwargs,
@@ -485,7 +484,7 @@ class WordSiv:
 
     def sents(
         self,
-        seed: None | float | str = None,
+        seed=None,
         min_n_sents: int = DEFAULT_MIN_PARA_LEN,
         max_n_sents: int = DEFAULT_MAX_PARA_LEN,
         n_sents: int | None = None,
@@ -507,7 +506,7 @@ class WordSiv:
 
     def paras(
         self,
-        seed: None | float | str = None,
+        seed=None,
         n_paras: int = 3,
         **para_kwargs,
     ):
@@ -518,7 +517,7 @@ class WordSiv:
 
     def text(
         self,
-        seed: None | float | str = None,
+        seed=None,
         para_sep: str = "\n\n",
         **paras_kwargs,
     ):
