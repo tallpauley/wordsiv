@@ -318,6 +318,7 @@ class WordSiv:
 
     def words(
         self,
+        vocab: str | None = None,
         glyphs: str | None = None,
         seed=None,
         n_words: int | None = None,
@@ -363,7 +364,13 @@ class WordSiv:
             )[0]
 
             if token_type == "word":
-                w = self.word(glyphs=glyphs, case=word_case, rnd=rnd, **word_num_kwargs)
+                w = self.word(
+                    vocab=vocab,
+                    glyphs=glyphs,
+                    case=word_case,
+                    rnd=rnd,
+                    **word_num_kwargs,
+                )
 
                 # try once to avoid repeat words
                 if w == last_w:
