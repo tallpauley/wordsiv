@@ -375,7 +375,11 @@ class WordSiv:
                 # try once to avoid repeat words
                 if w == last_w:
                     w = self.word(
-                        glyphs=glyphs, case=word_case, rnd=rnd, **word_num_kwargs
+                        vocab=vocab,
+                        glyphs=glyphs,
+                        case=word_case,
+                        rnd=rnd,
+                        **word_num_kwargs,
                     )
 
                 # w can be empty string if no matching word is found and we fail gently

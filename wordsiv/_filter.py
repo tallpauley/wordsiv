@@ -114,11 +114,6 @@ def _check_wc_empty(wc_list, filter_name, details=""):
         raise FilterError(msg)
 
 
-def _scale_counts(wc_list, scale):
-    """Scale counts in a wordcount list"""
-    return [(word, count * scale) for word, count in wc_list]
-
-
 def _filter_case(wc, case, glyphs, bicameral, minimum_results=1):
     if isinstance(wc, list) or isinstance(wc, tuple):
         wc_str = "\n".join(f"{w}\t{c}" for w, c in wc)
