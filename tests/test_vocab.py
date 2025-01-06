@@ -11,6 +11,16 @@ def test_vocab_no_data():
         vc.wordcount
 
 
+def test_vocab_no_data_no_data_file_raises_valueerror():
+    with pytest.raises(ValueError):
+        Vocab(bicameral=True, lang="en")
+
+
+def test_vocab_data_and_data_file_raises_valueerror():
+    with pytest.raises(ValueError):
+        Vocab(bicameral=True, lang="en", data="test", data_file="test.tsv")
+
+
 def test_vocab_bad_format():
     test_data = "123\t123"
     vc = Vocab(bicameral=True, lang="en", data=test_data)

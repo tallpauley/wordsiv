@@ -13,6 +13,62 @@ def wsv():
     return w
 
 
+def test_wordsiv_add_list_default_vocabs():
+    w = WordSiv(add_default_vocabs=True)
+    vocabs = w.list_vocabs()
+    assert all(isinstance(v, str) for v in vocabs)
+    assert len(vocabs) > 1
+
+
+@pytest.mark.parametrize("min_wl, max_wl", [(1, 1), (1, 2), (1, 4)])
+def test_number_min_max_wl(wsv, min_wl, max_wl):
+    number = wsv.number(min_wl=min_wl, max_wl=max_wl)
+    assert min_wl <= len(number) <= max_wl
+
+
+def test_number_min_max_wl_throws_valueerror(wsv):
+    with pytest.raises(ValueError):
+        wsv.number(min_wl=5, max_wl=1)
+
+
+def test_number_glyphs_no_numerals_throws_filtererror(wsv):
+    with pytest.raises(FilterError):
+        wsv.number(glyphs="abc", raise_errors=True)
+
+
+def test_number_glyphs_no_numerals(wsv):
+    assert wsv.number(glyphs="abc") == ""
+
+
+@pytest.mark.parametrize("wl", [1, 2, 4])
+def test_number_wl(wsv, wl):
+    number = wsv.number(wl=wl)
+    assert len(number) == wl
+
+
+def test_number_with_seed(wsv):
+    seed = 12345
+    number1 = wsv.number(seed=seed)
+    number2 = wsv.number(seed=seed)
+    assert number1 == number2
+
+
+def test_number_glyphs(wsv):
+    glyphs = "123"
+    number = wsv.number(glyphs=glyphs, min_wl=1, max_wl=4)
+    assert all(char in glyphs for char in number)
+
+
+def test_number_no_glyphs_raises_error(wsv):
+    with pytest.raises(FilterError):
+        wsv.number(glyphs="abc", raise_errors=True)
+
+
+def test_word_rnd_raises_valueerror(wsv):
+    with pytest.raises(ValueError):
+        wsv.word(rnd=1.1)
+
+
 def test_sent_missing_vocab_raises_keyerror(wsv):
     with pytest.raises(KeyError):
         wsv.sent(vocab="fake")
@@ -68,6 +124,23 @@ def test_sentence_min_n_words_max_n_words(wsv, min_n_words, max_n_words):
             )
             <= max_n_words
         )
+
+
+def test_wordsiv_seed(wsv):
+    wsv.seed(1)
+    assert wsv.word() == "apple"
+    wsv.seed(1)
+    assert wsv.word() == "apple"
+
+
+@pytest.mark.parametrize(
+    "function",
+    ["word", "number", "words", "sent", "sents", "para", "paras", "text"],
+)
+@pytest.mark.parametrize("seed", [35, "HAMBURG", 12.5])
+def test_seed_reproduces_same_output(wsv, function, seed):
+    f = getattr(wsv, function)
+    assert f(seed=seed) == f(seed=seed)
 
 
 @pytest.mark.parametrize("n_sents", [1, 2, 10, 20])

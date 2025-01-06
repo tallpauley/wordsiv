@@ -1,10 +1,28 @@
-from wordsiv import WordSiv
+from wordsiv import WordSiv, FilterError
+import logging
 
+########################################################################################
+############################# SETUP WORDSIV ############################################
+
+# Initialize WordSiv object with default vocab and glyphs:
 MY_GLYPHS = "HAMBUGERFONTSIVhambugerfontsiv.,"
 wsv = WordSiv(vocab="en", glyphs=MY_GLYPHS)
 
-###################################################################
-#################### WORD GENERATION FUNCTIONS ####################
+# We can also set the default glyphs and vocab after our WordSiv object is initialized:
+# Exactly the same settings as above, so this changes nothing:
+wsv.default_glyphs = MY_GLYPHS
+wsv.default_vocab = "en"
+
+# Use `list_vocabs()` to see Vocabs are available:
+print(wsv.list_vocabs())
+
+# We recommend seeding the WordSiv with our glyphs, so your output only changes when
+# your glyphs or your script change:
+wsv.seed(MY_GLYPHS)
+
+
+########################################################################################
+######################### WORD GENERATION FUNCTIONS ####################################
 
 # Word from probabilities (seed w/ MY_GLYPHS so proof stays the same):
 print(wsv.word(seed=MY_GLYPHS))
@@ -16,7 +34,8 @@ print(wsv.word(rnd=1))
 print(wsv.top_word())
 
 # 5th most common word (that can be spelled w/ glyphs):
-print(wsv.top_word(idx=4))  # works like list indeces, starts at 0
+# - works like list indeces, starts at 0
+print(wsv.top_word(idx=4))
 
 # A list of words from probabilities:
 print(wsv.words())
@@ -24,17 +43,35 @@ print(wsv.words())
 # A list of totally random words:
 print(wsv.words(rnd=1))
 
-# Most common 5 words (that can be spelled w/ glyphs):
+# Exactly 15 words:
+print(wsv.words(n_words=15))
+
+# Only select from top 100 words (after filtering)
+print(wsv.words(top_k=100))
+
+# List of 10-20 words:
+print(wsv.words(min_n_words=10, max_n_words=20))
+
+# List of five most-common words (that can be spelled w/ glyphs):
 print(wsv.top_words(n_words=5))
 
 # A sentence:
 print(wsv.sent())
 
-# 3 sentences:
-print(wsv.sents(n_sents=3))
+# A list of 3 sentences, with 20% chance of random figures:
+print(wsv.sents(glyphs=MY_GLYPHS + "0123456789", n_sents=3, numbers=0.2))
 
 # A paragraph:
 print(wsv.para())
+
+# A paragraph w/ no punctuation:
+print(wsv.para(punc=False))
+
+# A paragraph w/ totally random punctuation (not based on probabilities):
+print(wsv.para(glyphs=MY_GLYPHS + "()-–—“”‘’", rnd_punc=1))
+
+# A paragraph with 2-3 sentences:
+print(wsv.para(min_n_sents=2, max_n_sents=3))
 
 # A list of 2 Paragraphs:
 print(wsv.paras(n_paras=2))
@@ -42,8 +79,25 @@ print(wsv.paras(n_paras=2))
 # Block of text:
 print(wsv.text())
 
-###################################################################
-#################### LETTER CASE OPTIONS ##########################
+# Block of text w/ 3 paragraphs, 2-3 sentences a paragraph, roughly 10% figures,
+# 3-5 words a sentence, 10% chance of random words, paragraphs separated by "¶":
+print(
+    wsv.text(
+        glyphs=MY_GLYPHS + "0123¶-–—“”‘’",
+        n_paras=3,
+        numbers=0.1,
+        min_n_sents=2,
+        max_n_sents=3,
+        min_n_words=3,
+        max_n_words=5,
+        rnd=0.1,
+        para_sep="¶",
+    )
+)
+
+
+########################################################################################
+################################## LETTER CASE OPTIONS #################################
 
 # The default is `case='any'`, which transforms the case if not getting results:
 # - try to get (unmodified) words from Vocab which can be spelled with "ZO" and have at
@@ -89,11 +143,11 @@ print(wsv.top_words(case="lc_force", n_words=5))
 print(wsv.top_words(case="cap_force", n_words=5))
 
 
-###################################################################
-#################### WORD FILTER OPTIONS ##########################
+########################################################################################
+################################# WORD FILTER OPTIONS ##################################
 
 # These options can be used on ALL word generation functions, from `word()` all the way
-# up to `text()`. Here they are demonstrated w/ top_word for simplicity:
+# up to `text()`. Here they are demonstrated w/ top_word, top_words for simplicity:
 
 # Exact word length:
 print(wsv.top_word(wl=7))
@@ -139,14 +193,26 @@ print(wsv.top_word(regexp=r"h.+b.*ger"))
 # WordSiv uses regex (third-party) regex library from PyPi, so you can specify Unicode
 # blocks like this:
 wsv_es = WordSiv(vocab="es")
-print(wsv_es.top_word(regexp=r".*\p{InLatin-1_Supplement}.*"))
+print(wsv_es.top_words(regexp=r".*\p{InLatin-1_Supplement}.*"))
 
 # See https://www.regular-expressions.info/unicode.html for more ways you can use this
 # library to match Unicode blocks.
 
 
-# Random words in Spanish containing 'ña':
-print(wsv.words(vocab="es", glyphs="hambugerfontsivñ", n_words=5, rnd=1, contains="ña"))
+########################################################################################
+################################# WORD FILTER ERRORS ###################################
 
-# Most common words in Arabic with glyphs 'خشطغب':
-print(wsv.top_words(vocab="ar", n_words=5, min_wl=3, glyphs="خشطغب"))
+# WordSiv by default will log a warning to the console if it can't find any words
+wsv.top_word(contains="NOWAY")
+
+# We can suppress these warnings by setting the logging level to ERROR:
+log = logging.getLogger("wordsiv")
+log.setLevel(logging.ERROR)
+wsv.top_word(contains="NOWAY")
+
+# Or, we can make WordSiv raise an error if it can't find any words:
+wsv.raise_errors = True
+try:
+    wsv.top_word(contains="NOWAY")
+except FilterError as e:
+    print(f'Exception "{e}" would stop our script (if we didn\'t catch it!)')
