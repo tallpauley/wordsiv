@@ -179,6 +179,8 @@ def _filter_case(wc, case, glyphs, bicameral, minimum_results=1):
                 return _findall_recase(wc_str, "all")
         elif case == "lc":
             if glyphs:
+                if not lc_glyphs:
+                    raise FilterError("case='{case}' but no lowercase glyphs found")
                 # return words that are lowercase in the vocab and can be displayed with glyphs
                 return _findall_recase(wc_str, f"[{lc_glyphs}]+")
             else:
