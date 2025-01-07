@@ -18,7 +18,7 @@ def test_vocab_no_data_no_data_file_raises_valueerror():
 
 def test_vocab_data_and_data_file_raises_valueerror():
     with pytest.raises(ValueError):
-        Vocab(bicameral=True, lang="en", data="test", data_file="test.tsv")
+        Vocab(bicameral=True, lang="en", data="test", data_file="test")
 
 
 def test_vocab_bad_format():
@@ -268,6 +268,16 @@ def test_vocab_filter_contains():
 
     assert vc.filter(None, contains="a") == (
         ("apple", 5),
+        ("banana", 3),
+        ("date", 1),
+    )
+
+
+def test_vocab_filter_inner():
+    test_data = "apple\t5\nbanana\t3\ncherry\t2\ndate\t1\nelderberry\t4"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
+    assert vc.filter(None, inner="a") == (
         ("banana", 3),
         ("date", 1),
     )
