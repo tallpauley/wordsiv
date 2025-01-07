@@ -24,8 +24,8 @@ wsv.seed(MY_GLYPHS)
 ########################################################################################
 ######################### WORD GENERATION FUNCTIONS ####################################
 
-# Word from probabilities (seed w/ MY_GLYPHS so proof stays the same):
-print(wsv.word(seed=MY_GLYPHS))
+# Word from probabilities
+print(wsv.word())
 
 # Totally random word:
 print(wsv.word(rnd=1))
@@ -43,13 +43,13 @@ print(wsv.words())
 # A list of totally random words:
 print(wsv.words(rnd=1))
 
-# Exactly 15 words:
+# A list of 15 words:
 print(wsv.words(n_words=15))
 
-# Only select from top 100 words (after filtering)
+# List of words from probabilities, only pick from top 100 words (after filtering)
 print(wsv.words(top_k=100))
 
-# List of 10-20 words:
+# A list of 10-20 words:
 print(wsv.words(min_n_words=10, max_n_words=20))
 
 # List of five most-common words (that can be spelled w/ glyphs):
@@ -57,6 +57,9 @@ print(wsv.top_words(n_words=5))
 
 # A sentence:
 print(wsv.sent())
+
+# A sentence w/out asking for a capitalized first word:
+print(wsv.sent(cap_first=False))
 
 # A list of 3 sentences, with 20% chance of random figures:
 print(wsv.sents(glyphs=MY_GLYPHS + "0123456789", n_sents=3, numbers=0.2))
@@ -68,7 +71,7 @@ print(wsv.para())
 print(wsv.para(punc=False))
 
 # A paragraph w/ totally random punctuation (not based on probabilities):
-print(wsv.para(glyphs=MY_GLYPHS + "()-–—“”‘’", rnd_punc=1))
+print(wsv.para(glyphs=MY_GLYPHS + "!?;()-–—“”‘’", rnd_punc=1))
 
 # A paragraph with 2-3 sentences:
 print(wsv.para(min_n_sents=2, max_n_sents=3))
@@ -79,11 +82,14 @@ print(wsv.paras(n_paras=2))
 # Block of text:
 print(wsv.text())
 
-# Block of text w/ 3 paragraphs, 2-3 sentences a paragraph, roughly 10% figures,
-# 3-5 words a sentence, 10% chance of random words, paragraphs separated by "¶":
+# Block of text w/
+# - 3 paragraphs, 2-3 sentences a paragraph, 3-5 words a sentence
+# - paragraphs separated by "¶":
+# - roughly 10% figures, 10% chance of random words
+# - 50% totally random punctuation distribution
 print(
     wsv.text(
-        glyphs=MY_GLYPHS + "0123¶-–—“”‘’",
+        glyphs=MY_GLYPHS + "0123¶-–—“”‘’();!?",
         n_paras=3,
         numbers=0.1,
         min_n_sents=2,
@@ -91,27 +97,28 @@ print(
         min_n_words=3,
         max_n_words=5,
         rnd=0.1,
+        rnd_punc=0.5,
         para_sep="¶",
     )
 )
 
+###########################################################################
+######################### LETTER CASE OPTIONS #############################
 
-########################################################################################
-################################## LETTER CASE OPTIONS #################################
-
-# The default is `case='any'`, which transforms the case if not getting results:
-# - try to get (unmodified) words from Vocab which can be spelled with "ZO" and have at
-#   least 5 characters: No results.
+# The default is `case='any'`, which progressively transforms the case to expand results
+# if all words are being filtered out:
+# - try to get (unmodified) words from Vocab which can be spelled with "ZO" (that have
+#   at least 3 characters): No results.
 # - try to capitalize Vocab words: "zoo" becomes "Zoo" but we can't spell it without
 #   'o'. No results.
 # - try to uppercase Vocab words: "zoo" becomes "ZOO", Bingo! Returns 'ZOO' as most
 #   common word!
 print(wsv.top_word(glyphs="ZO", min_wl=3))
 
-# Same as above. `any` is the default if case isn't specified:
+# Same result as preceding example. `any` is the default if `case` isn't specified:
 print(wsv.top_word(glyphs="ZO", case="any", min_wl=3))
 
-# `case='any_og'` doesn't try to apply case transformations. So we get no results.
+# `case='any_og'` doesn't progressively apply case transformations. We get no results.
 print(wsv.top_word(glyphs="ZO", min_wl=3, case="any_og"))
 
 # Lowercase words, includes only words that are lowercase in the Vocab:
@@ -130,10 +137,10 @@ print(wsv.top_words(case="cap", n_words=5))
 # - words that are lowercase in the Vocab, transformed to all-caps
 print(wsv.top_words(case="uc", n_words=5))
 
-# Words that are capitalized in the Vocab:
+# Words that are capitalized in the Vocab (useful for proper nouns, etc.):
 print(wsv.top_words(case="cap_og", n_words=5))
 
-# Words that are all-caps in the Vocab:
+# Words that are all-caps in the Vocab (useful for acronyms):
 print(wsv.top_words(case="uc_og", n_words=5))
 
 # Transform ANY word to lowercase (even capitalized, all-caps, and camel-case words!):
@@ -142,9 +149,8 @@ print(wsv.top_words(case="lc_force", n_words=5))
 # Transform ANY word to capitalized (even all-caps and camel-case words!)
 print(wsv.top_words(case="cap_force", n_words=5))
 
-
-########################################################################################
-################################# WORD FILTER OPTIONS ##################################
+###########################################################################
+######################### WORD FILTER OPTIONS #############################
 
 # These options can be used on ALL word generation functions, from `word()` all the way
 # up to `text()`. Here they are demonstrated w/ top_word, top_words for simplicity:
@@ -165,26 +171,26 @@ print(wsv.top_word(startswith="ev"))
 print(wsv.top_word(endswith="s"))
 
 # Word ends with a string
-print(wsv.top_word(endswith="ts"))
+print(wsv.top_word(endswith="ats"))
 
 # Contains a glyph
 print(wsv.top_word(contains="a"))
 
 # Contains a string
-print(wsv.top_word(contains="rr"))
+print(wsv.top_word(contains="orr"))
 
 # Contains multiple strings, glyphs
-# (Note: list doesn't work, uses tuple for caching)
+# (Note: only accepts a tuple, not a list — this is for caching)
 print(wsv.top_word(contains=("b", "rr")))
 
-# Has character "inside" (in substring of word excluding first and last glyph)
+# Has character "inside" (substring of word excluding first, last glyph)
 print(wsv.top_word(inner="b"))
 
-# Has string "inside" (in substring of word excluding first and last glyph)
+# Has string "inside" (substring of word excluding first, last glyph)
 print(wsv.top_word(inner="br"))
 
 # Has multiple strings "inside" (in substring of word excluding first and last glyph)
-# (Note: list doesn't work, uses tuple for caching)
+# (Note: only accepts a tuple, not a list — this is for caching)
 print(wsv.top_word(inner=("br", "ck")))
 
 # Word matches Regular Expression
@@ -195,12 +201,11 @@ print(wsv.top_word(regexp=r"h.+b.*ger"))
 wsv_es = WordSiv(vocab="es")
 print(wsv_es.top_words(regexp=r".*\p{InLatin-1_Supplement}.*"))
 
-# See https://www.regular-expressions.info/unicode.html for more ways you can use this
-# library to match Unicode blocks.
+# See https://www.regular-expressions.info/unicode.html for more examples of \p{...}
+# syntax
 
-
-########################################################################################
-################################# WORD FILTER ERRORS ###################################
+###########################################################################
+########################## WORD FILTER ERRORS #############################
 
 # WordSiv by default will log a warning to the console if it can't find any words
 wsv.top_word(contains="NOWAY")
@@ -215,4 +220,4 @@ wsv.raise_errors = True
 try:
     wsv.top_word(contains="NOWAY")
 except FilterError as e:
-    print(f'Exception "{e}" would stop our script (if we didn\'t catch it!)')
+    print(f'Exception "{e}" would stop our script (if we didn\'t catch it w/ `except`)')
