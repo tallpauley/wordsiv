@@ -4,7 +4,6 @@ import random
 
 DEFAULT_PUNCTUATION = {
     "en": {
-        "start": {"": 1.0},
         "insert": {
             " ": 0.365,
             ", ": 0.403,
@@ -38,7 +37,6 @@ DEFAULT_PUNCTUATION = {
         "wrap_inner": {("", ""): 0.971, ("’", "‘"): 0.007, ("”", "“"): 0.022},
     },
     "es": {
-        "start": {"": 100},
         "insert": {
             " ": 0.277,
             ", ": 0.49,

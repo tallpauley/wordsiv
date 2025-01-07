@@ -438,14 +438,14 @@ class WordSiv:
                 raise e
             else:
                 log.warning("%s", e.args[0])
-                return ""
+                return []
 
         if not wc_list:
             if raise_errors:
                 raise FilterError(f"No words found at idx '{idx}'")
             else:
                 log.warning(f"No words found at idx '{idx}'")
-                return ""
+                return []
 
         return [w for w, _ in wc_list]
 

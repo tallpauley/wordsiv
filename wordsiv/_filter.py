@@ -54,6 +54,11 @@ def _filter_wordcount(
     else:
         wc_list = list(wc_tuple)
 
+    if not wc_list:
+        raise FilterError(
+            f"No words available after filtering glyphs='{glyphs}' with case='{case}'"
+        )
+
     if startswith:
         sw_len = len(startswith)
         wc_list = [(w, c) for w, c in wc_list if w[:sw_len] == startswith]

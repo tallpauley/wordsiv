@@ -1,6 +1,7 @@
 import pytest
 from wordsiv import WordSiv, FilterError, Vocab
 import string
+import re
 
 
 @pytest.fixture(scope="session")
@@ -11,6 +12,39 @@ def wsv():
     w.add_vocab("test", vocab)
     w.default_vocab = "test"
     return w
+
+
+def test_wordsiv_no_default_punctuation_for_vocab_ignores_punctuation():
+    w = WordSiv(add_default_vocabs=False)
+    test_data = "apple\t3\nbanana\t2\ncat\t1"
+    vocab = Vocab(bicameral=True, lang="xx", data=test_data)
+    w.add_vocab("test", vocab)
+    w.default_vocab = "test"
+    assert len(w.sent()) > 1
+
+
+def test_wordsiv_vocab_with_custom_punctuation():
+    w = WordSiv(add_default_vocabs=True)
+    punc_dict = {
+        "insert": {
+            "–": 1,
+        },
+        "wrap_sent": {
+            ("?", "!"): 1,
+        },
+        "wrap_inner": {
+            ("(", ")"): 1,
+        },
+    }
+    test_data = "apple\t3\nbanana\t2\ncat\t1"
+    w = WordSiv(add_default_vocabs=False)
+    vocab = Vocab(bicameral=True, lang="en", data=test_data, punctuation=punc_dict)
+    w.add_vocab("test", vocab)
+    w.default_vocab = "test"
+    sentence = w.sent()
+    assert all(punc in sentence for punc in "–()")
+    assert sentence.startswith("?")
+    assert sentence.endswith("!")
 
 
 def test_wordsiv_add_list_default_vocabs():
@@ -64,9 +98,63 @@ def test_number_no_glyphs_raises_error(wsv):
         wsv.number(glyphs="abc", raise_errors=True)
 
 
-def test_word_rnd_raises_valueerror(wsv):
+def test_top_word_idx_unavailable_returns_empty_string(wsv):
+    assert wsv.top_word(idx=4) == ""
+
+
+def test_top_word_no_results_returns_empty_string(wsv):
+    assert wsv.top_word(contains="xyz") == ""
+
+
+def test_top_word_no_results_throws_filtererror(wsv):
+    with pytest.raises(FilterError):
+        wsv.top_word(contains="xyz", raise_errors=True)
+
+
+def test_top_word_idx_unavailable_throws_filtererror(wsv):
+    with pytest.raises(FilterError):
+        wsv.top_word(idx=4, raise_errors=True)
+
+
+def test_top_words(wsv):
+    assert wsv.top_words() == ["apple", "banana", "cat"]
+
+
+def test_top_words_idx_unavailable_returns_empty_string(wsv):
+    assert wsv.top_words(idx=4) == []
+
+
+def test_top_words_idx_unavailable_throws_filtererror(wsv):
+    with pytest.raises(FilterError):
+        wsv.top_words(idx=4, raise_errors=True)
+
+
+def test_top_words_no_results_throws_filtererror(wsv):
+    with pytest.raises(FilterError):
+        wsv.top_words(contains="xyz", raise_errors=True)
+
+
+def test_top_words_no_results_returns_empty_list(wsv):
+    assert wsv.top_words(contains="xyz") == []
+
+
+def test_word_rnd_out_of_range_raises_valueerror(wsv):
     with pytest.raises(ValueError):
         wsv.word(rnd=1.1)
+
+
+def test_words_top_k(wsv):
+    assert "cat" not in wsv.words(top_k=2, n_words=100)
+
+
+def test_words_numbers_out_of_range_raises_valueerror(wsv):
+    with pytest.raises(ValueError):
+        wsv.words(numbers=1.1)
+
+
+def test_sent_rnd_punc_out_of_range_raises_valueerror(wsv):
+    with pytest.raises(ValueError):
+        wsv.sent(rnd_punc=1.1)
 
 
 def test_sent_missing_vocab_raises_keyerror(wsv):
@@ -156,3 +244,31 @@ def test_sentences_min_n_sents_max_n_sents(wsv, min_n_sents, max_n_sents):
             <= len(wsv.sents(min_n_sents=min_n_sents, max_n_sents=max_n_sents))
             <= max_n_sents
         )
+
+
+def test_all_numbers_arg_equals_1_returns_only_digits(wsv):
+    glyphs = "hambuger0123"
+    results = (
+        " ".join(wsv.words(glyphs=glyphs, numbers=1))
+        + wsv.sent(glyphs=glyphs, numbers=1, punc=False)
+        + " ".join(wsv.sents(glyphs=glyphs, numbers=1, punc=False))
+        + wsv.para(glyphs=glyphs, numbers=1, punc=False)
+        + " ".join(wsv.paras(glyphs=glyphs, numbers=1, punc=False))
+        + wsv.text(glyphs=glyphs, numbers=1, punc=False)
+    )
+    results_no_whitespace = re.sub(r"\s+", "", results)
+    assert all(char.isdigit() for char in results_no_whitespace)
+
+
+def test_all_numbers_arg_equals_0_returns_no_digits(wsv):
+    glyphs = "hambuger0123"
+    results = (
+        " ".join(wsv.words(glyphs=glyphs, numbers=0))
+        + wsv.sent(glyphs=glyphs, numbers=0, punc=False)
+        + " ".join(wsv.sents(glyphs=glyphs, numbers=0, punc=False))
+        + wsv.para(glyphs=glyphs, numbers=0, punc=False)
+        + " ".join(wsv.paras(glyphs=glyphs, numbers=0, punc=False))
+        + wsv.text(glyphs=glyphs, numbers=0, punc=False)
+    )
+    results_no_whitespace = re.sub(r"\s+", "", results)
+    assert not any(char.isdigit() for char in results_no_whitespace)
