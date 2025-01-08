@@ -49,21 +49,20 @@ class Vocab:
         elif data is None and not data_file:
             raise ValueError("Must specify either 'data' or 'data_file'")
 
-    @cached_property
+    @property
     def data(self):
         """Returns raw data from parameter _data or data_file."""
 
         if self._data is not None:
             data = self._data
         elif getattr(self, "data_file", None):
-            with open(self.data_file, "r", encoding="utf8") as f:
-                data = f.read()
+            data = _read_file(self.data_file)
         if not data:
             raise VocabEmptyError(f"No data found in {self.data_file}")
 
         return data
 
-    @cached_property
+    @property
     def wordcount_str(self) -> str:
         """Returns a TSV-formatted string with words and counts."""
 
@@ -74,23 +73,38 @@ class Vocab:
             return self.data
         elif regex.match(r"[[:alpha:]]+$", firstline):
             # if we just have newline-delimited words, add counts of 1
-            return "\n".join(f"{w}\t1" for w in self.data.splitlines())
+            return _add_counts_to_wordcount_str(self.data)
         else:
             raise VocabFormatError(
                 "The vocab file is formatted incorrectly. "
                 "Should be a TSV file with words and counts as columns, or a newline-delimited list of words."
             )
 
-    @cached_property
+    @property
     def wordcount(self) -> tuple[tuple[str, int], ...]:
         """Returns a tuple of tuples with words and counts."""
 
-        return tuple(
-            (line.split()[0], int(line.split()[1]))
-            for line in self.wordcount_str.splitlines()
-        )
+        return _wordcount_str_to_wordcount_tuple(self.wordcount_str)
 
     def filter(self, *args, **kwargs):
         return _filter_wordcount(
             self.wordcount, self.wordcount_str, self.bicameral, *args, **kwargs
         )
+
+
+@lru_cache(maxsize=None)
+def _read_file(file):
+    with open(file, "r", encoding="utf8") as f:
+        return f.read()
+
+
+@lru_cache(maxsize=None)
+def _wordcount_str_to_wordcount_tuple(wordcount_str):
+    return tuple(
+        (line.split()[0], int(line.split()[1])) for line in wordcount_str.splitlines()
+    )
+
+
+@lru_cache(maxsize=None)
+def _add_counts_to_wordcount_str(wordcount_str):
+    return "\n".join(f"{w}\t1" for w in wordcount_str.splitlines())
