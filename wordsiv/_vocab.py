@@ -90,6 +90,5 @@ class Vocab:
             for line in self.wordcount_str.splitlines()
         )
 
-    @lru_cache(maxsize=None)
     def filter(self, *args, **kwargs):
         return _filter_wordcount(self.wordcount, self.bicameral, *args, **kwargs)
