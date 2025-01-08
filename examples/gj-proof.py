@@ -26,11 +26,11 @@ def gj_proof_en(glyphs, case="cap"):
     words = []
     for pair in pairs:
         if case == "cap":
-            w = wsv.top_word(startswith=pair, case="cap", min_wl=4, idx=0)
+            w = wsv.top_word(startswith=pair, case="cap", min_wl=4)
         elif case == "lc":
-            w = wsv.top_word(inner=pair, case="lc", min_wl=4, idx=0)
+            w = wsv.top_word(inner=pair, case="lc", min_wl=4)
         elif case == "uc":
-            w = wsv.top_word(inner=pair, case="uc", min_wl=4, idx=0)
+            w = wsv.top_word(inner=pair, case="uc", min_wl=4)
         if w:
             words.append(w)
 
@@ -45,11 +45,11 @@ def gj_proof_ar(glyphs, mode):
     word_list = []
     for pair in pairs:
         if mode == "init":
-            w = wsv.top_word(startswith=pair, min_wl=5, idx=0)
-        if mode == "medi":
-            w = wsv.top_word(inner=pair, min_wl=5, idx=0)
-        if mode == "fina":
-            w = wsv.top_word(endswith=pair, min_wl=5, idx=0)
+            w = wsv.top_word(startswith=pair, min_wl=5)
+        elif mode == "medi":
+            w = wsv.top_word(inner=pair, min_wl=5)
+        elif mode == "fina":
+            w = wsv.top_word(endswith=pair, min_wl=5)
 
         if w:
             word_list.append(w)
