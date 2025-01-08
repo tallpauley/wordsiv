@@ -7,8 +7,6 @@ import logging
 wsv_log = logging.getLogger("wordsiv")
 wsv_log.setLevel(logging.ERROR)
 
-wsv = WordSiv(vocab="en_books")
-
 
 def gj_proof_en(glyphs, case="cap"):
     wsv = WordSiv(vocab="en", glyphs=glyphs)
