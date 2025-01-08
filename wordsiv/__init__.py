@@ -418,7 +418,6 @@ class WordSiv:
             self.get_vocab(self.default_vocab) if not vocab else self.get_vocab(vocab)
         )
 
-        # TODO: write test to check minimum_results
         try:
             wc_list = vocab_obj.filter(
                 glyphs,
@@ -431,7 +430,6 @@ class WordSiv:
                 startswith=startswith,
                 endswith=endswith,
                 regexp=regexp,
-                minimum_results=n_words,
             )[idx : idx + n_words]
         except FilterError as e:
             if raise_errors:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from functools import cached_property, lru_cache
+from functools import lru_cache
 from ._filter import _filter_wordcount
 from importlib.abc import Traversable
 import regex
@@ -87,9 +87,7 @@ class Vocab:
         return _wordcount_str_to_wordcount_tuple(self.wordcount_str)
 
     def filter(self, *args, **kwargs):
-        return _filter_wordcount(
-            self.wordcount, self.wordcount_str, self.bicameral, *args, **kwargs
-        )
+        return _filter_wordcount(self.wordcount_str, self.bicameral, *args, **kwargs)
 
 
 @lru_cache(maxsize=None)

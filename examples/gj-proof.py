@@ -50,7 +50,6 @@ def gj_proof_ar(glyphs, mode):
             w = wsv.top_word(inner=pair, min_wl=5)
         elif mode == "fina":
             w = wsv.top_word(endswith=pair, min_wl=5)
-
         if w:
             word_list.append(w)
 
