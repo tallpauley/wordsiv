@@ -91,4 +91,6 @@ class Vocab:
         )
 
     def filter(self, *args, **kwargs):
-        return _filter_wordcount(self.wordcount, self.bicameral, *args, **kwargs)
+        return _filter_wordcount(
+            self.wordcount, self.wordcount_str, self.bicameral, *args, **kwargs
+        )

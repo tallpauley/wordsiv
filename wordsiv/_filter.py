@@ -35,6 +35,7 @@ option
 @lru_cache(maxsize=None)
 def _filter_wordcount(
     wc_tuple,
+    wc_str,
     bicameral,
     glyphs=None,
     case="any",
@@ -50,7 +51,7 @@ def _filter_wordcount(
 ):
     # it's faster to filter case first, we just need to do it at the end for 'any'
     if case != "any":
-        wc_list = _filter_case(wc_tuple, case, glyphs, bicameral, minimum_results)
+        wc_list = _filter_case(wc_str, case, glyphs, bicameral, minimum_results)
     else:
         wc_list = list(wc_tuple)
 
