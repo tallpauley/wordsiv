@@ -230,15 +230,29 @@ def _filter_case(wc_str, case, glyphs, bicameral):
                 # return all vocab words, made capitalized
                 return _findall_recase(wc_str, "all", change_case="cap")
         elif case == "uc":
+            # catch camelcase words
+            no_camel = r"(?!.*\p{{Ll}}\p{{Lu}}.*)"
+            # catch words like PCIe
+            no_double_upper_lower = r"(?!.*\p{Lu}{2,}\p{Ll}.*)"
+
             if glyphs:
                 # return all vocab words, made uppercase, which can be displayed with glyphs
+                # no camelcase words, those should not be made uppercase
                 _check_uc_glyphs(uc_glyphs, case)
                 return _findall_recase(
-                    wc_str, f"[{uc_glyphs}{uc_glyphs.lower()}]+", change_case="uc"
+                    wc_str,
+                    no_camel
+                    + no_double_upper_lower
+                    + f"[{uc_glyphs}{uc_glyphs.lower()}]+",
+                    change_case="uc",
                 )
             else:
-                # return all vocab words, made uppercase
-                return _findall_recase(wc_str, "all", change_case="uc")
+                # return all vocab words, except mixed case words
+                return _findall_recase(
+                    wc_str,
+                    no_camel + no_double_upper_lower + ".*",
+                    change_case="uc",
+                )
         elif case == "uc_og":
             if glyphs:
                 # return words that are uppercase in the vocab and can be displayed with glyphs
@@ -247,6 +261,19 @@ def _filter_case(wc_str, case, glyphs, bicameral):
             else:
                 # return words that are uppercase in the vocab
                 return _findall_recase(wc_str, r"\p{Lu}+")
+        elif case == "uc_force":
+            if glyphs:
+                # return all vocab words, made uppercase, which can be displayed with glyphs
+                # even uppercase camelcase words
+                _check_uc_glyphs(uc_glyphs, case)
+                return _findall_recase(
+                    wc_str,
+                    f"[{uc_glyphs}{uc_glyphs.lower()}]+",
+                    change_case="uc",
+                )
+            else:
+                # return all vocab words, made uppercase
+                return _findall_recase(wc_str, "all", change_case="uc")
         else:
             raise ValueError(f"Invalid case option: {case}")
 

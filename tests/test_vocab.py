@@ -174,6 +174,19 @@ def test_vocab_filter_case_uc():
         ("APPLE", 3),
         ("BART", 4),
         ("BART", 5),
+    )
+
+
+def test_vocab_filter_case_uc_force():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
+    assert vc.filter(None, case="uc_force") == (
+        ("GRAPE", 1),
+        ("APPLE", 2),
+        ("APPLE", 3),
+        ("BART", 4),
+        ("BART", 5),
         ("DDOS", 6),
     )
 
@@ -204,16 +217,36 @@ def test_vocab_filter_case_cap_force():
     )
 
 
-def test_vocab_filter_glyphs_case():
+def test_vocab_filter_glyphs_case_lc():
     test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
 
     # simple cases
     assert vc.filter(glyphs="aple", case="lc") == (("apple", 2),)
+
+
+def test_vocab_filter_glyphs_case_cap():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(glyphs="Aple", case="cap") == (("Apple", 2), ("Apple", 3))
+
+
+def test_vocab_filter_glyphs_case_uc():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
     assert vc.filter(glyphs="APPLE", case="uc") == (("APPLE", 2), ("APPLE", 3))
     assert vc.filter(glyphs="BART", case="uc") == (("BART", 4), ("BART", 5))
-    assert vc.filter(glyphs="DDOS", case="uc") == (("DDOS", 6),)
+
+
+def test_vocab_filter_glyphs_case_uc_mixed_case_raises_filtererror():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
+    with pytest.raises(FilterError):
+        # this should raise an error, since DDOS shouldn't be made UC
+        vc.filter(glyphs="DDOS", case="uc")
 
 
 def test_vocab_filter_glyphs_case_raises_filtererror():
