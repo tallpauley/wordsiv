@@ -7,7 +7,7 @@ vocab = Vocab(bicameral=True, lang="en", data=test_data)
 # Build our WordSiv object
 wsv = WordSiv(add_default_vocabs=False)
 wsv.add_vocab("example", vocab)
-wsv.default_vocab = "example"
+wsv.vocab = "example"
 
 # Words that already have desired case
 assert wsv.top_word(case="lc") == "grape"

@@ -10,7 +10,7 @@ def wsv():
     w = WordSiv(add_default_vocabs=False)
     vocab = Vocab(bicameral=True, lang="en", data=test_data)
     w.add_vocab("test", vocab)
-    w.default_vocab = "test"
+    w.vocab = "test"
     return w
 
 
@@ -19,7 +19,7 @@ def test_wordsiv_no_default_punctuation_for_vocab_ignores_punctuation():
     test_data = "apple\t3\nbanana\t2\ncat\t1"
     vocab = Vocab(bicameral=True, lang="xx", data=test_data)
     w.add_vocab("test", vocab)
-    w.default_vocab = "test"
+    w.vocab = "test"
     assert len(w.sent()) > 1
 
 
@@ -40,7 +40,7 @@ def test_wordsiv_vocab_with_custom_punctuation():
     w = WordSiv(add_default_vocabs=False)
     vocab = Vocab(bicameral=True, lang="en", data=test_data, punctuation=punc_dict)
     w.add_vocab("test", vocab)
-    w.default_vocab = "test"
+    w.vocab = "test"
     sentence = w.sent()
     assert all(punc in sentence for punc in "–()")
     assert sentence.startswith("?")

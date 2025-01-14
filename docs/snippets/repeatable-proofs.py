@@ -9,7 +9,7 @@ print(wsv.sent(seed=3))
 # "Heart tent terra Emma root buffet foam mom Hagen to earth at ammo"
 
 # not if we change our glyphs though!
-wsv.default_glyphs = "HAMBUGERFONTSIVhambugerfontsiv"
+wsv.glyphs = "HAMBUGERFONTSIVhambugerfontsiv"
 print(wsv.sent(seed=3))
 # "Of not but not to as on to setting the of the things"
 

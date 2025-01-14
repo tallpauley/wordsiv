@@ -10,8 +10,8 @@ wsv = WordSiv(vocab="en", glyphs=MY_GLYPHS)
 
 # We can also set the default glyphs and vocab after our WordSiv object is initialized:
 # Exactly the same settings as above, so this changes nothing:
-wsv.default_glyphs = MY_GLYPHS
-wsv.default_vocab = "en"
+wsv.glyphs = MY_GLYPHS
+wsv.vocab = "en"
 
 # Use `list_vocabs()` to see Vocabs are available:
 print(wsv.list_vocabs())

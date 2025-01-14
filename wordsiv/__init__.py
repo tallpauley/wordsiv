@@ -12,7 +12,7 @@ from typing import Sequence
 from ._vocab import Vocab, VocabFormatError, VocabEmptyError
 from ._filter import FilterError, CaseType
 from ._punctuation import DEFAULT_PUNCTUATION, _punctuate
-from . import vocab_data
+from . import _vocab_data
 
 __all__ = [
     "WordSiv",
@@ -91,10 +91,10 @@ class WordSiv:
         raise_errors (bool): Whether to raise errors or fail gently.
 
     Attributes:
-        default_glyphs (str | None): The set of glyphs that constrains the words generated.
-        default_vocab (str | None): The name of the default Vocab.
+        glyphs (str | None): The set of glyphs that constrains the words generated.
+        vocab (str | None): The name of the default Vocab.
         raise_errors (bool): Whether to raise errors or fail gently.
-        vocabs (dict): A dictionary of Vocab names and objects.
+        vocab_lookup (dict): A dictionary of Vocab names and objects.
         rand (random.Random): An instance of random.Random for generating random numbers.
     """
 
@@ -105,10 +105,10 @@ class WordSiv:
         add_default_vocabs: bool = True,
         raise_errors: bool = False,
     ):
-        self.default_vocab = vocab
-        self.default_glyphs = glyphs
+        self.vocab = vocab
+        self.glyphs = glyphs
         self.raise_errors = raise_errors
-        self._vocabs: dict[str, Vocab] = {}
+        self._vocab_lookup: dict[str, Vocab] = {}
 
         if add_default_vocabs:
             self._add_default_vocabs()
@@ -126,15 +126,15 @@ class WordSiv:
             vocab_name (str): a name to access the Vocab with
             vocab (Vocab): The Vocab object.
         """
-        self._vocabs[vocab_name] = vocab
+        self._vocab_lookup[vocab_name] = vocab
 
     def _add_default_vocabs(self) -> None:
         for vocab_name, (meta_file, data_file) in DEFAULT_VOCABS.items():
-            meta_path = resources.files(vocab_data) / meta_file
+            meta_path = resources.files(_vocab_data) / meta_file
             with meta_path.open("r", encoding="utf8") as f:
                 meta = json.load(f)
 
-            data_path = resources.files(vocab_data) / data_file
+            data_path = resources.files(_vocab_data) / data_file
             vocab = Vocab(
                 meta["lang"], bool(meta["bicameral"]), meta=meta, data_file=data_path
             )
@@ -150,17 +150,17 @@ class WordSiv:
             Vocab: The Vocab object.
         """
         if vocab_name:
-            return self._vocabs[vocab_name]
+            return self._vocab_lookup[vocab_name]
         else:
-            if self.default_vocab:
-                return self._vocabs[self.default_vocab]
+            if self.vocab:
+                return self._vocab_lookup[self.vocab]
             else:
                 raise ValueError("Error: no vocab specified")
 
     def list_vocabs(self) -> list[str]:
         """List all available vocabs."""
 
-        return list(self._vocabs.keys())
+        return list(self._vocab_lookup.keys())
 
     def number(
         self,
@@ -171,7 +171,7 @@ class WordSiv:
         max_wl=None,
         raise_errors=False,
     ):
-        glyphs = self.default_glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if not glyphs else glyphs
         raise_errors = self.raise_errors if not raise_errors else raise_errors
 
         if seed is not None:
@@ -220,7 +220,7 @@ class WordSiv:
         regexp: str | None = None,
         raise_errors: bool = False,
     ):
-        glyphs = self.default_glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if not glyphs else glyphs
         raise_errors = self.raise_errors if not raise_errors else raise_errors
         vocab_obj = self.get_vocab(vocab)
 
@@ -281,11 +281,9 @@ class WordSiv:
             case (CaseType): The desired case of the word. See [`CaseType`][wordsiv.CaseType] for more details.
         """
 
-        glyphs = self.default_glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if not glyphs else glyphs
         raise_errors = self.raise_errors if not raise_errors else raise_errors
-        vocab_obj = (
-            self.get_vocab(self.default_vocab) if not vocab else self.get_vocab(vocab)
-        )
+        vocab_obj = self.get_vocab(self.vocab) if not vocab else self.get_vocab(vocab)
 
         try:
             wc_list = vocab_obj.filter(
@@ -330,7 +328,7 @@ class WordSiv:
         rnd: float = 0,
         **word_num_kwargs,
     ):
-        glyphs = self.default_glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if not glyphs else glyphs
 
         if seed is not None:
             self.rand.seed(seed)
@@ -413,10 +411,8 @@ class WordSiv:
         regexp: str | None = None,
         raise_errors: bool = False,
     ):
-        glyphs = self.default_glyphs if not glyphs else glyphs
-        vocab_obj = (
-            self.get_vocab(self.default_vocab) if not vocab else self.get_vocab(vocab)
-        )
+        glyphs = self.glyphs if not glyphs else glyphs
+        vocab_obj = self.get_vocab(self.vocab) if not vocab else self.get_vocab(vocab)
 
         try:
             wc_list = vocab_obj.filter(
@@ -456,7 +452,7 @@ class WordSiv:
         rnd_punc: float = 0,
         **words_kwargs,
     ):
-        glyphs = self.default_glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if not glyphs else glyphs
         vocab_obj = self.get_vocab(vocab)
 
         if seed is not None:
