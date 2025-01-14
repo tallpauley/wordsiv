@@ -17,11 +17,18 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets:
-      base_path: docs/snippets
+      base_path:
+        - docs/snippets
+        - examples
   - pymdownx.superfences
 nav:
   - Introduction: index.md
-  - Quick Reference: quick-reference.md
+  - Examples:
+      - Quick Reference: examples/quick-reference.md
+      - Hoefler-style Proof: examples/hoefler-style-proof.md
+      - GJ-style Proof: examples/gj-style-proof.md
+      - Init/Medi/Fina Proof: examples/init-medi-fina-proof.md
+
   - Guide:
       - Basic Usage: guide/basic-usage.md
       - Filtering Words: guide/filtering-words.md

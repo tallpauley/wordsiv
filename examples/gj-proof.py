@@ -4,6 +4,11 @@ from wordsiv import WordSiv
 from itertools import product
 import logging
 
+GLYPHS_EN = "HAMBUGERFONTSIVhambugerfontsiv.,"
+GLYPHS_AR = "نيوفأعدقجزخضذئةىءآإ"
+
+# Quiet the output of WordSiv, since there will inevitably be a lot of word queries
+# that don't have any results when we're permuting all letters
 wsv_log = logging.getLogger("wordsiv")
 wsv_log.setLevel(logging.ERROR)
 
@@ -57,25 +62,29 @@ def gj_proof_ar(glyphs, mode):
 
 
 if __name__ == "__main__":
-    glyphs = "HAMBUGERFONTSIVhambugerfontsiv.,"
     proof = ""
-    proof = f"English: UC-lc letter permutations at word start for glyphs {glyphs}\n"
-    proof += gj_proof_en(glyphs, case="cap") + "\n\n"
+    proof = (
+        f'English: UC-lc letter permutations at word start for glyphs "{GLYPHS_EN}"\n'
+    )
+    proof += gj_proof_en(GLYPHS_EN, case="cap") + "\n\n"
 
-    proof += f"English: UC-UC letter permutations inside word for glyphs {glyphs}\n"
-    proof += gj_proof_en(glyphs, case="uc") + "\n\n"
+    proof += (
+        f'English: UC-UC letter permutations inside word for glyphs "{GLYPHS_EN}"\n'
+    )
+    proof += gj_proof_en(GLYPHS_EN, case="uc") + "\n\n"
 
-    proof += f"English: lc-lc letter permutations inside word for glyphs {glyphs}\n"
-    proof += gj_proof_en(glyphs, case="lc") + "\n\n"
+    proof += (
+        f'English: lc-lc letter permutations inside word for glyphs "{GLYPHS_EN}"\n'
+    )
+    proof += gj_proof_en(GLYPHS_EN, case="lc") + "\n\n"
 
-    glyphs = "نيوفأعدقجزخضذئةىءآإ"
-    proof += f"Arabic: letter permutations at word start for glyphs {glyphs}\n"
-    proof += gj_proof_ar(glyphs, mode="init") + "\n\n"
+    proof += f'Arabic: letter permutations at word start for glyphs "{GLYPHS_AR}"\n'
+    proof += gj_proof_ar(GLYPHS_AR, mode="init") + "\n\n"
 
-    proof += f"Arabic: letter permutations inside word for glyphs {glyphs}\n"
-    proof += gj_proof_ar(glyphs, mode="medi") + "\n\n"
+    proof += f'Arabic: letter permutations inside word for glyphs "{GLYPHS_AR}"\n'
+    proof += gj_proof_ar(GLYPHS_AR, mode="medi") + "\n\n"
 
-    proof += f"Arabic: letter permutations at word end for glyphs {glyphs}\n"
-    proof += gj_proof_ar(glyphs, mode="fina")
+    proof += f'Arabic: letter permutations at word end for glyphs "{GLYPHS_AR}"\n'
+    proof += gj_proof_ar(GLYPHS_AR, mode="fina")
 
     print(proof)

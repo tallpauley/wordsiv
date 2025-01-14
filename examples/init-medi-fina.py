@@ -3,8 +3,8 @@
 from wordsiv import WordSiv
 
 # Arabic and Farsi glyphs
-ar_glyphs = "ابجدهوزحطيكلمنسعفصقرشتثخذضظغء"
-fa_glyphs = "یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء"
+AR_GLYPHS = "ابجدهوزحطيكلمنسعفصقرشتثخذضظغء"
+FA_GLYPHS = "یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء"
 
 
 def init_medi_fina(glyphs, lang):
@@ -23,7 +23,7 @@ def init_medi_fina(glyphs, lang):
 if __name__ == "__main__":
     # Generate and print text proofs for Arabic and Farsi templates
     print("Proof text in Farsi:")
-    print(init_medi_fina(fa_glyphs, lang="fa"))
+    print(init_medi_fina(FA_GLYPHS, lang="fa"))
 
     print("Proof text in Arabic:")
-    print(init_medi_fina(ar_glyphs, lang="ar"))
+    print(init_medi_fina(AR_GLYPHS, lang="ar"))

@@ -104,6 +104,7 @@ class WordSiv:
         glyphs: str | None = None,
         add_default_vocabs: bool = True,
         raise_errors: bool = False,
+        seed=None,
     ):
         self.vocab = vocab
         self.glyphs = glyphs
@@ -114,6 +115,9 @@ class WordSiv:
             self._add_default_vocabs()
 
         self.rand = random.Random()
+
+        if seed is not None:
+            self.seed(seed)
 
     def seed(self, seed) -> None:
         """Seed for the random number generator."""

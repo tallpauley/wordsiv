@@ -2,6 +2,8 @@
 
 from wordsiv import WordSiv
 
+MY_GLYPHS = "HAMBUGERFONTSIVhambugerfontsiv.,"
+
 ROUND_L_LC = "cdeoq"
 ROUND_R_LC = "bop"
 FLAT_L_LC = "bhiklmnpru"
@@ -92,8 +94,6 @@ def hflr_para_uc(glyphs):
 
 
 if __name__ == "__main__":
-    glyphs = "HAMBUGERFONTSIVhambugerfontsiv.,"
-
-    print(hflr_para_lc(glyphs))
+    print(hflr_para_lc(MY_GLYPHS))
     print()
-    print(hflr_para_uc(glyphs))
+    print(hflr_para_uc(MY_GLYPHS))
