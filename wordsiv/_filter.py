@@ -22,6 +22,7 @@ CaseType = Literal[
     "cap_force",
     "uc",
     "uc_og",
+    "uc_force",
 ]
 """
 Options for setting case via the `case` argument.

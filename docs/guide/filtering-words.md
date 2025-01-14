@@ -1,6 +1,6 @@
 # Filtering Words
 
-## Letter Case
+## Filter Words by Letter Case
 
 The most important parameter in WordSiv (for bicameral languages) is `case`.
 WordSiv allows for words in Vocabs to be:
@@ -10,60 +10,109 @@ WordSiv allows for words in Vocabs to be:
 - **all caps** (e.g. `"WWF"`): **`uc`**
 - **camel-case** (e.g. `"DDoS"`): (no parameter, but respected)
 
-The `case` argument allows you to:
+The `case` argument allows you to select the desired output letter case
+(considering your glyph set, if you've set `glyphs`), optionally transforming
+the original case of words from the Vocab.
 
-- select words from a Vocab which **already have the desired case** and only
-  contain `glyphs`:  **`lc`**, **`cap_og`**, **`uc_og`**
-- select words from a Vocab which **can be transfomed into the desired case**
-  and contain only `glyphs` (after transform): **`uc`**, **`cap`**, **`cap_force`**,
-  **`lc_force`**
-- select any word from a Vocab **of any case** which only contain `glyphs`:
-  **`any-og`**
-- select words from a Vocab **of any case** which only contain `glyphs`,
-  transforming case to `cap` and then `uc` if there aren't enough matches:
-  **`any`**
+The options are best demonstrated with a small example Vocab:
+```python
+--8<-- "case-demo.py"
+```
 
-The existing letter case is respected, so you have to explicitly specify a case
-option if you want to make a change to the case that is unusual, such as:
-
-- Changing `"WWF"` to `"Wwf"` (`cap-force`)
-- Changing `"DDoS"`to `"ddos"` (`lc-force`)
-
-### Default: Any Case w/ Transforms (`case='any'`)
+### Default: Any Case with Transforms (`case='any'`)
 
 The default option (`case='any'`) tries to match as many words as possible,
-transforming the case to `cap` and then `uc` if there aren't enough matches.
+transforming the case to `cap` and then `uc` if there aren't any matches.
 
 ```python
 --8<-- "case-any.py"
 ```
 
-### Any Case w/out Transforms (`case='any-og'`)
+### Any Case without Transforms (`case='any_og'`)
 
 You can also specify you want any word *exactly* as it appears
-in the Vocab `case='any-og'`:
+in the Vocab `case='any_og'`:
 
 ```python
 --8<-- "case-any-og.py"
 ```
 
-### All Caps (`case='uc'`)
+### Lowercase (`case='lc'`)
+
+The `lc` option selects lowercase words from the Vocab, like "bread". No words
+that are all caps or uppercase in the Vocab will be returned (it will NOT
+include "paris" or "fda").
+
+!!! Note "Why no `lc_og`?"
+    There is no `lc_og` option since `lc` already only uses lowercase words from
+    the Vocab.
 
 ```python
-sent(case="uc", n_words=5)
+--8<-- "case-lc.py"
+```
 
-# Returns: 'THE PRESS–NOT GET GROWTH.'
+### Lowercase, Force Transforms (`case='lc_force'`)
 
-# get top 5 words from vocab and capitalize them (if either lc or capitalized)
+The `lc_force` option selects all words from the Vocab, and indiscriminately
+transforms them to lowercase.
 
-top_words(case="cap", n_words=5)
+```python
+--8<-- "case-lc-force.py"
+```
 
-# Returns: ['The', 'Of', 'And', 'To', 'A']
+### Capitalized (`case='cap'`)
 
-# get top words that are *already* capitalized in the vocab
+The `cap` option selects capitalized words from the Vocab (like "Paris") as well as
+lowercase words from the Vocab, transformed to capitalized (like "Boat").
 
-top_words(case="cap_og", n_words=5)
+```python
+--8<-- "case-cap.py"
+```
 
-# Returns:  ['I', 'Jan', 'January', 'American', 'John']
+### Capitalized, Force Transforms (`case='cap_force'`)
 
+The `cap_force` option selects all words from the Vocab, and indiscriminately
+transforms them to uppercase.
+
+```python
+--8<-- "case-cap-force.py"
+```
+
+### Capitalized without Transforms (`case='cap_og'`)
+
+The `cap_og` option selects capitalized words from the Vocab (like "Paris"). It does
+**not** transform any lowercase words from the Vocab to capitalized. This is
+useful for getting words like proper nouns.
+
+```python
+--8<-- "case-cap-og.py"
+```
+
+### All Caps (`case='uc'`)
+
+The `uc` option selects all caps words from the Vocab (like "WWF"), as well as
+lowercase and capitalized words from the vocab, transformed to all caps
+(like "PARIS" and "BOAT").
+
+```python
+--8<-- "case-uc.py"
+```
+
+### All Caps without Transforms (`case='uc_og'`)
+
+The `uc_og` option selects all caps words from the Vocab (like "WWF"). It does
+**not** transform any lowercase or capitalized words to all caps. This is
+useful for getting all caps words like acronyms.
+
+```python
+--8<-- "case-uc-og.py"
+```
+
+### All Caps, Force Transforms (`case='uc_force'`)
+
+The `uc_force` option selects all words from the Vocab, and indiscriminately
+transforms them to uppercase.
+
+```python
+--8<-- "case-uc-force.py"
 ```

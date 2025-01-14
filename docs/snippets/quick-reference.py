@@ -111,8 +111,8 @@ print(
 #   at least 3 characters): No results.
 # - try to capitalize Vocab words: "zoo" becomes "Zoo" but we can't spell it without
 #   'o'. No results.
-# - try to uppercase Vocab words: "zoo" becomes "ZOO", Bingo! Returns 'ZOO' as most
-#   common word!
+# - try to uppercase Vocab words: "zoo" becomes "ZOO", which we can spell!  Returns
+# 'ZOO' as most common word!
 print(wsv.top_word(glyphs="ZO", min_wl=3))
 
 # Same result as preceding example. `any` is the default if `case` isn't specified:
@@ -148,6 +148,9 @@ print(wsv.top_words(case="lc_force", n_words=5))
 
 # Transform ANY word to capitalized (even all-caps and camel-case words!)
 print(wsv.top_words(case="cap_force", n_words=5))
+
+# Transform ANY word to all-caps (even camel-case words!)
+print(wsv.top_words(case="uc_force", n_words=5))
 
 ###########################################################################
 ######################### WORD FILTER OPTIONS #############################
