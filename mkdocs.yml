@@ -41,6 +41,7 @@ nav:
 repo_url: https://github.com/tallpauley/wordsiv
 watch:
   - wordsiv
+  - examples
 plugins:
   - autorefs
   - search
