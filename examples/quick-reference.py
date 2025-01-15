@@ -1,7 +1,7 @@
 from wordsiv import WordSiv
 
-# initialize WordSiv, using Vocab "en" (English), and restricting glyphs to MY_GLYPHS
-# setting the optional seed means our output will be reproducible
+# initialize WordSiv, using Vocab "en" (English), and restricting glyphs to
+# MY_GLYPHS. Setting the optional seed means our output will be reproducible
 MY_GLYPHS = "HAMBUGERFONTSIVhambugerfontsiv.,"
 wsv = WordSiv(vocab="en", glyphs=MY_GLYPHS, seed=123)
 
@@ -14,22 +14,23 @@ print(wsv.word())
 # Sample a totally random word that starts with "B", contains "a", ends with "rs"
 print(wsv.word(rnd=1, startswith="B", inner="a", endswith="rs"))
 
-# Most common word which has an inner "aa" (not overlapping first or last letter) and
-# at least 6 letters
+# Most common word which has an inner "aa" (not overlapping first or last
+# letter) and at least 6 letters
 print(wsv.top_word(inner="aa", min_wl=6))
 
-# A list of 7 totally random all caps words (including lowercase, capitalized words made
-# all caps) that are 7 letters long
+# A list of 7 totally random all caps words (including lowercase, capitalized
+# words made all caps) that are 7 letters long
 print(wsv.words(n_words=7, wl=7, rnd=1, case="uc"))
 
-# Sample 5 totally random all caps words from the Vocab which are already all caps
-# (useful for getting acronyms and similar)
+# Sample 5 totally random all caps words from the Vocab which are already all
+# caps (useful for getting acronyms and similar)
 print(wsv.words(n_words=5, rnd=1, case="uc_og"))
 
 # List of top 5 lowercase words which are at least 15 letters long
 print(wsv.top_words(n_words=5, min_wl=15, case="lc"))
 
-# Top 5 Spanish words of 5 or less letters, which have an inner "í", made capitalized
+# Top 5 Spanish words of 5 or less letters, which have an inner "í", made
+# capitalized
 ES_GLYPHS = "HAMBUGERFONTSIVhambugerfontsiv.,éáí"
 print(
     wsv.top_words(
@@ -42,8 +43,9 @@ print(wsv.top_words(n_words=5, startswith="sh", regexp=r"(?!.*[aot].*).*"))
 # A sentence from word probabilities, adding a little bit of randomness
 print(wsv.sent(rnd=0.03))
 
-# A sentence in arabic with 7-10 words, drawing from only the top 100 words in the Vocab
-# We are choosing not to restrict the glyphs on this WordSiv instance!
+# A sentence in arabic with 7-10 words, drawing from only the top 100 words in
+# the Vocab. We are choosing not to restrict the glyphs on this WordSiv
+# instance!
 wsv_ar = WordSiv(vocab="ar", seed=123)
 print(wsv_ar.sent(min_n_words=7, max_n_words=10, top_k=100))
 
