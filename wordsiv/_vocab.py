@@ -20,10 +20,10 @@ class Vocab:
     Attributes:
         lang (str): The language of the vocabulary.
         bicameral (bool): Specifies whether the vocabulary has uppercase and lowercase letters.
-        punctuation (dict | None): A dictionary or None for handling punctuation in generated text.
-        data (str | None): A TSV-formatted string with word-count pairs or a newline-delimited list of words.
-        data_file (str | Traversable | None): A path to a file to supply the data instead of the data attribute.
-        meta (dict | None): Additional metadata for the vocabulary.
+        punctuation (dict, optional): A dictionary or None for handling punctuation in generated text.
+        data (str, optional): A TSV-formatted string with word-count pairs or a newline-delimited list of words.
+        data_file (str | Traversable, optional): A path to a file to supply the data instead of the data attribute.
+        meta (dict, optional): Additional metadata for the vocabulary.
     """
 
     def __init__(
@@ -35,7 +35,16 @@ class Vocab:
         data_file: str | Traversable | None = None,
         meta: dict | None = None,
     ):
-        """Initializes the Vocab instance."""
+        """Initializes the Vocab instance.
+
+        Args:
+            lang (str): The language of the vocabulary.
+            bicameral (bool): Specifies whether the vocabulary has uppercase and lowercase letters.
+            punctuation (dict, optional): A dictionary or None for handling punctuation in generated text.
+            data (str, optional): A TSV-formatted string with word-count pairs or a newline-delimited list of words.
+            data_file (str | Traversable, optional): A path to a file to supply the data instead of the data attribute.
+            meta (dict, optional): Additional metadata for the vocabulary.
+        """
 
         self.lang = lang
         self.bicameral = bicameral
