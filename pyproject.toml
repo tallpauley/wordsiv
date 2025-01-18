@@ -27,7 +27,7 @@ pytest-cov = "^6.0.0"
 
 [tool.poe.tasks]
 test = "poetry run python -m pytest"
-coverage = "poetry run pytest --cov-report term-missing --cov=wordsiv tests/"
+coverage = "poetry run pytest --cov-report term-missing --cov=wordsiv tests/ --ignore=tests/test_snippets.py"
 docs = "poetry run mkdocs serve"
 
 [tool.pytest.ini_options]
