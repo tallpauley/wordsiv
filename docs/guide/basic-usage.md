@@ -56,4 +56,3 @@ Or specify `glyphs` when you are calling `word()`, `sent()`, etc.:
     ```python
     --8<-- "set-glyphs-arg-precedence.py"
     ```
-
