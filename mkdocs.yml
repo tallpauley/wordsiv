@@ -1,5 +1,5 @@
 site_name: WordSiv
-site_url: https://mydomain.org/mysite
+site_url: https://tallpauley.github.io/wordsiv
 theme:
   palette:
     primary: amber
@@ -10,6 +10,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
 markdown_extensions:
+  - attr_list
   - admonition
   - pymdownx.highlight:
       anchor_linenums: true
@@ -28,11 +29,10 @@ nav:
       - Hoefler-style Proof: examples/hoefler-style-proof.md
       - GJ-style Proof: examples/gj-style-proof.md
       - Init/Medi/Fina Proof: examples/init-medi-fina-proof.md
-
-  - Guide:
+  - Usage:
       - Basic Usage: guide/basic-usage.md
-      - Filtering Words: guide/filtering-words.md
       - Generating Text: guide/generating-text.md
+      - Filtering Words: guide/filtering-words.md
       - Repeatable Proofs: guide/repeatable-proofs.md
   - API Reference:
       wordsiv:

@@ -12,10 +12,10 @@ You should see a random sentence in the console in the lower-right of DrawBot!
 
 ## Listing Vocabs
 
-WordSiv generates text using [Vocabs](../../api-reference/#wordsiv.Vocab): objects that contain a word
-list (usually with counts) for a given language. WordSiv includes some Vocabs, and you can
-make your own (instructions coming soon!). See all available vocabs with:
-`list_vocabs()`:
+WordSiv generates text using [Vocabs](../../api-reference/#wordsiv.Vocab):
+objects that contain a word list (usually with counts) for a given language.
+WordSiv includes some Vocabs, and you can make your own (instructions coming
+soon!). See all available vocabs with: `list_vocabs()`:
 
 ```python
 --8<-- "list-vocabs.py"

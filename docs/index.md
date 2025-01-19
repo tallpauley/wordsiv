@@ -1,7 +1,13 @@
+[![CI](https://github.com/tallpauley/wordsiv/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tallpauley/wordsiv/actions/workflows/ci.yml?query=branch%3Amain)
+
 # WordSiv
 
 WordSiv is a Python library for generating proofing text for an incomplete
 typeface.
+
+[Documentation](https://tallpauley.github.io/wordsiv) | [Source Code](https://github.com/tallpauley/wordsiv)
+
+----
 
 Say you've drawn `HAMBUGERFONTSIVhambugerfontsiv.,` and want a sentence with
 *only* those glyphs:
@@ -16,13 +22,16 @@ This returns something like:
 
 ## Key Features
 
-- **Shaped text**: WordSiv generates text that is roughly the *shape* of the
-  desired language using word/punctuation probabilities and capitalization.
-- **Word filtering**: WordSiv selects from words that can be spelled with your
-  current glyph set. Many additional filters to select for letter combinations
-  you want without worrying about `.notdef`.
-- **Letter case support**: WordSiv supports cased source words, and has many
-  ways of filtering and transforming case via the `case` parameter.
+- **Shaped Text**: WordSiv generates text that is roughly the *shape* of text in
+  the desired language using word/punctuation probabilities and capitalization.
+- **Easy Word Filtering**: WordSiv selects from words that can be spelled with
+  your current glyph set, so you don't have to worry about `.notdef`. Add
+  additional word requirements (substrings, patterns, word length, etc.) on top
+  without having to wrangle regex.
+- **Letter Case Aware**: WordSiv has a simple `case` argument to set the desired
+  case of words, and choose whether to transform letter case of the words in the
+  Vocab. Words like `"I", "Paris", "DDoS", "WWF"` will by appear in their
+  original letter case by default (if the Vocab has capitalization).
 
 # Installation
 
@@ -32,17 +41,14 @@ This returns something like:
 
 2. Enter ```git+https://github.com/tallpauley/wordsiv``` and click **Go!**
 
-!!! note
-
-    You'll see some red text but it's nothing to worry about!
-
 ![Screenshot of DrawBot "Install Python Packages"
-Window](../images/drawbot-install.jpg)
+Window](./images/drawbot-install.jpg)
 
-### Installing Outside of DrawBot (advanced)
+### Installing Outside of DrawBot
 
 You can also install WordSiv on your system and use it in any Python script.
-You'll probably want to use a [virtual environment][venv] or a [Python tool][tool] that manages these for you, but I'll leave that up to you!
+You'll probably want to use a [virtual environment][venv] or a
+[Python tool][tool] that manages these for you, but I'll leave that up to you!
 
 First make sure you have Python 3.9+. Then:
 

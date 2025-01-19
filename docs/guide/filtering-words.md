@@ -1,7 +1,7 @@
 # Filtering Words
 
-All WordSiv word/text generation functions can be filtered by multiple
-arguments that are passed as keyword arguments.
+All WordSiv word/text generation functions allow for filtering of the words
+from the Vocab
 
 We demonstrate these arguments with `top_words()` for ease of understanding.
 These arguments are applicable to `word()`, `words()`, `top_word()`,
