@@ -2,8 +2,11 @@ from wordsiv import WordSiv
 
 wsv = WordSiv(vocab="en")
 
-# multiple words
+# Random number of words
 print(wsv.words())
+
+# Random number of words, capitalized first word
+print(wsv.words(cap_first=True))
 
 # 5 words
 print(wsv.words(n_words=5))

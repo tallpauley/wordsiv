@@ -6,8 +6,7 @@ WordSiv provides several methods for generating text at different levels:
   [`words()`](#list-of-random-words-words),
   [`top_word()`](#most-common-word-top_word),
   [`top_words()`](#list-of-most-common-words-top_words)
-- Sentence(s): [`sent()`](#sentence-sent),
-  [`sents()`](#list-of-sentences-sents)
+- Sentence(s): [`sent()`](#sentence-sent), [`sents()`](#list-of-sentences-sents)
 - Paragraph(s): [`para()`](#paragraph-generation-para),
   [`paras()`](#multiple-paragraphs-generation-paras)
 - Text Blocks: [`text()`](#full-text-block-generation-text)
@@ -28,28 +27,13 @@ This means you can pass arguments to `text()` that will effect all the smaller
 text generation methods it calls:
 
 ```python
-from wordsiv import WordSiv
-
-wsv = WordSiv(vocab='en')
-
-print(
-    wsv.text(
-        n_paras=3,  # Number of paragraphs
-        min_n_sents=2,  # Min sentences per paragraph
-        max_n_sents=4,  # Max sentences per paragraph
-        min_n_words=3,  # Min words per sentence
-        max_n_words=7,  # Max words per sentence
-        numbers=0.1,  # 10% chance of numbers
-        rnd=0.1,  # 10% random word selection
-        rnd_punc=0.5,  # 50% random punctuation
-        para_sep="¶",  # Custom paragraph separator
-    )
-)
+--8<-- "text-propagation.py"
 ```
 
-### Random Word Generation (`word()`)
+### Random Word (`word()`)
 
-The `word()` method generates a single random word based on word frequencies:
+The `word()` method generates a single random word based on word frequencies.
+Accepts [word filter arguments](../filtering-words).
 
 ```python
 --8<-- "word.py"
@@ -57,7 +41,8 @@ The `word()` method generates a single random word based on word frequencies:
 
 ### Most Common Word (`top_word()`)
 
-The `top_word()` method retrieves the most common word or the nth common word:
+The `top_word()` method retrieves the most common word or the nth common word.
+Accepts [word filter arguments](../filtering-words).
 
 ```python
 --8<-- "top-word.py"
@@ -65,7 +50,8 @@ The `top_word()` method retrieves the most common word or the nth common word:
 
 ### List of Random Words (`words()`)
 
-The `words()` method generates multiple random words using word frequencies:
+The `words()` method generates multiple random words using word frequencies. See
+also [word filter arguments](../filtering-words).
 
 ```python
 --8<-- "words.py"
@@ -73,7 +59,8 @@ The `words()` method generates multiple random words using word frequencies:
 
 ### List of Most Common Words (`top_words()`)
 
-The `top_words()` method generates a list of the most common words in descending frequency order:
+The `top_words()` method generates a list of the most common words in descending
+frequency order. Accepts [word filter arguments](../filtering-words).
 
 ```python
 --8<-- "top-words.py"
@@ -82,7 +69,8 @@ The `top_words()` method generates a list of the most common words in descending
 ### Sentence (`sent()`)
 
 The `sent()` method generates a single sentence by calling `words()` and
-optionally adding punctuation:
+optionally adding punctuation. Accepts [word filter
+arguments](../filtering-words).
 
 ```python
 --8<-- "sent.py"
@@ -90,53 +78,62 @@ optionally adding punctuation:
 
 ### List of Sentences (`sents()`)
 
-The `sents()` method generates multiple sentences and returns them in a list:
+The `sents()` method generates multiple sentences and returns them in a list.
+Accepts [word filter arguments](../filtering-words).
 
 ```python
 --8<-- "sents.py"
 ```
 
-### Paragraph Generation (`para()`)
+### Paragraph (`para()`)
 
-The `para()` method generates a single paragraph by joining sentences:
+The `para()` method generates a single paragraph by joining sentences. Accepts
+[word filter arguments](../filtering-words).
 
 ```python
 --8<-- "para.py"
 ```
 
-### Multiple Paragraphs Generation (`paras()`)
+### Multiple Paragraphs (`paras()`)
 
-The `paras()` method generates multiple paragraphs and returns them in a list:
+The `paras()` method generates multiple paragraphs and returns them in a list.
+Accepts [word filter arguments](../filtering-words).
 
 ```python
 --8<-- "paras.py"
 ```
 
-### Full Text Block Generation (`text()`)
+### Text Block (`text()`)
 
-The `text()` method generates a full text block by joining paragraphs:
+The `text()` method generates a full text block by joining paragraphs. Accepts
+[word filter arguments](../filtering-words).
 
 ```python
 --8<-- "text.py"
 ```
 
-## Controlling Randomness
+## Adjusting Randomness
 
 ### Repeatable Output
 
 For reproducible results, you can set a random seed either when initializing
-WordSiv or for individual function calls:
+WordSiv or for individual function calls. This is essential if you want you want
+your proof to remain the same until you make changes to the code (or your
+glyphs).
 
 ```python
 --8<-- "repeatable-output.py"
 ```
 
-### Word Selection Randomness (`rnd`)
+### Word Randomness (`rnd`)
 
-The `rnd` parameter controls how random the word selection is:
+The `rnd` parameter controls how random the word generation is. This is useful
+for getting more less frequent words, especially when your glyph set is limited
+and the probability distribution becomes even more skewed towards short, common
+words.
 
-- `rnd=0`: Use word frequencies (default)
-- `rnd=1`: Completely random selection
+- `rnd=0`: Use word frequencies to select words (default)
+- `rnd=1`: Completely random word selection
 - `0<rnd<1`: Interpolation of word frequency distribution and fully random
   distribution
 
@@ -144,11 +141,11 @@ The `rnd` parameter controls how random the word selection is:
 --8<-- "rnd.py"
 ```
 
-### Punctuation Selection Randomness (`rnd_punc`)
+### Punctuation Randomness (`rnd_punc`)
 
-The `rnd_punc` parameter controls how random the punctuation selection is:
+The `rnd_punc` parameter controls how random the punctuation generation is:
 
-- `rnd=0`: Use punctuation frequencies (default)
+- `rnd=0`: Use punctuation frequencies to select punctuation (default)
 - `rnd=1`: Completely random punctuation choice
 - `0<rnd<1`: Interpolation of punctuation frequency distribution and fully
   random distribution
@@ -162,28 +159,26 @@ print(wsv.para(rnd_punc=1))
 
 ### Limiting Word Pool (`top_k`)
 
-Restrict word selection to the most common `top_k` words:
+You can restrict word selection to the most common `top_k` words. This is useful
+if you want to inspect a bunch of highly frequent words.
 
 ```python
---8<-- "advanced-features.py"
+--8<-- "top-k.py"
 ```
 
-### Including Numbers (`numbers`)
+### Mixing In Numbers (`numbers`)
 
-Control the probability of including numbers in text:
+You can include basic random figures in your text (constrained by `glyphs`) with
+the `numbers` parameter.
 
 ```python
-# 20% chance of including numbers
-print(wsv.sent(numbers=0.2))
+--8<-- "numbers.py"
 ```
-
-Note that your `glyphs` must include the necessary digits for numbers to appear.
 
 ### Disabling Punctuation (`punc`)
 
 You can disable punctuation with the `punc` parameter:
 
 ```python
-# No punctuation
-print(wsv.para(punc=False))
+--8<-- "punc-false.py"
 ```

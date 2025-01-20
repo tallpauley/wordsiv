@@ -1,4 +1,4 @@
-## 0.2.0 – 2025-01-19
+## 0.2.0 – 2025-01-20
 
 ### Added
 
@@ -66,13 +66,14 @@
 
 ### Removed
 
-- **Deprecated Models and Source Packages** (`RandomModel`, `SequentialModel`,
+- **Models and Source Packages** (`RandomModel`, `SequentialModel`,
   `MarkovModel`):
-    - **Random** selection is now achieved with `rnd=1`.
-    - **Sequential** selection is now handled by `top_word()` / `top_words()`.
-    - **Markov**-based generation has **no direct replacement**.
+    - Models have been removed, and Source Packages are replaced by Vocabs,
+      some of which are bundled with WordSiv itself. However:
+        - **RandomModel** can be replicated `rnd=1`.
+        - **SequentialModel** can be replicated with `top_word()` /
+          `top_words()`.
+        - **MarkovModel** has **no direct replacement**.
 - **Font-based glyph inspection** and **bounding-box width filtering**:
-    - These relied on `fonttools` and introduced extra complexity. Now you
-        simply pass your glyph set in `glyphs="..."` for character constraints.
-- **Partial "source" loading**: All related complexities are gone. Built-in
-  Vocabs or your own minimal `Vocab` objects are used instead.
+    - These relied on `fonttools` and introduced extra complexity. Inspecting
+      fonts is now up to the user.

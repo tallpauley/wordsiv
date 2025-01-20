@@ -1,13 +1,22 @@
-[![CI](https://github.com/tallpauley/wordsiv/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tallpauley/wordsiv/actions/workflows/ci.yml?query=branch%3Amain)
-
-# WordSiv
-
-WordSiv is a Python library for generating proofing text for an incomplete
+<p align="center">
+  <a href="https://tallpauley.github.io/wordsiv"><img src="images/wordsiv-logo.png" alt="WordSiv"></a>
+</p>
+<p align="center">WordSiv is a Python library for generating proofing text for an incomplete
 typeface.
+</p>
+<p align="center">
+  <a href="https://github.com/tallpauley/wordsiv/actions/workflows/ci.yml?query=branch%3Amain">
+    <img src="https://github.com/tallpauley/wordsiv/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI">
+  </a>
+</p>
 
-[Documentation](https://tallpauley.github.io/wordsiv) | [Source Code](https://github.com/tallpauley/wordsiv)
+---
 
-----
+**Documentation**: [https://tallpauley.github.io/wordsiv](https://tallpauley.github.io/wordsiv)
+
+**Source Code**: [https://github.com/tallpauley/wordsiv](https://github.com/tallpauley/wordsiv)
+
+---
 
 Say you've drawn `HAMBUGERFONTSIVhambugerfontsiv.,` and want a sentence with
 *only* those glyphs:
@@ -43,10 +52,22 @@ This returns something like:
 
 1. In the DrawBot menu, click **Python->Install Python Packages**:
 
-2. Enter ```git+https://github.com/tallpauley/wordsiv``` and click **Go!**
+2. Enter `git+https://github.com/tallpauley/wordsiv` and click **Go!**:
 
 ![Screenshot of DrawBot "Install Python Packages"
 Window](docs/images/drawbot-install.jpg)
+
+#### Notes on Updating WordSiv
+
+DrawBot caches Python packages/modules, so I'd recommend this process for
+updating to the latest version of WordSiv:
+
+1. In the DrawBot menu, click **Python->Install Python Packages**.
+2. Click the dropdown **Install / Upgrade** and select **Uninstall**.
+3. Enter `wordsiv` and click **Go!**.
+4. Restart DrawBot.
+5. Follow the [above instructions](#installing-in-drawbot) to install WordSiv
+   again.
 
 ### Installing Outside of DrawBot
 
