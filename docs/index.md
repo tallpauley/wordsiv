@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://tallpauley.github.io/wordsiv"><img src="images/wordsiv-logo.png" alt="WordSiv"></a>
+  <a href="https://wordsiv.com"><img src="images/wordsiv-logo.png" alt="WordSiv"></a>
 </p>
 <p align="center">WordSiv is a Python library for generating proofing text for an incomplete
 typeface.
@@ -12,7 +12,7 @@ typeface.
 
 ---
 
-**Documentation**: [https://tallpauley.github.io/wordsiv](https://tallpauley.github.io/wordsiv)
+**Documentation**: [https://wordsiv.com](https://wordsiv.com)
 
 **Source Code**: [https://github.com/tallpauley/wordsiv](https://github.com/tallpauley/wordsiv)
 
