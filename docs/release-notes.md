@@ -4,7 +4,7 @@
 
 - **Built-in "Vocabs"**: Sources are now referred to as **Vocabs**, which
   include English (`"en"`), Spanish (`"es"`), Arabic (`"ar"`), and Farsi
-  (`"fa"`).
+  (`"fa"`) (thanks [@jmsole!](https://github.com/jmsole)).
     - No extra installation required—simply pass `vocab="en"` (etc.) to your
     `WordSiv` methods.
     - English (`"en"`) Vocab features improved capitalization for acronyms,
@@ -19,7 +19,7 @@
     call `top_words(n_words=...)` now.
 - **Advanced word filtering**: New substring and regex constraints let you
   refine which words appear. In addition to `min_wl`, `max_wl`, and `wl`, you
-  can now use:
+  can now use (thanks [@jmsole!](https://github.com/jmsole)):
     - `startswith="..."`
     - `endswith="..."`
     - `contains="..."`
