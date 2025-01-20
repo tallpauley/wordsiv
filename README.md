@@ -12,7 +12,7 @@ typeface.
 Say you've drawn `HAMBUGERFONTSIVhambugerfontsiv.,` and want a sentence with
 *only* those glyphs:
 ```python
---8<-- "intro-example.py"
+--8<-- "docs/snippets/intro-example.py"
 ```
 
 This returns something like:

@@ -21,7 +21,7 @@ markdown_extensions:
       base_path:
         - docs/snippets
         - examples
-  - pymdownx.superfences
+  - pymdownx.superfences:
 nav:
   - Introduction: index.md
   - Examples:
@@ -33,7 +33,6 @@ nav:
       - Basic Usage: guide/basic-usage.md
       - Generating Text: guide/generating-text.md
       - Filtering Words: guide/filtering-words.md
-      - Repeatable Proofs: guide/repeatable-proofs.md
   - API Reference:
       wordsiv:
         wordsiv: api-reference.md

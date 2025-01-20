@@ -10,6 +10,9 @@ sentence:
 
 You should see a random sentence in the console in the lower-right of DrawBot!
 
+Check out the [Quick Reference](../../examples/quick-reference) if you want to
+quickly jump into WordSiv, or read on for more detailed information.
+
 ## Listing Vocabs
 
 WordSiv generates text using [Vocabs](../../api-reference/#wordsiv.Vocab):

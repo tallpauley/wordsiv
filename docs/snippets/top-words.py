@@ -1,9 +1,12 @@
 from wordsiv import WordSiv
 
-wsv = WordSiv(vocab="en", glyphs="HAMBUGERFONTSIVhambugerfontsiv")
+wsv = WordSiv(vocab="en")
 
-wsv.top_word()
-# returns: 'the'
+# Get 10 most common words
+print(wsv.top_words(n_words=10))
 
-wsv.top_words()
-# returns: ['the', 'of', 'to', 'in', 'for', 'is', 'on', 'that', 'this', 'it']
+# Get the 10th-19th most common words
+print(wsv.top_words(n_words=10, idx=9))
+
+# Get 10 most common words after word filters
+print(wsv.top_words(n_words=10, glyphs="HAMBUGERFONTSIVhambugerfontsiv", wl=7))
