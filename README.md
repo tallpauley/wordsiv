@@ -11,8 +11,12 @@ typeface.
 
 Say you've drawn `HAMBUGERFONTSIVhambugerfontsiv.,` and want a sentence with
 *only* those glyphs:
+
 ```python
---8<-- "docs/snippets/intro-example.py"
+from wordsiv import WordSiv
+
+wsv = WordSiv(vocab="en", glyphs="HAMBUGERFONTSIVhambugerfontsiv.,")
+print(wsv.sent(rnd=0.03))  # rnd lets us turn up the randomness
 ```
 
 This returns something like:
