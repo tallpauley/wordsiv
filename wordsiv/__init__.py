@@ -25,7 +25,8 @@ __all__ = [
 
 log = logging.getLogger(__name__)
 
-DEFAULT_VOCABS = {
+_DEFAULT_MAX_NUM_LENGTH = 4
+_DEFAULT_VOCABS = {
     "ar": ("ar_subs_meta.json", "ar_subs.tsv"),
     "en": ("en_books_meta.json", "en_books.tsv"),
     "es": ("es_subs_meta.json", "es_subs.tsv"),
@@ -186,7 +187,7 @@ class WordSiv:
         maps a short code (e.g., 'en', 'es') to the meta and data filenames. This method
         initializes each Vocab (however, the data is loaded lazily).
         """
-        for vocab_name, (meta_file, data_file) in DEFAULT_VOCABS.items():
+        for vocab_name, (meta_file, data_file) in _DEFAULT_VOCABS.items():
             meta_path = resources.files(_vocab_data) / meta_file
             with meta_path.open("r", encoding="utf8") as f:
                 meta = json.load(f)
@@ -234,7 +235,7 @@ class WordSiv:
         glyphs: str | None = None,
         wl: int | None = None,
         min_wl: int = 1,
-        max_wl: int = 4,
+        max_wl: int = _DEFAULT_MAX_NUM_LENGTH,
         raise_errors: bool = False,
     ) -> str:
         """
@@ -260,8 +261,8 @@ class WordSiv:
             FilterError: If no numerals are available in `glyphs` and `raise_errors` is
                 True.
         """
-        glyphs = self.glyphs if not glyphs else glyphs
-        raise_errors = self.raise_errors if not raise_errors else raise_errors
+        glyphs = self.glyphs if glyphs is None else glyphs
+        raise_errors = self.raise_errors if raise_errors is None else raise_errors
 
         if seed is not None:
             self._rand.seed(seed)
@@ -340,8 +341,8 @@ class WordSiv:
             VocabFormatError: If the underlying Vocab data is malformed.
             VocabEmptyError: If the underlying Vocab is empty.
         """
-        glyphs = self.glyphs if not glyphs else glyphs
-        raise_errors = self.raise_errors if not raise_errors else raise_errors
+        glyphs = self.glyphs if glyphs is None else glyphs
+        raise_errors = self.raise_errors if raise_errors is None else raise_errors
         vocab_obj = self.get_vocab(vocab)
 
         if not (0 <= rnd <= 1):
@@ -352,7 +353,7 @@ class WordSiv:
 
         try:
             wc_list = vocab_obj.filter(
-                glyphs,
+                glyphs=glyphs,
                 case=case,
                 min_wl=min_wl,
                 max_wl=max_wl,
@@ -389,7 +390,7 @@ class WordSiv:
         inner: str | Sequence[str] | None = None,
         startswith: str | None = None,
         endswith: str | None = None,
-        regexp: str | Sequence[str] | None = None,
+        regexp: str | None = None,
         raise_errors: bool = False,
     ) -> str:
         """
@@ -416,26 +417,26 @@ class WordSiv:
                 interior.
             startswith (str | None): Substring that the word must start with.
             endswith (str | None): Substring that the word must end with.
-            regexp (str | Sequence[str] | None): Regex pattern(s) that the word must
-                match.
+            regexp (str | None): Regex pattern that the word must match.
             raise_errors (bool): Whether to raise errors on filter or index failures.
 
         Returns:
             str: The nth most common word that meets the constraints (or an empty string
-            on failure if `raise_errors` is False).
+                on failure if `raise_errors` is False).
 
         Raises:
             FilterError: If filtering fails (no words match) and `raise_errors` is True.
             ValueError: If no default vocab is set when `vocab` is None.
-            IndexError: If `idx` is out of range after filtering and `raise_errors` is True.
+            IndexError: If `idx` is out of range after filtering and `raise_errors` is
+                True.
         """
-        glyphs = self.glyphs if not glyphs else glyphs
-        raise_errors = self.raise_errors if not raise_errors else raise_errors
+        glyphs = self.glyphs if glyphs is None else glyphs
+        raise_errors = self.raise_errors if raise_errors is None else raise_errors
         vocab_obj = self.get_vocab(self.vocab) if not vocab else self.get_vocab(vocab)
 
         try:
             wc_list = vocab_obj.filter(
-                glyphs,
+                glyphs=glyphs,
                 case=case,
                 min_wl=min_wl,
                 max_wl=max_wl,
@@ -474,7 +475,11 @@ class WordSiv:
         cap_first: bool | None = None,
         case: CaseType = "any",
         rnd: float = 0,
-        **word_num_kwargs,
+        min_wl: int = 1,
+        max_wl: int | None = None,
+        wl: int | None = None,
+        raise_errors: bool = False,
+        **word_kwargs,
     ) -> list[str]:
         """
         Generate a list of words (and optionally numbers) according to the specified
@@ -502,8 +507,11 @@ class WordSiv:
             case (CaseType): Desired case form for the words ("any", "lower", "upper",
                 etc.).
             rnd (float): Randomness factor for word selection, in [0, 1].
-            **word_num_kwargs: Additional keyword arguments passed along to `word` or
-                `number`.
+            min_wl (int): Minimum length for words/numbers.
+            max_wl (int): Maximum length for words/numbers.
+            wl (int | None): Exact length for words/numbers. If None, uses min/max_wl.
+            raise_errors (bool): Whether to raise errors or fail gently.
+            **word_kwargs: Additional keyword arguments passed along to `word()`.
 
         Returns:
             list[str]: A list of randomly generated tokens (words or numbers).
@@ -511,7 +519,7 @@ class WordSiv:
         Raises:
             ValueError: If `numbers` is not in [0, 1].
         """
-        glyphs = self.glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if glyphs is None else glyphs
 
         if seed is not None:
             self._rand.seed(seed)
@@ -549,17 +557,27 @@ class WordSiv:
                     glyphs=glyphs,
                     case=word_case,
                     rnd=rnd,
-                    **word_num_kwargs,
+                    min_wl=min_wl,
+                    max_wl=max_wl,
+                    wl=wl,
+                    raise_errors=raise_errors,
+                    **word_kwargs,
                 )
 
                 # Try once more to avoid consecutive repeats
+                # TODO: this is a hack, we should find a better way to avoid consecutive
+                # repeats
                 if w == last_w:
                     w = self.word(
                         vocab=vocab,
                         glyphs=glyphs,
                         case=word_case,
                         rnd=rnd,
-                        **word_num_kwargs,
+                        min_wl=min_wl,
+                        max_wl=max_wl,
+                        wl=wl,
+                        raise_errors=raise_errors,
+                        **word_kwargs,
                     )
 
                 if w:
@@ -567,7 +585,13 @@ class WordSiv:
                     last_w = w
             else:
                 # token_type == "number"
-                w = self.number(glyphs=glyphs, **word_num_kwargs)
+                w = self.number(
+                    glyphs=glyphs,
+                    wl=wl,
+                    min_wl=min_wl,
+                    max_wl=max_wl or _DEFAULT_MAX_NUM_LENGTH,
+                    raise_errors=raise_errors,
+                )
 
                 if w:
                     word_list.append(w)
@@ -598,7 +622,8 @@ class WordSiv:
 
         Args:
             glyphs (str | None): Allowed glyph set. If None, uses default glyphs.
-            vocab (str | None): Name of the Vocab to use. If None, use the default Vocab.
+            vocab (str | None): Name of the Vocab to use. If None, use the default
+                Vocab.
             n_words (int): Number of words to return.
             idx (int): The index at which to start returning words (0-based).
             case (CaseType): Desired case form ("any", "upper", "lower", etc.).
@@ -606,7 +631,8 @@ class WordSiv:
             max_wl (int | None): Maximum word length. If None, no maximum is applied.
             wl (int | None): Exact word length. If None, no exact length filter.
             contains (str | Sequence[str] | None): Substring(s) that must appear.
-            inner (str | Sequence[str] | None): Substring(s) that must appear, not at edges.
+            inner (str | Sequence[str] | None): Substring(s) that must appear, not at
+                edges.
             startswith (str | None): Required starting substring.
             endswith (str | None): Required ending substring.
             regexp (str | None): Regex pattern(s) to match.
@@ -618,12 +644,12 @@ class WordSiv:
         Raises:
             FilterError: If filtering fails (no words match) and `raise_errors` is True.
         """
-        glyphs = self.glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if glyphs is None else glyphs
         vocab_obj = self.get_vocab(self.vocab) if not vocab else self.get_vocab(vocab)
 
         try:
             wc_list = vocab_obj.filter(
-                glyphs,
+                glyphs=glyphs,
                 case=case,
                 min_wl=min_wl,
                 max_wl=max_wl,
@@ -680,7 +706,7 @@ class WordSiv:
         Raises:
             ValueError: If `rnd_punc` is not in [0, 1].
         """
-        glyphs = self.glyphs if not glyphs else glyphs
+        glyphs = self.glyphs if glyphs is None else glyphs
         vocab_obj = self.get_vocab(vocab)
 
         if seed is not None:
@@ -700,7 +726,11 @@ class WordSiv:
                 punctuation = vocab_obj.punctuation
             else:
                 try:
-                    punctuation = DEFAULT_PUNCTUATION[vocab_obj.lang]
+                    try:
+                        punctuation = DEFAULT_PUNCTUATION[vocab_obj.lang]
+                    except KeyError:
+                        # If no default punctuation is found, return unpunctuated sentence
+                        return " ".join(word_list)
                 except KeyError:
                     # If no default punctuation is found, return unpunctuated sentence
                     return " ".join(word_list)

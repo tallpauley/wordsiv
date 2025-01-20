@@ -1,16 +1,31 @@
 import pytest
 from wordsiv import WordSiv, FilterError, Vocab
+from unittest.mock import create_autospec
 import string
 import re
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def wsv():
     test_data = "apple\t3\nbanana\t2\ncat\t1"
     w = WordSiv(add_default_vocabs=False)
     vocab = Vocab(bicameral=True, lang="en", data=test_data)
     w.add_vocab("test", vocab)
     w.vocab = "test"
+    return w
+
+
+@pytest.fixture
+def wsv_with_mock_vocab():
+    test_data = "apple\t3\nbanana\t2\ncat\t1"
+    vocab = Vocab(bicameral=True, lang="en", data=test_data)
+
+    mock_vocab = create_autospec(vocab, spec_set=True)
+    mock_vocab.filter.return_value = (("apple", 1),)
+
+    w = WordSiv(add_default_vocabs=False)
+    w.add_vocab("mock", mock_vocab)
+    w.vocab = "mock"
     return w
 
 
@@ -244,6 +259,41 @@ def test_sentences_min_n_sents_max_n_sents(wsv, min_n_sents, max_n_sents):
             <= len(wsv.sents(min_n_sents=min_n_sents, max_n_sents=max_n_sents))
             <= max_n_sents
         )
+
+
+@pytest.mark.parametrize(
+    "function",
+    [
+        "word",
+        "top_word",
+        "words",
+        "top_words",
+        "sent",
+        "sents",
+        "para",
+        "paras",
+        "text",
+    ],
+)
+def test_all_filter_parameters_passed_to_vocab_filter(wsv_with_mock_vocab, function):
+    # params don't matter, just testing that the vocab.filter() is called with the
+    # correct parameters
+    params = {
+        "glyphs": "abc",
+        "case": "lc",
+        "min_wl": 3,
+        "max_wl": 5,
+        "wl": 4,
+        "contains": "a",
+        "inner": "r",
+        "startswith": "a",
+        "endswith": "s",
+        "regexp": r".*",
+    }
+    f = getattr(wsv_with_mock_vocab, function)
+    wsv_with_mock_vocab.get_vocab("mock").filter.return_value = (("apple", 1),)
+    f(**params)
+    wsv_with_mock_vocab.get_vocab("mock").filter.assert_called_with(**params)
 
 
 def test_all_numbers_arg_equals_1_returns_only_digits(wsv):

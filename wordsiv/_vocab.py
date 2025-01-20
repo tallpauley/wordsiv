@@ -95,8 +95,8 @@ class Vocab:
 
         return _wordcount_str_to_wordcount_tuple(self.wordcount_str)
 
-    def filter(self, *args, **kwargs):
-        return _filter_wordcount(self.wordcount_str, self.bicameral, *args, **kwargs)
+    def filter(self, **kwargs):
+        return _filter_wordcount(self.wordcount_str, self.bicameral, **kwargs)
 
 
 @lru_cache(maxsize=None)

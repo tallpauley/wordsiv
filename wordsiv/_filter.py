@@ -36,22 +36,24 @@ def _filter_wordcount(wc_str, bicameral, glyphs=None, case="any", **kwargs):
     if bicameral and glyphs and case == "any":
         try:
             return _filter_all_params(
-                wc_str, bicameral, glyphs, case="any_og", **kwargs
+                wc_str, bicameral, glyphs=glyphs, case="any_og", **kwargs
             )
         except FilterError:
             try:
                 return _filter_all_params(
-                    wc_str, bicameral, glyphs, case="cap", **kwargs
+                    wc_str, bicameral, glyphs=glyphs, case="cap", **kwargs
                 )
             except FilterError:
                 return _filter_all_params(
-                    wc_str, bicameral, glyphs, case="uc", **kwargs
+                    wc_str, bicameral, glyphs=glyphs, case="uc", **kwargs
                 )
 
     elif case == "any":
-        return _filter_all_params(wc_str, bicameral, glyphs, case="any_og", **kwargs)
+        return _filter_all_params(
+            wc_str, bicameral, glyphs=glyphs, case="any_og", **kwargs
+        )
     else:
-        return _filter_all_params(wc_str, bicameral, glyphs, case=case, **kwargs)
+        return _filter_all_params(wc_str, bicameral, glyphs=glyphs, case=case, **kwargs)
 
 
 def _filter_all_params(
@@ -128,17 +130,17 @@ def _filter_wl_substr(
 
     # filter by word length
     if wl:
-        _check_int(wl, "wl")
+        _check_pos_int(wl, "wl")
         pattern += rf"(?=.{{{wl}}}\t)"
     elif min_wl or max_wl:
         # min wl is just 0 by default
-        _check_int(min_wl, "min_wl")
+        _check_pos_int(min_wl, "min_wl")
 
         # max wl we need an empty string if it's not set
         if not max_wl:
             max_wl_str = ""
         else:
-            _check_int(max_wl, "max_wl")
+            _check_pos_int(max_wl, "max_wl")
             max_wl_str = max_wl
 
         pattern += rf"(?=.{{{min_wl},{max_wl_str}}}\t)"
@@ -279,9 +281,9 @@ def _filter_case(wc_str, case, glyphs, bicameral):
             raise ValueError(f"Invalid case option: {case}")
 
 
-def _check_int(i, name):
-    if not isinstance(i, int):
-        raise ValueError(f"{name} must be an integer")
+def _check_pos_int(i, name):
+    if not isinstance(i, int) or i < 0:
+        raise ValueError(f"{name} must be a positive integer")
 
 
 def _check_alpha(s, name):
