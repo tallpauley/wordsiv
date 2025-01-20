@@ -30,9 +30,9 @@ nav:
       - GJ-style Proof: examples/gj-style-proof.md
       - Init/Medi/Fina Proof: examples/init-medi-fina-proof.md
   - Usage:
-      - Basic Usage: guide/basic-usage.md
-      - Generating Text: guide/generating-text.md
-      - Filtering Words: guide/filtering-words.md
+      - Basic Usage: usage/basic-usage.md
+      - Generating Text: usage/generating-text.md
+      - Filtering Words: usage/filtering-words.md
   - API Reference:
       wordsiv:
         wordsiv: api-reference.md

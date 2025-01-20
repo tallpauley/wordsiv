@@ -18,4 +18,4 @@ print(wsv.sent(min_n_words=3, max_n_words=10))
 print(wsv.sent(numbers=1, n_words=10))
 
 # 50% words, 50% numbers
-print(wsv.words(numbers=0.5, n_words=10))
+print(wsv.sent(numbers=0.5, n_words=10))

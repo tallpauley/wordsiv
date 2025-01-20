@@ -2,14 +2,14 @@
 
 WordSiv provides several methods for generating text at different levels:
 
-- Word(s): [`word()`](#random-word-generation-word),
+- Word(s): [`word()`](#random-word-word),
   [`words()`](#list-of-random-words-words),
   [`top_word()`](#most-common-word-top_word),
   [`top_words()`](#list-of-most-common-words-top_words)
 - Sentence(s): [`sent()`](#sentence-sent), [`sents()`](#list-of-sentences-sents)
-- Paragraph(s): [`para()`](#paragraph-generation-para),
-  [`paras()`](#multiple-paragraphs-generation-paras)
-- Text Blocks: [`text()`](#full-text-block-generation-text)
+- Paragraph(s): [`para()`](#paragraph-para),
+  [`paras()`](#multiple-paragraphs-paras)
+- Text Blocks: [`text()`](#text-block-text)
 
 ## Text Generation Methods
 
