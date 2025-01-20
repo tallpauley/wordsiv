@@ -1,0 +1,10 @@
+{
+    "name": "en_books",
+    "lang": "en",
+    "bicameral": "True",
+    "description": "84K cased words. UAKCD (words/casing), Peter Norvig (counts), and Leipzig (casing)",
+    "author": "Chris Pauley",
+    "author_email": "cmpauley@gmail.com",
+    "author_url": "https://github.com/tallpauley",
+    "license": "See UAKCD, Norvig, Leipzig"
+}

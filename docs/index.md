@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://wordsiv.com"><img src="docs/images/wordsiv-logo.png" alt="WordSiv"></a>
+  <a href="https://wordsiv.com"><img src="images/wordsiv-logo.png" alt="WordSiv"></a>
 </p>
 <p align="center">WordSiv is a Python library for generating proofing text for an incomplete
 typeface.
@@ -20,12 +20,8 @@ typeface.
 
 Say you've drawn `HAMBUGERFONTSIVhambugerfontsiv.,` and want a sentence with
 *only* those glyphs:
-
 ```python
-from wordsiv import WordSiv
-
-wsv = WordSiv(vocab="en", glyphs="HAMBUGERFONTSIVhambugerfontsiv.,")
-print(wsv.sent(rnd=0.03))  # rnd lets us turn up the randomness
+--8<-- "intro-example.py"
 ```
 
 This returns something like:
@@ -52,22 +48,23 @@ This returns something like:
 
 1. In the DrawBot menu, click **Python->Install Python Packages**:
 
-2. Enter `git+https://github.com/tallpauley/wordsiv` and click **Go!**:
+2. Enter ```git+https://github.com/tallpauley/wordsiv``` and click **Go!**
 
 ![Screenshot of DrawBot "Install Python Packages"
-Window](docs/images/drawbot-install.jpg)
+Window](./images/drawbot-install.jpg)
 
-#### Notes on Updating WordSiv
+#### Updating WordSiv in DrawBot
 
 DrawBot caches Python packages/modules, so I'd recommend this process for
 updating to the latest version of WordSiv:
 
 1. In the DrawBot menu, click **Python->Install Python Packages**.
-2. Click the dropdown **Install / Upgrade** and select **Uninstall**.
-3. Enter `wordsiv` and click **Go!**.
+    - Click the dropdown **Install / Upgrade** and select **Uninstall**.
+    - Enter `wordsiv` and click **Go!**.
 4. Restart DrawBot.
-5. Follow the [above instructions](#installing-in-drawbot) to install WordSiv
-   again.
+5. Follow the [above instructions](#installing-in-drawbot) to install the latest
+   version of WordSiv.
+
 
 ### Installing Outside of DrawBot
 

@@ -1,0 +1,70 @@
+site_name: WordSiv
+site_url: https://wordsiv.com
+theme:
+  palette:
+    primary: amber
+  name: material
+  features:
+    - content.code.select
+    - content.code.copy
+    - navigation.tabs
+    - navigation.tabs.sticky
+markdown_extensions:
+  - attr_list
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path:
+        - docs/snippets
+        - examples
+  - pymdownx.superfences:
+nav:
+  - Introduction: index.md
+  - Examples:
+      - Quick Reference: examples/quick-reference.md
+      - Hoefler-style Proof: examples/hoefler-style-proof.md
+      - GJ-style Proof: examples/gj-style-proof.md
+      - Init/Medi/Fina Proof: examples/init-medi-fina-proof.md
+  - Usage:
+      - Basic Usage: guide/basic-usage.md
+      - Generating Text: guide/generating-text.md
+      - Filtering Words: guide/filtering-words.md
+  - API Reference:
+      wordsiv:
+        wordsiv: api-reference.md
+  - Release Notes: release-notes.md
+repo_url: https://github.com/tallpauley/wordsiv
+watch:
+  - wordsiv
+  - examples
+plugins:
+  - autorefs
+  - search
+  - mkdocstrings:
+      enable_inventory: true
+      handlers:
+        python:
+          paths: [wordsiv]
+          import:
+            - https://docs.python.org/3/objects.inv
+          options:
+            inherited_members:
+              - Vocab
+            docstring_options:
+              ignore_init_summary: true
+            show_labels: true
+            separate_signature: true
+            preload_modules:
+              - wordsiv
+            signature_crossrefs: true
+            summary:
+              attributes: true
+              modules: false
+              functions: true
+              classes: true
+            docstring_style: google
+            cross_references: true

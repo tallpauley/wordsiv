@@ -1,0 +1,10 @@
+{
+    "name": "es_subs",
+    "lang": "es",
+    "bicameral": "True",
+    "description": "From Leipzig Corpora, Wikipedia words 100k 2021",
+    "author": "Jose Sole",
+    "author_email": "type@jmsole.cl",
+    "author_url": "https://github.com/jmsole",
+    "license": "From Leipzig Corpora, Wikipedia words 100k 2021"
+}
