@@ -98,7 +98,7 @@ in a corpus of text.
 
 Of course, the more we restrict our glyph set the more we've tampered with the
 natural distribution of words, since most the longer, less-common words aren't
-available (which make up the long tail of the [Zipf's law][zipf]).
+available (which make up the long tail of the [Zipf Distribution][zipf]).
 However, we can blend in a bit of randomness to make it look like real text at a
 glance!
 
