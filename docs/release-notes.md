@@ -1,6 +1,6 @@
-## 0.2.1, 0.2.2 – 2025-01-20
+## 0.2.3, 0.2.2, 0.2.1 – 2025-01-20
 
-Minor site fixes, identical behavior
+Minor site/docs fixes
 
 ### Added
 
