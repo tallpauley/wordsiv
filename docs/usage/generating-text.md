@@ -11,7 +11,7 @@ WordSiv provides several methods for generating text:
   [`paras()`](#multiple-paragraphs-paras)
 - **Text Block**: [`text()`](#text-block-text)
 
-For methods that generate text with probabilities (not `top_word()`, `top_words()`), there are some options for adjusting randomness of the output:
+For methods that generate text with probabilities (not `top_word()`, `top_words()`), there are options for adjusting the randomness of the output:
 
 - **[`seed`](#repeatable-output-seed)**: Make output repeatable (deterministic)
 - **[`rnd`](#word-randomness-rnd)**: Blend in fully random word selection with
@@ -19,7 +19,7 @@ For methods that generate text with probabilities (not `top_word()`, `top_words(
 - **[`rnd_punc`](#punctuation-randomness-rnd_punc)**: Blend in fully random
   punctuation selection with the default probability-based punctuation selection
 
-There are also these additional options:
+There are also additional options:
 
 - **[`numbers`](#mixing-in-numbers-numbers)**: Mix-in figures with the words
 - **[`punc`](#disabling-punctuation-punc)**: Optionally disable punctuation
@@ -124,10 +124,9 @@ also [word filter arguments](../filtering-words).
 
 ### Repeatable Output (`seed`)
 
-For reproducible results, you can set a random [seed] when initializing
-WordSiv or for individual function calls. This is essential if you want you want
-your proof to remain the same until you make changes to the code (or your
-glyphs).
+For reproducible results, you can set a random [seed] when initializing WordSiv
+or for individual function calls. This is essential if you want your proof to
+remain the same until you make changes to the code (or your glyphs).
 
 ```python
 --8<-- "seed.py"
@@ -160,9 +159,9 @@ The `rnd_punc` parameter controls how random the punctuation generation is. This
 is useful for getting less common punctuation that statistically doesn't occur
 all that often.
 
-- `rnd=0`: Use punctuation frequencies to select punctuation (default)
-- `rnd=1`: Completely random punctuation selection
-- `0<rnd<1`: Interpolation of punctuation frequency distribution and fully
+- `rnd_punc=0`: Use punctuation frequencies to select punctuation (default)
+- `rnd_punc=1`: Completely random punctuation selection
+- `0<rnd_punc<1`: Interpolation of punctuation frequency distribution and fully
   random distribution
 
 ```python

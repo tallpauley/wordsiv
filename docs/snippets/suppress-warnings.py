@@ -11,7 +11,6 @@ wsv = WordSiv(vocab="en")
 print(wsv.top_word(contains="BLAH"))
 
 # We can suppress these warnings by setting the logging level to ERROR:
-log = logging.getLogger("wordsiv")
 log.setLevel(logging.ERROR)
 
 # No warning this time!

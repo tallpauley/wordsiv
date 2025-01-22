@@ -1,6 +1,20 @@
-## 0.2.3, 0.2.2, 0.2.1 – 2025-01-20
+## 0.2.4 – 2025-01-21
 
-Minor site/docs fixes
+### Fixed
+
+- Minor site/docs fixes
+
+### Removed
+
+- `wordsiv/about.py`: no need to have this, package version in pyproject.toml
+
+## 0.2.1, 0.2.2, 0.2.3 – 2025-01-20
+
+### Fixed
+
+- Minor site/docs fixes
+
+## 0.2.0 - 2025-01-20
 
 ### Added
 

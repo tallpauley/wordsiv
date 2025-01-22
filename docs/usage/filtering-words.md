@@ -1,11 +1,17 @@
 # Filtering Words
 
-All WordSiv word/text generation functions allow for filtering of the words
-from the Vocab
+WordSiv provides options for filtering the words that are used
+to [generate text](../generating-text):
 
-We demonstrate these arguments with `top_words()` for ease of understanding.
-These arguments are applicable to `word()`, `words()`, `top_word()`,
-`top_words()`, `sent()`, `sents()`, `para()`, `paras()`.
+- **Letter Case: [`case`](#filter-words-by-letter-case)**
+- **Word Length: [`wl`](#filter-words-by-word-length), [`min_wl`](#filter-words-by-word-length), [`max_wl`](#filter-words-by-word-length)**
+- **Substrings: [`startswith`](#word-starts-with-string-startswith), [`endswith`](#word-ends-with-string-endswith), [`contains`](#word-contains-strings-contains), [`inner`](#word-contains-inner-strings-inner)**
+- **Regular Expressions: [`regexp`](#filter-words-by-regex)**
+
+We demonstrate these arguments with `top_words()` so you can see what's
+happening without randomization. You can use these arguments for `word()`,
+`words()`, `top_word()`, `top_words()`, `sent()`, `sents()`, `para()`,
+`paras()`, `text()`.
 
 
 ## Filter Words by Letter Case
@@ -50,11 +56,11 @@ from the vocab.
 
 The `lc` option selects lowercase words from the Vocab (e.g. `"bread"`). It will
 *not* try to lowercase any words with capitals, since we wouldn't want to
-lowercase words like "Paris", "FAA" or "DDoS"
+lowercase words like `"Paris"`, `"FAA"`, or `"DDoS"`
 
 !!! Note "Why no `lc_og`?"
-    There is no need for a `lc_og` option, because `lc` only selects lowercase
-    words from the Vocab.
+    There is no need for a `lc_og` option, because `lc` **already** only selects
+    lowercase words from the Vocab.
 ```python
 --8<-- "case-lc.py"
 ```
@@ -109,10 +115,9 @@ vocab, transforming them to all caps (e.g. `"WWF", "BOAT", "PARIS"`).
 
 ### All Caps, No Case Change (`case='uc_og'`)
 
-The `cap_og` option selects all caps words from the Vocab (e.g. `"WWF"`). It
+The `uc_og` option selects all caps words from the Vocab (e.g. `"WWF"`). It
 does **not** capitalize any lowercase or capitalized words (like `case='uc'`
 does). This is useful for getting all caps words like acronyms.
-
 
 ```python
 --8<-- "case-uc-og.py"
@@ -138,32 +143,38 @@ the Vocab:
 
 ## Filter Words by Substrings
 
-Arguments `startswith`, `endswith`, `contains`, and `inner` let you select by
-words which contain specific substrings.
+Arguments **[`startswith`](#word-starts-with-string-startswith)**, **[`endswith`](#word-ends-with-string-endswith)**, **[`contains`](#word-contains-strings-contains)**, and **[`inner`](#word-contains-inner-strings-inner)** let you select words which contain specific substrings.
 
 ### Word Starts With String (`startswith`)
+
+Argument `startswith` matches words that have a specific glyph/string at the
+start of the word, *after* any case transformations may have occurred.
+
 ```python
 --8<-- "startswith.py"
 ```
 
 ### Word Ends With String (`endswith`)
 
+Argument `endswith` matches words that have a specific glyph/string at the
+end of the word, *after* any case transformations may have occurred.
+
 ```python
 --8<-- "endswith.py"
 ```
 
 ### Word Contains String(s) (`contains`)
-The `contains` argument looks for string(s) in the word, *after* any case
-transformations may have occurred.
+
+Argument `contains` matches words which contain specific string(s) in the word,
+*after* any case transformations may have occurred.
 
 ```python
 --8<-- "contains.py"
 ```
 
 ### Word Contains Inner String(s) (`inner`)
-The `inner` argument looks for string(s) in all characters of the word except
-for the first and last characters `word[1:-1]`, *after* any case
-transformations may have occurred.
+Argument `inner` matches words which contain specific string(s) in `word[1:-1]` (all
+but first and last glyphs), *after* any case transformations may have occurred.
 
 ```python
 --8<-- "inner.py"
@@ -197,10 +208,9 @@ the given filters. However, you can turn this off by adjusting the log level:
 
 ### Raising Errors
 
-Maybe you want your script to halt if there are no matching words, or
-want to catch the error and try something else. For this you can use the
-`raise_errors` option, which will raise `wordsiv.FilterError` exception if the
-filters return no word matches.
+Maybe you want your script to halt if there are no matching words, or want to
+catch the error and try something else. For this you can use the `raise_errors`
+option, which will raise `wordsiv.FilterError` if there are no word matches.
 
 ```python
 --8<-- "raise-errors.py"
