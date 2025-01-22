@@ -72,7 +72,7 @@ You can also install WordSiv on your system and use it in any Python script.
 You'll probably want to use a [virtual environment][venv] or a
 [Python tool][tool] that manages these for you, but I'll leave that up to you!
 
-First make sure you have Python 3.9+. Then:
+First, make sure you have Python 3.9+. Then:
 
 ```bash
 pip install git+https://github.com/tallpauley/wordsiv
@@ -82,20 +82,20 @@ pip install git+https://github.com/tallpauley/wordsiv
 
 Proofing text doesn't necessarily have to be syntactically correct or have
 meaning. It just needs the right amount of common and uncommon words to give it
-a "realistic" *shape*. Often type designers do this manually, such as in
+a "realistic" *shape*. Often, type designers do this manually, such as in
 Jonathan Hoefler's fantastic [proof][proof]:
 >Finally, I wanted the text to have the visual cadences of my native English, in
 >which words of variable but digestible length are punctuated by shorter ones.
 
 If we simply select words randomly, out of a hat which contains many more
-duplicates of say, "the" than "etymology", we'll get a string of words which
+duplicates of, say, "the" than "etymology", we'll get a string of words which
 visually resembles a sentence. This is how WordSiv works: sampling words from a
 *probability distribution* which is determined by the occurrence counts of words
 in a corpus of text.
 
-Of course, the more we restrict our glyph set the more we've tampered with the
-natural distribution of words, since most the longer, less-common words aren't
-available (which make up the long tail of the [Zipf's law][zipf]).
+Of course, the more we restrict our glyph set, the more we've tampered with the
+natural distribution of words, since most of the longer, less-common words
+aren't available (which make up the long tail of the [Zipf Distribution][zipf]).
 However, we can blend in a bit of randomness to make it look like real text at a
 glance!
 

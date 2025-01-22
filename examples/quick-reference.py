@@ -12,7 +12,7 @@ print(wsv.list_vocabs())
 print(wsv.word())
 
 # Sample a totally random word that starts with "B", contains "a", ends with "rs"
-print(wsv.word(rnd=1, startswith="B", inner="a", endswith="rs"))
+print(wsv.word(rnd=1, startswith="B", contains="a", endswith="rs"))
 
 # Most common word which has an inner "aa" (not overlapping first or last
 # letter) and at least 6 letters
