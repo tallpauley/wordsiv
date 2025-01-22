@@ -16,9 +16,9 @@ quickly jump into WordSiv, or read on for more detailed information.
 ## Listing Vocabs
 
 WordSiv generates text using [Vocabs](../../api-reference/#wordsiv.Vocab):
-objects that contain a word list (usually with counts) for a given language.
-WordSiv includes some Vocabs, and you can make your own (instructions coming
-soon!). See all available vocabs with: `list_vocabs()`:
+objects that contain a word list (usually with occurrence counts) for a given
+language. WordSiv includes some Vocabs, and you can make your own (instructions
+coming soon!). You can see all available Vocabs with: `list_vocabs()`:
 
 ```python
 --8<-- "list-vocabs.py"
@@ -26,12 +26,14 @@ soon!). See all available vocabs with: `list_vocabs()`:
 
 ## Selecting a Vocab
 
-You can set the default Vocab on `WordSiv` object initialization:
+You can set which Vocab you want to use on `WordSiv` object initialization,
+which will affect all text generation methods you call:
 ```python
 --8<-- "default-vocab.py"
 ```
 
-Or specify `vocab` when you are calling `word()`, `sent()`, etc.:
+Alternatively, you can specify `vocab` when you are calling `word()`, `sent()`,
+etc.:
 ```python
 --8<-- "vocab-arg.py"
 ```
@@ -44,12 +46,17 @@ Or specify `vocab` when you are calling `word()`, `sent()`, etc.:
 
 ## Restricting the Glyph Set
 
-You can set the default glyphs on `WordSiv` object initialization:
+The `glyphs` argument specifies a whitelist of glyphs that WordSiv will use to
+constrain text generation.
+
+You can set `glyphs` on `WordSiv` object initialization, which will affect all
+subsequent text generation methods you call:
 ```python
 --8<-- "set-glyphs.py"
 ```
 
-Or specify `glyphs` when you are calling `word()`, `sent()`, etc.:
+Alternatively, you can specify `glyphs` when you are calling `word()`, `sent()`,
+etc.:
 ```python
 --8<-- "glyphs-arg.py"
 ```
