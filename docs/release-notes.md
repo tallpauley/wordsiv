@@ -1,3 +1,18 @@
+## 0.3.0 – 2025-02-01
+
+### Added
+
+- Documentation on [language support](usage/language-support.md)
+
+### Fixed
+
+- internal: `tests/test_snippets.py` now uses the current working directory
+- Minor site/docs fixes
+
+### Removed
+
+- `docs/punctuation.md` (unused)
+
 ## 0.2.4 – 2025-01-21
 
 ### Fixed
