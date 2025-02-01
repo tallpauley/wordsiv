@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "wordsiv"
-version = "0.2.4"
+version = "0.2.5"
 description = "Generate text with a limited character set for font proofing"
 authors = ["Chris Pauley <cmpauley@gmail.com>"]
 license = "MIT"

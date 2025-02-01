@@ -1,7 +1,7 @@
 # Filtering Words
 
 WordSiv provides options for filtering the words that are used
-to [generate text](../generating-text):
+to [generate text](generating-text.md):
 
 - **Letter Case: [`case`](#filter-words-by-letter-case)**
 - **Word Length: [`wl`](#filter-words-by-word-length), [`min_wl`](#filter-words-by-word-length), [`max_wl`](#filter-words-by-word-length)**

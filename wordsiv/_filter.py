@@ -26,8 +26,8 @@ CaseType = Literal[
 ]
 """
 Options for setting case via the `case` argument.
-See [Letter Case](../guide/filtering-words/#letter-case) in the Guide for detailed descriptions and examples of each
-option
+See [Letter Case](usage/filtering-words.md#filter-words-by-letter-case) in the Guide for
+detailed descriptions and examples of each option
 """
 
 

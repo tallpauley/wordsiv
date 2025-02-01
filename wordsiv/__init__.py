@@ -789,7 +789,7 @@ class WordSiv:
             seed (float | str | None): Seed the random number generator if seed is not
                 None.
             sent_sep (str): The string used to join sentences.
-             **sents_kwargs: Keyword arguments passed to `sents(...)`.
+            **sents_kwargs: Keyword arguments passed to `sents(...)`.
 
         Returns:
             str: A single paragraph containing multiple sentences.
