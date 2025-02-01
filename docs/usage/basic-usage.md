@@ -10,12 +10,12 @@ sentence:
 
 You should see a random sentence in the console in the lower-right of DrawBot!
 
-Check out the [Quick Reference](../../examples/quick-reference) if you want to
+Check out the [Quick Reference](../examples/quick-reference.md) if you want to
 quickly jump into WordSiv, or read on for more detailed information.
 
 ## Listing Vocabs
 
-WordSiv generates text using [Vocabs](../../api-reference/#wordsiv.Vocab):
+WordSiv generates text using [Vocabs](../api-reference.md#wordsiv.Vocab):
 objects that contain a word list (usually with occurrence counts) for a given
 language. WordSiv includes some Vocabs, and you can make your own (instructions
 coming soon!). You can see all available Vocabs with: `list_vocabs()`:
