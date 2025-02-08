@@ -160,6 +160,7 @@ def _filter_wl_substr(
 def _filter_case(wc_str, case, glyphs, bicameral):
     if not bicameral:
         if glyphs:
+            glyphs = regex.escape(glyphs)
             return _findall_recase(wc_str, f"[{glyphs}]+")
         else:
             return wc_str.splitlines()
@@ -172,6 +173,7 @@ def _filter_case(wc_str, case, glyphs, bicameral):
             # case "any_og" means any unmodified words from vocab
             if glyphs:
                 # return all vocab words we can display with glyphs as is
+                glyphs = regex.escape(glyphs)
                 return _findall_recase(wc_str, f"[{glyphs}]+")
             else:
                 # return all vocab words
