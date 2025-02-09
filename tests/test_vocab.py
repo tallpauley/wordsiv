@@ -277,6 +277,13 @@ def test_vocab_filter_glyphs_case_cap_force():
     assert vc.filter(glyphs="Ddos", case="cap_force") == (("Ddos", 6),)
 
 
+def test_vocab_filter_glyphs_contains_special_chars():
+    test_data = "grape\t1\napple\t2\nApple\t3\nBart\t4\nBART\t5\nDDoS\t6"
+    vc = Vocab(bicameral=True, lang="en", data=test_data)
+
+    assert vc.filter(glyphs="[]+apple[]{}.*$^", case="any_og") == (("apple", 2),)
+
+
 def test_vocab_filter_wl():
     test_data = "apple\t10\nbanana\t5\njoe\t2"
     vc = Vocab(bicameral=True, lang="en", data=test_data)
