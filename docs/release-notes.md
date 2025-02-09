@@ -1,3 +1,10 @@
+## 0.3.1 – 2025-02-09
+
+### Fixed
+
+- Fixed bug where brackets (`[]`) were not properly escaped from glyphs string,
+  causing glyph filtering to work incorrectly (thanks @jmsole!)
+
 ## 0.3.0 – 2025-02-01
 
 ### Added
