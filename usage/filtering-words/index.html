@@ -1,0 +1,1543 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://wordsiv.com/usage/filtering-words/">
+      
+      
+        <link rel="prev" href="../generating-text/">
+      
+      
+        <link rel="next" href="../language-support/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>Filtering Words - WordSiv</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a40c8224.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="amber" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#filtering-words" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="WordSiv" class="md-header__button md-logo" aria-label="WordSiv" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WordSiv
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Filtering Words
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tallpauley/wordsiv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Introduction
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/quick-reference/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../basic-usage/" class="md-tabs__link">
+          
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../release-notes/" class="md-tabs__link">
+        
+  
+    
+  
+  Release Notes
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="WordSiv" class="md-nav__button md-logo" aria-label="WordSiv" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WordSiv
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tallpauley/wordsiv" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/quick-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hoefler-style-proof/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hoefler-style Proof
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gj-style-proof/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GJ-style Proof
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/init-medi-fina-proof/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Init/Medi/Fina Proof
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basic-usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generating-text/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generating Text
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Filtering Words
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Filtering Words
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-letter-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Letter Case
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter Words by Letter Case">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-smart-any-case-caseany" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default: Smart Any Case (case='any')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#any-case-caseany_og" class="md-nav__link">
+    <span class="md-ellipsis">
+      Any Case (case='any_og')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lowercase-caselc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lowercase (case='lc')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forced-lowercase-caselc_force" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forced Lowercase (case='lc_force')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capitalized-casecap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capitalized (case='cap')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capitalized-no-case-change-casecap_og" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capitalized, No Case Change (case='cap_og')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forced-capitalized-casecap_force" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forced Capitalized (case='cap_force')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-caps-caseuc" class="md-nav__link">
+    <span class="md-ellipsis">
+      All Caps (case='uc')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-caps-no-case-change-caseuc_og" class="md-nav__link">
+    <span class="md-ellipsis">
+      All Caps, No Case Change (case='uc_og')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forced-all-caps-caseuc_force" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forced All Caps (case='uc_force')
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-word-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Word Length
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-substrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Substrings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter Words by Substrings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#word-starts-with-string-startswith" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Starts With String (startswith)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-ends-with-string-endswith" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Ends With String (endswith)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-contains-strings-contains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Contains String(s) (contains)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-contains-inner-strings-inner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Contains Inner String(s) (inner)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Regex
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-filters-and-raising-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Filters and Raising Errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Filters and Raising Errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suppressing-warning-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suppressing Warning Messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raising-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raising Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../language-support/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Language Support
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wordsiv
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-notes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Release Notes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-letter-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Letter Case
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter Words by Letter Case">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-smart-any-case-caseany" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default: Smart Any Case (case='any')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#any-case-caseany_og" class="md-nav__link">
+    <span class="md-ellipsis">
+      Any Case (case='any_og')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lowercase-caselc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lowercase (case='lc')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forced-lowercase-caselc_force" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forced Lowercase (case='lc_force')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capitalized-casecap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capitalized (case='cap')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capitalized-no-case-change-casecap_og" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capitalized, No Case Change (case='cap_og')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forced-capitalized-casecap_force" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forced Capitalized (case='cap_force')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-caps-caseuc" class="md-nav__link">
+    <span class="md-ellipsis">
+      All Caps (case='uc')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-caps-no-case-change-caseuc_og" class="md-nav__link">
+    <span class="md-ellipsis">
+      All Caps, No Case Change (case='uc_og')
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forced-all-caps-caseuc_force" class="md-nav__link">
+    <span class="md-ellipsis">
+      Forced All Caps (case='uc_force')
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-word-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Word Length
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-substrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Substrings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter Words by Substrings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#word-starts-with-string-startswith" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Starts With String (startswith)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-ends-with-string-endswith" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Ends With String (endswith)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-contains-strings-contains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Contains String(s) (contains)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-contains-inner-strings-inner" class="md-nav__link">
+    <span class="md-ellipsis">
+      Word Contains Inner String(s) (inner)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filter-words-by-regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Words by Regex
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-filters-and-raising-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Filters and Raising Errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Filters and Raising Errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#suppressing-warning-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suppressing Warning Messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raising-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raising Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="filtering-words">Filtering Words</h1>
+<p>WordSiv provides options for filtering the words that are used
+to <a href="../generating-text/">generate text</a>:</p>
+<ul>
+<li><strong>Letter Case: <a href="#filter-words-by-letter-case"><code>case</code></a></strong></li>
+<li><strong>Word Length: <a href="#filter-words-by-word-length"><code>wl</code></a>, <a href="#filter-words-by-word-length"><code>min_wl</code></a>, <a href="#filter-words-by-word-length"><code>max_wl</code></a></strong></li>
+<li><strong>Substrings: <a href="#word-starts-with-string-startswith"><code>startswith</code></a>, <a href="#word-ends-with-string-endswith"><code>endswith</code></a>, <a href="#word-contains-strings-contains"><code>contains</code></a>, <a href="#word-contains-inner-strings-inner"><code>inner</code></a></strong></li>
+<li><strong>Regular Expressions: <a href="#filter-words-by-regex"><code>regexp</code></a></strong></li>
+</ul>
+<p>We demonstrate these arguments with <code>top_words()</code> so you can see what's
+happening without randomization. You can use these arguments for <code>word()</code>,
+<code>words()</code>, <code>top_word()</code>, <code>top_words()</code>, <code>sent()</code>, <code>sents()</code>, <code>para()</code>,
+<code>paras()</code>, <code>text()</code>.</p>
+<h2 id="filter-words-by-letter-case">Filter Words by Letter Case</h2>
+<p>The most important parameter in WordSiv (for bicameral languages) is <code>case</code>.
+WordSiv allows for words in Vocabs to be:</p>
+<ul>
+<li><strong>lowercase</strong> (e.g. <code>"owl"</code>): <strong><code>lc</code></strong></li>
+<li><strong>capitalized</strong> (e.g. <code>"Korea"</code>): <strong><code>cap</code></strong></li>
+<li><strong>all caps</strong> (e.g. <code>"WWF"</code>): <strong><code>uc</code></strong></li>
+<li><strong>camel-case</strong> (e.g. <code>"DDoS"</code>): (no parameter, but respected)</li>
+</ul>
+<p>The <code>case</code> argument allows you to select the <em>desired letter case</em> while
+considering your available glyphs (if you've set <code>glyphs</code>), optionally
+<em>transforming the original case</em> of words from the Vocab to expand results.</p>
+<p>The options are best demonstrated with a small example Vocab:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vocab</span><span class="p">,</span> <span class="n">WordSiv</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Make example Vocab w/ no probabilities</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">example_words</span> <span class="o">=</span> <span class="s2">&quot;grape</span><span class="se">\n</span><span class="s2">April</span><span class="se">\n</span><span class="s2">BART</span><span class="se">\n</span><span class="s2">DDoS&quot;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">vocab</span> <span class="o">=</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">bicameral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">example_words</span><span class="p">)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Build our WordSiv object</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">add_default_vocabs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">wsv</span><span class="o">.</span><span class="n">add_vocab</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">wsv</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="s2">&quot;example&quot;</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># Select words that *already have* desired case in the Vocab</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;lc&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;grape&quot;</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;cap_og&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;April&quot;</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;uc_og&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;BART&quot;</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_words</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;any_og&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;grape&quot;</span><span class="p">,</span> <span class="s2">&quot;April&quot;</span><span class="p">,</span> <span class="s2">&quot;BART&quot;</span><span class="p">,</span> <span class="s2">&quot;DDoS&quot;</span><span class="p">]</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1"># Select words that *can be transformed* to desired case</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_words</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;cap&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;Grape&quot;</span><span class="p">,</span> <span class="s2">&quot;April&quot;</span><span class="p">]</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_words</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;uc&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;GRAPE&quot;</span><span class="p">,</span> <span class="s2">&quot;APRIL&quot;</span><span class="p">,</span> <span class="s2">&quot;BART&quot;</span><span class="p">]</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1"># Select all words and transform to desired case</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_words</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;cap_force&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;Grape&quot;</span><span class="p">,</span> <span class="s2">&quot;April&quot;</span><span class="p">,</span> <span class="s2">&quot;Bart&quot;</span><span class="p">,</span> <span class="s2">&quot;Ddos&quot;</span><span class="p">]</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_words</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;uc_force&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;GRAPE&quot;</span><span class="p">,</span> <span class="s2">&quot;APRIL&quot;</span><span class="p">,</span> <span class="s2">&quot;BART&quot;</span><span class="p">,</span> <span class="s2">&quot;DDOS&quot;</span><span class="p">]</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="c1"># Special &#39;any&#39; case tries &#39;any_og&#39;, then tries &#39;cap&#39; and &#39;uc&#39; if no results</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="c1"># Notice we left out the &#39;case&#39; parameter on the second call, since &#39;any&#39; is the default</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;Grape&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;any&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Grape&quot;</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="k">assert</span> <span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;APRIL&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;APRIL&quot;</span>
+</span></code></pre></div></p>
+<h3 id="default-smart-any-case-caseany">Default: Smart Any Case (<code>case='any'</code>)</h3>
+<p>The default option (<code>case='any'</code>) tries to match as many words as possible,
+first trying <code>any_og</code>, then <code>cap</code>, then <code>uc</code> if there are not any matches.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">#   Returns &#39;ZOO&#39; as most common word</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;ZO&quot;</span><span class="p">,</span> <span class="n">min_wl</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># No `case` arg, so the default is `case=&#39;any&#39;` which will:</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># - try to get (unmodified) words from Vocab which can be spelled with &quot;ZO&quot;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1">#   (that have at least 3 characters): No results.</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># - try to capitalize Vocab words: &quot;zoo&quot; becomes &quot;Zoo&quot; but we can&#39;t spell it</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1">#   without &#39;o&#39;. No results.</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># - try to uppercase Vocab words: &quot;zoo&quot; becomes &quot;ZOO&quot;, which we can spell!</span>
+</span></code></pre></div>
+<h3 id="any-case-caseany_og">Any Case (<code>case='any_og'</code>)</h3>
+<p>The <code>any_og</code> option selects any word from the Vocab that can be spelled with
+<code>glyphs</code> (if set, otherwise all words). It does <em>not</em> change the case of words
+from the vocab.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># We don&#39;t get any words, because there are no words of at least 5 letters in</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># our Vocab that &quot;AIPRS&quot; can spell</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;AIPRS&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;any_og&quot;</span><span class="p">,</span> <span class="n">min_wl</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># However, this returns &quot;Paris&quot; since we have all the glyphs</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;aiPrs&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="s2">&quot;any_og&quot;</span><span class="p">,</span> <span class="n">min_wl</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="lowercase-caselc">Lowercase (<code>case='lc'</code>)</h3>
+<p>The <code>lc</code> option selects lowercase words from the Vocab (e.g. <code>"bread"</code>). It will
+<em>not</em> try to lowercase any words with capitals, since we wouldn't want to
+lowercase words like <code>"Paris"</code>, <code>"FAA"</code>, or <code>"DDoS"</code></p>
+<div class="admonition note">
+<p class="admonition-title">Why no <code>lc_og</code>?</p>
+<p>There is no need for a <code>lc_og</code> option, because <code>lc</code> <strong>already</strong> only selects
+lowercase words from the Vocab.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;lc&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="forced-lowercase-caselc_force">Forced Lowercase (<code>case='lc_force'</code>)</h3>
+<p>The <code>lc_force</code> option selects all words from the Vocab, and indiscriminately
+transforms them to lowercase.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;lc_force&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="capitalized-casecap">Capitalized (<code>case='cap'</code>)</h3>
+<p>The <code>cap</code> option selects capitalized words from the Vocab (e.g. <code>"Paris"</code>) as
+well as lowercase (e.g. <code>"boat"</code>) words from the Vocab, capitalizing them
+(e.g. <code>"Paris", "Boat"</code>).</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;cap&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="capitalized-no-case-change-casecap_og">Capitalized, No Case Change  (<code>case='cap_og'</code>)</h3>
+<p>The <code>cap_og</code> option selects capitalized words from the Vocab (like <code>"Paris"</code>).
+It does <strong>not</strong> capitalize any lowercase words (like <code>case='cap'</code> does). This is
+useful for getting capitalized words like proper nouns.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;cap_og&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="forced-capitalized-casecap_force">Forced Capitalized (<code>case='cap_force'</code>)</h3>
+<p>The <code>cap_force</code> option selects all words from the Vocab, and indiscriminately
+transforms them to uppercase.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;cap_force&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="all-caps-caseuc">All Caps (<code>case='uc'</code>)</h3>
+<p>The <code>uc</code> option selects all caps words from the Vocab (e.g. <code>"WWF"</code>), as well as
+lowercase (e.g. <code>"boat"</code>) and capitalized (e.g. <code>"Paris"</code>) words from the
+vocab, transforming them to all caps (e.g. <code>"WWF", "BOAT", "PARIS"</code>).</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;uc&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="all-caps-no-case-change-caseuc_og">All Caps, No Case Change (<code>case='uc_og'</code>)</h3>
+<p>The <code>uc_og</code> option selects all caps words from the Vocab (e.g. <code>"WWF"</code>). It
+does <strong>not</strong> capitalize any lowercase or capitalized words (like <code>case='uc'</code>
+does). This is useful for getting all caps words like acronyms.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;uc_og&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="forced-all-caps-caseuc_force">Forced All Caps (<code>case='uc_force'</code>)</h3>
+<p>The <code>uc_force</code> option selects all words from the Vocab, and indiscriminately
+transforms them to uppercase.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">=</span><span class="s2">&quot;HAMBUGERShambugers&quot;</span><span class="p">)</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="s2">&quot;uc_force&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h2 id="filter-words-by-word-length">Filter Words by Word Length</h2>
+<p>Arguments <code>wl</code>, <code>min_wl</code>, and <code>max_wl</code> let you select for the length of words in
+the Vocab:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="c1"># Exactly 7 letters</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">wl</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1"># At least 4 letters</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">min_wl</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="c1"># No more than 20 letters</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">max_wl</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="c1"># At least 10 letters, no more than 20 letters</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">min_wl</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_wl</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span>
+</span></code></pre></div>
+<h2 id="filter-words-by-substrings">Filter Words by Substrings</h2>
+<p>Arguments <strong><a href="#word-starts-with-string-startswith"><code>startswith</code></a></strong>, <strong><a href="#word-ends-with-string-endswith"><code>endswith</code></a></strong>, <strong><a href="#word-contains-strings-contains"><code>contains</code></a></strong>, and <strong><a href="#word-contains-inner-strings-inner"><code>inner</code></a></strong> let you select words which contain specific substrings.</p>
+<h3 id="word-starts-with-string-startswith">Word Starts With String (<code>startswith</code>)</h3>
+<p>Argument <code>startswith</code> matches words that have a specific glyph/string at the
+start of the word, <em>after</em> any case transformations may have occurred.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># starts with single glyph</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">startswith</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">))</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># starts with string</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">startswith</span><span class="o">=</span><span class="s2">&quot;ev&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="word-ends-with-string-endswith">Word Ends With String (<code>endswith</code>)</h3>
+<p>Argument <code>endswith</code> matches words that have a specific glyph/string at the
+end of the word, <em>after</em> any case transformations may have occurred.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="c1"># contains single glyph</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">endswith</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">))</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># contains string</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">endswith</span><span class="o">=</span><span class="s2">&quot;ats&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="word-contains-strings-contains">Word Contains String(s) (<code>contains</code>)</h3>
+<p>Argument <code>contains</code> matches words which contain specific string(s) in the word,
+<em>after</em> any case transformations may have occurred.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1"># contains single glyph</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">contains</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">))</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># contains string</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">contains</span><span class="o">=</span><span class="s2">&quot;orr&quot;</span><span class="p">))</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="c1"># contains multiple glyphs/strings</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="c1"># `inner` only accepts a tuple, not a list (this is for caching)</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">contains</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;rr&quot;</span><span class="p">)))</span>
+</span></code></pre></div>
+<h3 id="word-contains-inner-strings-inner">Word Contains Inner String(s) (<code>inner</code>)</h3>
+<p>Argument <code>inner</code> matches words which contain specific string(s) in <code>word[1:-1]</code> (all
+but first and last glyphs), <em>after</em> any case transformations may have occurred.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="c1"># Contains glyph inside (word[1:-1])</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">inner</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">))</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="c1"># Contains string inside (word[1:-1])</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">inner</span><span class="o">=</span><span class="s2">&quot;br&quot;</span><span class="p">))</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="c1"># Contains multiple strings inside (word[1:-1])</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="c1"># `inner` only accepts a tuple, not a list (this is for caching)</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">inner</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;ck&quot;</span><span class="p">)))</span>
+</span></code></pre></div>
+<h2 id="filter-words-by-regex">Filter Words by Regex</h2>
+<p>The <code>regexp</code> argument lets you match words by regular expression. This filter
+happens <em>after</em> any case transformations may have occurred. It uses the
+<a href="https://pypi.org/project/regex/">regex</a> library from PyPI which gives more
+options for selecting
+<a href="https://www.regular-expressions.info/unicode.html">unicode blocks</a> and more:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">regexp</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;h.+b.*ger&quot;</span><span class="p">))</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># WordSiv uses regex (third-party) regex library from PyPi,</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="c1"># so you can specify Unicode blocks like this:</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="n">wsv_es</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;es&quot;</span><span class="p">)</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv_es</span><span class="o">.</span><span class="n">top_words</span><span class="p">(</span><span class="n">regexp</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*\p{InLatin-1_Supplement}.*&quot;</span><span class="p">))</span>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="c1"># See https://www.regular-expressions.info/unicode.html for</span>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="c1"># more examples of \p{...} syntax</span>
+</span></code></pre></div>
+<h2 id="debugging-filters-and-raising-errors">Debugging Filters and Raising Errors</h2>
+<p>Most of the time when proofing, some output is better than nothing. When WordSiv
+can't find a matching word for your <code>glyphs</code> and filter arguments, it will just
+return an empty string and send a warning log message to the console with some
+details. However, we can change these behaviors:</p>
+<h3 id="suppressing-warning-messages">Suppressing Warning Messages</h3>
+<p>WordSiv by default outputs log messages when there are no matching words for
+the given filters. However, you can turn this off by adjusting the log level:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Initially we&#39;ll set the logger to show WARNING and more severe</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;wordsiv&quot;</span><span class="p">)</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="c1"># We see a warning in our console</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">contains</span><span class="o">=</span><span class="s2">&quot;BLAH&quot;</span><span class="p">))</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="c1"># We can suppress these warnings by setting the logging level to ERROR:</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="c1"># No warning this time!</span>
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">contains</span><span class="o">=</span><span class="s2">&quot;NOWAY&quot;</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="raising-errors">Raising Errors</h3>
+<p>Maybe you want your script to halt if there are no matching words, or want to
+catch the error and try something else. For this you can use the <code>raise_errors</code>
+option, which will raise <code>wordsiv.FilterError</code> if there are no word matches.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wordsiv</span><span class="w"> </span><span class="kn">import</span> <span class="n">WordSiv</span><span class="p">,</span> <span class="n">FilterError</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">wsv</span> <span class="o">=</span> <span class="n">WordSiv</span><span class="p">(</span><span class="n">vocab</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="n">wsv</span><span class="o">.</span><span class="n">top_word</span><span class="p">(</span><span class="n">contains</span><span class="o">=</span><span class="s2">&quot;NOWAY&quot;</span><span class="p">)</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="k">except</span> <span class="n">FilterError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;We can handle our error &quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&quot; here!&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.select", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+    
+  </body>
+</html>
